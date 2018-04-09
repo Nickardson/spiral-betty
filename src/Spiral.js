@@ -1,6 +1,23 @@
 import React, { PureComponent } from 'react'
 import {getPoints, createPath} from './lib/spiral'
 import { connect } from 'react-redux'
+import styled from 'styled-components'
+
+const {layout: {ids: {spiralSvg}}} = require('./lib/constants')
+
+const Svg = styled.svg`
+  transition: .05s;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  path, circle { /* since we are pulling svg from html we want decouple these interactive elements */
+    transition: fill .05s; 
+  }
+  > *:first-child { /* base */
+    pointer-events: all;
+  }
+`
 
 class Spiral extends PureComponent {
   render () {
@@ -20,7 +37,7 @@ class Spiral extends PureComponent {
       mouseLeave
     } = this.props
     if (!imgData) return null
-    const d = createPath(getPoints({
+    const points = getPoints({
       contrast,
       cx,
       cy,
@@ -29,41 +46,29 @@ class Spiral extends PureComponent {
       height,
       imgData,
       maxLoops: rings
-    }))
+    })
+    const d = createPath(points)
     const active = !!imgData && !editing
     const svgLength = Math.min(width / scale, height / scale)
     const radius = svgLength / 2
     const viewBox = `0 0 ${svgLength} ${svgLength}`
     return (
-      <svg
+      <Svg
+        id={spiralSvg}
         viewBox={viewBox}
-        style={{
-          opacity: active ? 1 : 0,
-          transition: '.2s',
-          position: 'absolute',
-          width: '100%',
-          height: '100%'
-        }}>
+        style={{opacity: active ? 1 : 0}}>
         <circle
-          style={{transition: 'fill .15s'}}
+          onMouseEnter={active && mouseEnter ? mouseEnter : undefined}
+          onMouseLeave={active && mouseLeave ? mouseLeave: undefined}
+          style={{cursor: active ? 'pointer' : 'default'}}
           fill={colorLight}
           r={radius}
           cx={radius}
           cy={radius} />
         <path
-          style={{transition: 'fill .15s'}}
           d={d}
           fill={colorDark} />
-        {/* For mouse events */}
-        <circle
-          onMouseEnter={active && mouseEnter ? mouseEnter : undefined}
-          onMouseLeave={active && mouseLeave ? mouseLeave: undefined}
-          style={{cursor: active ? 'pointer' : 'default'}}
-          fill={'transparent'}
-          r={radius}
-          cx={radius}
-          cy={radius} />
-      </svg>
+      </Svg>
     )
   }
 }

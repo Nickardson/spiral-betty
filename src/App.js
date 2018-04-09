@@ -9,6 +9,7 @@ import EditPhoto from './EditPhoto'
 import Sidebar from './Sidebar'
 import Swatch from './Swatch'
 import Filter from './Filter'
+import DownloadSvg from './DownloadSvg'
 
 import {addFilter, setup, updatePreviewLength, updateImgPos, updateFilter, startEditingPhoto, updateContrast, endEditingPhoto, addImgData} from './redux/actions'
 import {getImageData} from './lib/img'
@@ -235,6 +236,8 @@ class App extends Component {
                   colorLight={light}
                   colorDark={dark} />
               ))}
+            <p>Download</p>
+            <DownloadSvg /><button>jpg</button>
           </Fragment>
         </Sidebar>
       </Fragment> 
