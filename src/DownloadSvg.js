@@ -1,7 +1,32 @@
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
+import styled from 'styled-components'
 
 const {layout: {ids: {spiralSvg}}} = require('./lib/constants')
+
+const Download = styled.button`
+  width: 189px;
+  height: 46px;
+  color: #fff;
+  position: fixed;
+  right: 25px;
+  top: 25px;
+  font-size: 20px;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 15.5px;
+  border-radius: 46px;
+  cursor: pointer;
+  border: none;
+  transition: .2s;
+  background-color: var(--accent);
+  &:not(:disabled):hover {
+  }
+  &:disabled {
+    cursor: default;
+    background-color: #eee;
+  }
+`
 
 class DownloadSvg extends Component {
   onClick () {
@@ -41,7 +66,7 @@ class DownloadSvg extends Component {
     const {editing, imgData} = this.props
     const disabled = !imgData || editing
     return (
-      <button disabled={disabled} onClick={this.onClick}>svg</button>
+      <Download disabled={disabled} onClick={this.onClick}>Download</Download>
     )
   }
 }

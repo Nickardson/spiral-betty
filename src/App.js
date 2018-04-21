@@ -10,6 +10,9 @@ import Sidebar from './Sidebar'
 import Swatch from './Swatch'
 import Filter from './Filter'
 import DownloadSvg from './DownloadSvg'
+import Slider from './Slider'
+import { SectionTitle } from './Text'
+import Section from './Section'
 
 import {addFilter, setup, updatePreviewLength, updateImgPos, updateFilter, startEditingPhoto, updateContrast, endEditingPhoto, addImgData} from './redux/actions'
 import {getImageData} from './lib/img'
@@ -26,33 +29,29 @@ const Main = styled.div`
 
 const coloring = [
   {
+    name: 'Slumber',
+    light: ['#00e5c8'],
+    dark: ['#851f73'],
+    type: 'flat'
+  }, {
     name: 'Classic',
     light: ['#fff'],
     dark: ['#000'],
     type: 'flat'
-  },
-  {
+  }, {
     name: 'Hipster',
     light: ['#ff4137'],
     dark: ['#ff4137'],
     type: 'flat'
-  },
-  {
+  }, {
     name: 'Goldy',
     light: ['#f3dd6d'],
     dark: ['#810065'],
     type: 'flat'
-  },
-  {
+  }, {
     name: 'Iredesent',
     light: ['#00fcff'],
     dark: ['#0028e6'],
-    type: 'flat'
-  },
-  {
-    name: 'Slumber',
-    light: ['#00e5c8'],
-    dark: ['#851f73'],
     type: 'flat'
   }
 ]
@@ -90,12 +89,10 @@ const contrastVals = {
 class App extends Component {
   constructor () {
     super()
-    this.handleRingChange = (e) => {
-      const rings = Number(e.target.value)
-      this.props.updateRings(rings)
+    this.handleRingChange = (val) => {
+      this.props.updateRings(val)
     }
-    this.handleScaleChange = (e) => {
-      const scale = Number(e.target.value)
+    this.handleScaleChange = (scale) => {
       const {img: {scale: prevScale, cx: prevCx, cy: prevCy, width, height}, updateImgPos} = this.props
       if (prevScale <= scale) {
         // Increasing in scale, we're good to go and update
@@ -130,10 +127,9 @@ class App extends Component {
         updateImgPos(scale, cx, cy)
       }
     }
-    this.handleContrastChange = (e) => {
+    this.handleContrastChange = (val) => {
       const {updateContrast} = this.props
-      const contrast = Number(e.target.value)
-      updateContrast(contrast)
+      updateContrast(val)
     }
     this.updateImage = (updates) => {
       const {scale, cx, cy} = updates
@@ -195,51 +191,70 @@ class App extends Component {
             <Upload onChange={this.handleFileChange} />
           </Canvas>
         </Main>
-        <Sidebar>
+        <Sidebar> 
           <Fragment>
-            <p>Scale</p>
-            <input 
-              style={{width: '100%'}}
-              type={'range'}
-              min={1}
-              max={4}
-              value={scale || 1}
-              onChange={this.handleScaleChange}
-              step={.05} />
-            <p>Rings</p>
-            <input
-              style={{width: '100%'}}
-              type={'range'}
-              min={rings.min}
-              max={rings.max}
-              onChange={this.handleRingChange}
-              defaultValue={rings.default} 
-              step={1} />
-            <p>Contrast</p>
-            <input
-              style={{width: '100%'}}
-              type={'range'}
-              min={contrastVals.min}
-              max={contrastVals.max}
-              onChange={this.handleContrastChange}
-              defaultValue={contrastVals.default} 
-              step={contrastVals.step} />
-            <p>Preview size</p>
-            <button onClick={() => {updatePreviewLength(168)}}>FB</button>
+            <Section>
+              <SectionTitle>Colors</SectionTitle>
+              <div>
+                {coloring.map(({light, dark}, i) => (
+                  <Swatch
+                    key={i}
+                    colorLight={light}
+                    colorDark={dark} />
+                ))}
+              </div>
+            </Section>
+            <Section>
+              <SectionTitle>Scale</SectionTitle>
+              <Slider
+                min={1}
+                max={4}
+                step={.05}
+                value={scale || 1}
+                defaultValue={scale || 1}
+                onChange={this.handleScaleChange} />
+            </Section>
+            <Section>
+              <SectionTitle>Rings</SectionTitle>
+              <Slider
+                min={rings.min}
+                max={rings.max}
+                step={1}
+                defaultValue={rings.default}
+                onChange={this.handleRingChange} />
+            </Section>
+            <Section>
+              <SectionTitle>Contrast</SectionTitle>
+              <Slider
+                startCenter
+                min={contrastVals.min}
+                max={contrastVals.max}
+                step={contrastVals.step}
+                defaultValue={contrastVals.default}
+                onChange={this.handleContrastChange} />
+            </Section>
+            <Section>
+              <SectionTitle>Brightness</SectionTitle>
+              <Slider
+                startCenter
+                min={contrastVals.min}
+                max={contrastVals.max}
+                step={contrastVals.step}
+                defaultValue={contrastVals.default}
+                onChange={this.handleContrastChange} />
+            </Section>
+            <Section>
+              <SectionTitle>Preview size</SectionTitle>
+              <button onClick={() => {updatePreviewLength(168)}}>FB</button>
               <button onClick={() => {updatePreviewLength(200)}}>Twitter</button>
               <button onClick={() => {updatePreviewLength(614)}}>Instagram</button>
               <span>Custom</span>
-              <p>Colors</p>
-              {coloring.map(({light, dark}, i) => (
-                <Swatch
-                  key={i}
-                  colorLight={light}
-                  colorDark={dark} />
-              ))}
-            <p>Download</p>
-            <DownloadSvg /><button>jpg</button>
+            </Section>
           </Fragment>
         </Sidebar>
+        <div>
+          <DownloadSvg />
+        </div>
       </Fragment> 
     )
   }

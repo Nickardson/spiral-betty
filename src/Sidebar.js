@@ -1,13 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
 
-const {layout: {sidebar: {width}}} = require('./lib/constants')
-
 const Container = styled.div`
   position: fixed;
-  width: ${width}px;
+  width: ${60 * 2 + 15 + 35 * 2}px;
   height: 100%;
-  padding: 30px;
+  padding: 35px;
+  overflow-y: auto;
 `
 
 const Sidebar = ({children}) => (

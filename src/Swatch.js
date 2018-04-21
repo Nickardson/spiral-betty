@@ -5,14 +5,20 @@ import { connect } from 'react-redux'
 import { updateFilter } from './redux/actions'
 
 const Container = styled.div`
-  width: 70px;
-  height: 70px;
-  display: inline-block;
-  border-radius: 5px;
-  margin: 0 5px 5px 0;
-  border: 2px solid rgba(0,0,0,.1);
+  width: 60px;
+  height: 60px;
+  float: left;
+  margin: 0 15px 15px 0;
+  border: 1px solid #979797;
   position: relative;
   cursor: pointer;
+  transition: .2s;
+  &:nth-of-type(even) {
+    margin-right: 0px;
+  }
+  &.active {
+    border: 4px solid var(--accent);
+  }
 `
 const Line = styled.div`
   width: 70%;
@@ -27,13 +33,16 @@ class Swatch extends Component {
     this.onClick = () => {
       const {colorDark, colorLight, updateFilter} = this.props
       updateFilter(colorLight, colorDark)
+      document.documentElement.style.setProperty('--accent', colorDark)
     }
   }
   render () {
-    const {colorDark, colorLight} = this.props
+    const {colorDark, colorLight, light, dark} = this.props
+    const active = `${colorDark}` === `${dark}` && `${colorLight}` === `${light}`
     return (
       <Container
         onClick={this.onClick}
+        className={active ? 'active' : ''}
         style={{background: colorLight.length === 1 ? colorLight[0] : ''}}>
         <Line className={'pos-center'} style={{borderColor: colorDark.length === 1 ? colorDark[0] : ''}} />
       </Container>
@@ -41,6 +50,10 @@ class Swatch extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  const {filter: {colorLight: light, colorDark: dark}} = state
+  return {light, dark}
+}
 const mapDispatchToProps = (dispatch) => {
   return {
     updateFilter: (colorLight, colorDark) => dispatch(updateFilter(undefined, undefined, colorLight, colorDark)),
@@ -48,6 +61,6 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default connect(
-  undefined,
+  mapStateToProps,
   mapDispatchToProps
 )(Swatch)

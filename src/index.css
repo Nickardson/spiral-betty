@@ -1,12 +1,29 @@
+:root {
+  --accent: #852073;
+}
+
+.clearfix::after, .clearfix::before {
+    content: "";
+    clear: both;
+    display: table;
+}
+
 body {
+  font-family: Nunito, sans-serif;
+  font-weight: 400;
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
   color: #777;
+  font-size: 15px;
 }
 
 *, *:after, *:before {
   box-sizing: border-box;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 10px;
 }
 
 .pos-center {

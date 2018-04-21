@@ -1,6 +1,6 @@
 const layout = {
   sidebar: {
-    width: 300
+    width: 135 + 35 * 2
   },
   ids: {
     spiralSvg: 'svg-filter'

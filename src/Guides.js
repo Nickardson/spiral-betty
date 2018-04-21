@@ -2,45 +2,42 @@ import React from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
-const color = 'cyan'
-
 const Border = styled.div`
   border-radius: 100%;
-  border 1px solid ${color};
+  border 3px solid var(--accent);
   width: 100%;
   height: 100%;
   position: absolute;
   pointer-events: none;
   transition: .4s;
 `
-
 const BorderLeft = styled.div`
   width: 1px;
   left: 33%;
   height: 100%;
   position: absolute;
-  background-color: ${color};
+  background-color: var(--accent);
 `
 const BorderRight = styled.div`
   width: 1px;
   left: 67%;
   height: 100%;
   position: absolute;
-  background-color: ${color};
+  background-color: var(--accent);
 `
 const BorderTop = styled.div`
   width: 100%;
   top: 33%;
   height: 1px;
   position: absolute;
-  background-color: ${color};
+  background-color: var(--accent);
 `
 const BorderBottom = styled.div`
   width: 100%;
   top: 67%;
   height: 1px;
   position: absolute;
-  background-color: ${color};
+  background-color: var(--accent);
 `
 const BorderVert = styled.div`
   width: 1px;
@@ -48,7 +45,7 @@ const BorderVert = styled.div`
   top: 47%;
   height: 6%;
   position: absolute;
-  background-color: ${color};
+  background-color: var(--accent);
 `
 const BorderHoriz = styled.div`
   width: 6%;
@@ -56,7 +53,7 @@ const BorderHoriz = styled.div`
   left: 47%;
   height: 1px;
   position: absolute;
-  background-color: ${color};
+  background-color: var(--accent);
 `
 
 const Guides = ({active}) => (
