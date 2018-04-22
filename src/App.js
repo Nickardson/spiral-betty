@@ -29,27 +29,22 @@ const Main = styled.div`
 
 const coloring = [
   {
-    name: 'Slumber',
     light: ['#00e5c8'],
     dark: ['#851f73'],
     type: 'flat'
   }, {
-    name: 'Classic',
     light: ['#fff'],
     dark: ['#000'],
     type: 'flat'
   }, {
-    name: 'Hipster',
     light: ['#ff4137'],
     dark: ['#ff4137'],
     type: 'flat'
   }, {
-    name: 'Goldy',
     light: ['#f3dd6d'],
     dark: ['#810065'],
     type: 'flat'
   }, {
-    name: 'Iredesent',
     light: ['#00fcff'],
     dark: ['#0028e6'],
     type: 'flat'
@@ -57,7 +52,6 @@ const coloring = [
 ]
 
 const gradientMapColors = [
-  ['#fff', '#000'],
   ['#ff4137', '#1c3c63'],
   ['#f3dd6d', '#810065'],
   ['#00fcff', '#0028e6'],

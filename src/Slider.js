@@ -9,22 +9,24 @@ const SliderInput = styled.input`
   &[type=range] {
   -webkit-appearance: none;
   width: 100%;
+  height: 11px;
   margin: 0;
   padding: 0;
   line-height: 0;
+  background-color: transparent;
 }
 &[type=range]:focus {
   outline: none;
   border: none;
 }
 &[type=range]::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
   width: 100%;
-  height: 1px;
+  height: 11px;
   cursor: pointer;
   box-shadow: none;
-  background: ${trackColor};
+  background: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45.44%, ${trackColor} 45.45%, ${trackColor} 54.54%, rgba(0,0,0,0) 54.55%, rgba(0,0,0,0) 100%);
   border-radius: 0px;
-  border: none;
 }
 &[type=range]::-webkit-slider-thumb {
   box-shadow: none;
@@ -33,23 +35,24 @@ const SliderInput = styled.input`
   width: ${sliderThumbSize};
   border-radius: 100%;
   background: var(--accent);
-  cursor: pointer;
+  cursor: grab;
   -webkit-appearance: none;
-  margin-top: -5.5px;
-  transition: background-color .15s;
+  margin-top: -1px;
+  border: 2px solid transparent;
+  transition: background-color .15s, transform .2s, border .5s;
 }
 &::-moz-focus-outer {
   border: 0;
 }
 &[type=range]::-moz-range-track {
   width: 100%;
-  height: 1px;
   cursor: pointer;
   box-shadow: none;
-  background: ${trackColor};
   border-radius: 0px;
-  border: none;
+  height: 11px;
+  background: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45.44%, ${trackColor} 45.45%, ${trackColor} 54.54%, rgba(0,0,0,0) 54.55%, rgba(0,0,0,0) 100%);
 }
+
 &[type=range]::-moz-range-thumb {
   box-shadow: none;
   border: none;
@@ -57,16 +60,16 @@ const SliderInput = styled.input`
   width: ${sliderThumbSize};
   border-radius: 100%;
   background: var(--accent);
-  cursor: pointer;
+  cursor: grab;
   transition: background-color .15s;
 }
 &[type=range]::-ms-track {
   width: 100%;
-  height: 1px;
   cursor: pointer;
-  background: transparent;
   border-color: transparent;
   color: transparent;
+  height: 11px;
+  background-image: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45.44%, ${trackColor} 45.45%, ${trackColor} 54.54%, rgba(0,0,0,0) 54.55%, rgba(0,0,0,0) 100%);
 }
 &[type=range]::-ms-fill-lower {
   background: #2b6699;
@@ -87,43 +90,89 @@ const SliderInput = styled.input`
   width: ${sliderThumbSize};
   border-radius: 100%;
   background: var(--accent);
-  cursor: pointer;
+  cursor: grab;
   height: 1px;
   transition: background-color .15s;
 }
 &[type=range]:focus::-ms-fill-lower {
   background: ${trackColor};
 }
+&.hover::-webkit-slider-thumb {
+  transform: scale(2);
+  border: 2px solid rgba(255,255,255,.8);
+} 
+&.hover::-moz-range-thumb {
+  transform: scale(2);
+  border: 2px solid rgba(255,255,255,.8);
+} 
+&.hover::-ms-thumb {
+  transform: scale(2);
+  border: 2px solid rgba(255,255,255,.8);
+} 
+&.grabbing.grabbing::-webkit-slider-thumb {
+  cursor: grabbing !important;
+  transform: scale(1.65);
+  border: 2px solid transparent;
+}
+&.grabbing.grabbing::-moz-range-thumb {
+  cursor: grabbing !important;
+  transform: scale(1.65);
+  border: 2px solid transparent;
+}
+&.grabbing.grabbing::-ms-thumb {
+  cursor: grabbing !important;
+  transform: scale(1.65);
+  border: 2px solid transparent;
+}
+&.grabbing.grabbing::-webkit-slider-runnable-track {
+  cursor: grabbing !important;
+}
+&.grabbing.grabbing::-moz-range-track {
+  cursor: grabbing !important;
+}
+&.grabbing.grabbing::-ms-track {
+  cursor: grabbing !important;
+}
 `
 const TrackBeforeSlider = styled.div`
   position: absolute;
   width: 100%;
   height: 3px;
-  top: 5.5px; // FF
+  top: 4px;
   background-color: var(--accent);
   pointer-events: none;
   transition: background-color .15s;
-  
-  // Safari && Chrome
-  &:not(*:root) {
-    top: 3.3px;
-  }
 `
 
 // TODO: while dragging keep pointer
 class Slider extends Component {
   constructor (props) {
     super(props)
-    this.state = {value: this.props.defaultValue}
+    this.state = {
+      value: this.props.defaultValue,
+      dragging: false,
+      hover: false
+    }
     this.onChange = (e) => {
       const value = Number(e.target.value)
-      console.log(value)
       this.setState({value})
       this.props.onChange(value)
     } 
+    this.dragging = () => {
+      this.setState({dragging: false})
+      document.body.classList.remove('grabbing')
+      document.removeEventListener('mouseup', this.dragging)
+    }
+    this.onMouseDown = () => {
+      this.setState({dragging: true})
+      document.body.classList.add('grabbing')
+      document.addEventListener('mouseup', this.dragging)
+    }
+    this.onMouseEnter = () => { this.setState({hover: true}) }
+    this.onMouseLeave = () => { this.setState({hover: false}) }
   }
   render () {
-    const {min, max, step, startCenter} = this.props
+    const {min, max, step, startCenter} = this.props 
     const {value} = this.state
     let trackBeforeSliderStyle = {}
     if (startCenter) {
@@ -139,9 +188,17 @@ class Slider extends Component {
         width: `${(value - min) / (max - min) * 100}%`
       }
     }
+    let className = ''
+    if (this.state.dragging) className = 'grabbing'
+    else if (this.state.hover) className = 'hover'
+    
     return (
       <div style={{position: 'relative', width: '100%', height: 'auto', padding: 0, margin: '12px 0 0', lineHeight: 0}}>
         <SliderInput
+          className={className}
+          onMouseDown={this.onMouseDown}
+          onMouseEnter={this.onMouseEnter}
+          onMouseLeave={this.onMouseLeave}
           type="range"
           min={min}
           max={max}

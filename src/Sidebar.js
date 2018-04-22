@@ -6,7 +6,7 @@ const Container = styled.div`
   width: ${60 * 2 + 15 + 35 * 2}px;
   height: 100%;
   padding: 35px;
-  overflow-y: auto;
+  overflow-y: auto; 
 `
 
 const Sidebar = ({children}) => (
