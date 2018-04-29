@@ -51,6 +51,7 @@ const getPoints = ({imgData, contrast, scale, cx, cy, width, height, maxLoops = 
   const scaledHeight = height / scale
   const outter = []
   const inner = []
+  const loopIndexes = [] // used for animations
   
   const radius = Math.min(scaledWidth, scaledHeight) / 2
     
@@ -96,15 +97,17 @@ const getPoints = ({imgData, contrast, scale, cx, cy, width, height, maxLoops = 
       inner.push(p2)
     }
     
-    loop = Math.floor(angle / Math.PI * 2) // which loop are we on...
+    loop = Math.floor(angle / (Math.PI * 2)) // which loop are we on...
+    if (loopIndexes[loop] === undefined) loopIndexes.push(outter.length - 1)
     if (firstRing.length) angle = firstRing.shift()
     else angle = angle + getAngle(loop, chord, b)
   }
   
-  return {outter, inner}
+  return {outter, inner, loopIndexes}
 }
 
 const createPath = ({outter, inner}) => {
+  if (!outter || outter.length === 0) return ''
   let d = 'M'
   outter.forEach(([x, y]) => { d += `${x},${y} `})
   inner.reverse().forEach(([x, y]) => { d += `${x},${y} ` })
