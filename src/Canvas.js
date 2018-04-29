@@ -13,7 +13,8 @@ const Canvas = ({children, length}) => (
   <Container
     style={{
       width: length,
-      height: length
+      height: length,
+      transition: '.2s'
     }}>
     {children}
   </Container>

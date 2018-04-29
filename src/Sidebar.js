@@ -10,7 +10,7 @@ const Container = styled.div`
 `
 
 const Sidebar = ({children}) => (
-  <Container>
+  <Container id='sidebar'>
     {children}
   </Container>
 )

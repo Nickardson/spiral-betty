@@ -8,9 +8,6 @@ const Download = styled.button`
   width: 189px;
   height: 46px;
   color: #fff;
-  position: fixed;
-  right: 25px;
-  top: 25px;
   font-size: 20px;
   text-transform: uppercase;
   font-weight: 800;

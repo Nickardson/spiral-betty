@@ -10,6 +10,7 @@ import Sidebar from './Sidebar'
 import Swatch from './Swatch'
 import Filter from './Filter'
 import DownloadSvg from './DownloadSvg'
+import Size from './Size'
 import Slider from './Slider'
 import { SectionTitle } from './Text'
 import Section from './Section'
@@ -68,7 +69,7 @@ const gradientMapColors = [
 ]
 
 const rings = {
-  default: 50,
+  default: 40,
   min: 8,
   max: 180
 }
@@ -161,9 +162,8 @@ class App extends Component {
   }
   componentWillMount () {
     // setup store
-    const {addFilter, setup, updatePreviewLength} = this.props
+    const {addFilter, setup} = this.props
     addFilter()
-    updatePreviewLength(1000)
     setup()
   }
   render() {
@@ -173,9 +173,8 @@ class App extends Component {
       <Fragment>
         <Main
           style={{
-            paddingLeft: '300px',
-            minWidth: length + 100,
-            minHeight: length + 100,
+            minWidth: (length || 0) + 100,
+            minHeight: (length || 0) + 100,
             overflow: 'hidden'
           }}> 
           <Canvas>
@@ -237,16 +236,10 @@ class App extends Component {
                 defaultValue={contrastVals.default}
                 onChange={this.handleContrastChange} />
             </Section>
-            <Section>
-              <SectionTitle>Preview size</SectionTitle>
-              <button onClick={() => {updatePreviewLength(168)}}>FB</button>
-              <button onClick={() => {updatePreviewLength(200)}}>Twitter</button>
-              <button onClick={() => {updatePreviewLength(614)}}>Instagram</button>
-              <span>Custom</span>
-            </Section>
           </Fragment>
         </Sidebar>
-        <div>
+        <div style={{position: 'fixed', right: '25px', top: '25px'}}>
+          <Size />
           <DownloadSvg />
         </div>
       </Fragment> 
@@ -262,7 +255,6 @@ const mapDispatchToProps = (dispatch) => {
   return {
     addFilter: () => dispatch(addFilter('spiral', {rings: rings.default}, ['#fff'], ['#000'])),
     setup: () => dispatch(setup()),
-    updatePreviewLength: (length) => dispatch(updatePreviewLength(length)),
     updateRings: (rings) => dispatch(updateFilter(undefined, {rings})),
     startEditingPhoto: () => dispatch(startEditingPhoto()),
     endEditingPhoto: () => dispatch(endEditingPhoto()),
