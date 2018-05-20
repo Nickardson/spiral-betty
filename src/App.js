@@ -11,9 +11,10 @@ import Swatch from './Swatch'
 import Filter from './Filter'
 import DownloadSvg from './DownloadSvg'
 import Size from './Size'
-import Slider from './Slider'
 import { SectionTitle } from './Text'
 import Section from './Section'
+import SectionSlider from './SectionSlider'
+import SectionImage from './sidebar/SectionImage'
 
 import {addFilter, setup, updatePreviewLength, updateImgPos, updateFilter, startEditingPhoto, updateContrast, endEditingPhoto, addImgData} from './redux/actions'
 import {getImageData} from './lib/img'
@@ -24,53 +25,144 @@ const Main = styled.div`
   position: absolute;
   height: 100%;
   overflow: auto;
-  left: ${width}px;
-  width: calc(100% - ${width}px);
+  left: 235px;
+  width: calc(100% - 550px);
 `
 
 const coloring = [
   {
     light: ['#00e5c8'],
     dark: ['#851f73'],
-    type: 'flat'
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
   }, {
     light: ['#fff'],
     dark: ['#000'],
-    type: 'flat'
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
   }, {
-    light: ['#ff4137'],
-    dark: ['#ff4137'],
-    type: 'flat'
+    light: ['#fff'],
+    dark: ['#f00'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
   }, {
     light: ['#f3dd6d'],
     dark: ['#810065'],
-    type: 'flat'
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#D7C9B8'],
+    dark: ['#3D3536'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
   }, {
     light: ['#00fcff'],
     dark: ['#0028e6'],
-    type: 'flat'
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#ff4137'],
+    dark: ['#1c3c63'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#88dbdf'],
+    dark: ['#981012'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#fef08d'],
+    dark: ['#037a44'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#43fd90'],
+    dark: ['#05407a'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#fff809'],
+    dark: ['#dc51d2'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#90d3ca'],
+    dark: ['#513750'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#ff6436'],
+    dark: ['#1e3265'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#9defe1'],
+    dark: ['#e72b3c'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#f03061'],
+    dark: ['#2e3060'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#fff639'],
+    dark: ['#4a1bcd'],
+    fill: {
+      line: 'flood',
+      background: 'flood'
+    }
+  }, {
+    light: ['#fff'],
+    dark: ['cyan', 'red'],
+    fill: {
+      line: 'dual',
+      background: 'flood'
+    }
+  }, {
+    light: ['#fff'],
+    dark: ['cyan', 'lime'],
+    fill: {
+      line: 'linear-gradient',
+      background: 'flood'
+    }
   }
-]
-
-const gradientMapColors = [
-  ['#ff4137', '#1c3c63'],
-  ['#f3dd6d', '#810065'],
-  ['#00fcff', '#0028e6'],
-  ['#00e5c8', '#851f73'],
-  ['#88dbdf', '#981012'],
-  ['#fef08d', '#037a44'],
-  ['#43fd90', '#05407a'],
-  ['#fff809', '#dc51d2'],
-  ['#90d3ca', '#513750'],
-  ['#ff6436', '#1e3265'],
-  ['#f03061', '#2e3060'],
-  ['#9defe1', '#e72b3c'],
-  ['#fff639', '#4a1bcd']
+  
 ]
 
 const rings = {
   default: 40,
-  min: 8,
+  min: 6,
   max: 180
 }
 
@@ -132,14 +224,27 @@ class App extends Component {
       updateImgPos(scale, cx, cy)
       endEditingPhoto()
     }
-    this.handleFileChange = (e) => { this._handleFileChange(e) }
   }
-  _handleFileChange (e) {
+  handleFile = (url, file) => {
+    // TODO: get img data for 2x the size of the spiral length
+    getImageData(url).then(({status, width, height, imgData: data}) => {
+      if (status === 'ok') { 
+        const {startEditingPhoto, addImgData} = this.props
+        startEditingPhoto()
+        // TODO: Orientation in parallel with getImageData
+        this.getOrientation(file, (val) => {
+          addImgData(url, contrastVals.default, 1, width, height, data, val || 1, file.name)
+        })
+      } else {
+        // TODO: error with img have a warning of some sort
+        console.error('something has gone terribly wrong we need to add an warning')
+      }
+    })
+  }
+  handleFileChange = (e) => {
     // TODO: get exif orientation!!!
     const file = e.target.files[0]
     if (!file || !file.name) return
-    
-    // Make sure this is a png, gif, or jpg (more filetypes?)
     const allowedFileExt = ['png', 'gif', 'jpg', 'jpeg']
     const ext = file.name.split('.').slice(-1)[0].toLowerCase()
     if (
@@ -147,18 +252,44 @@ class App extends Component {
       file.type.indexOf('image/') !== -1
     ) {
       const blobUrl = URL.createObjectURL(file)
-      // TODO: get img data for 2x the size of the spiral length
-      getImageData(blobUrl).then(({status, width, height, imgData: data}) => {
-        if (status === 'ok') { 
-          this.props.startEditingPhoto()
-          this.props.addImgData(blobUrl, contrastVals.default, 1, width, height, data)
-        } else {
-          // TODO: error with img have a warning of some sort
-        }
-      })
+      this.handleFile(blobUrl, file)
     } else {
       // TODO: will need to give a warning if not supported
     }
+  }
+  getOrientation (file, callback) {
+    // TODO: move to img utils
+    // Source: https://stackoverflow.com/a/32490603/2824643
+    var reader = new FileReader()
+    reader.onload = function(e) {
+      var view = new DataView(e.target.result)
+      if (view.getUint16(0, false) !== 0xFFD8) return callback(-2)
+      var length = view.byteLength, offset = 2
+      while (offset < length) {
+        if (view.getUint16(offset + 2, false) <= 8) return callback(-1)
+        var marker = view.getUint16(offset, false)
+        offset += 2
+        if (marker === 0xFFE1) {
+          if (view.getUint32(offset += 2, false) !== 0x45786966) return callback(-1)
+
+          var little = view.getUint16(offset += 6, false) == 0x4949
+          offset += view.getUint32(offset + 4, little)
+          var tags = view.getUint16(offset, little)
+          offset += 2
+          for (var i = 0; i < tags; i++) {
+            if (view.getUint16(offset + (i * 12), little) === 0x0112) {
+              return callback(view.getUint16(offset + (i * 12) + 8, little))
+            }
+          }
+        } else if ((marker & 0xFF00) !== 0xFF00) {
+          break
+        } else {
+          offset += view.getUint16(offset, false)
+        }
+      }
+      return callback(-1)
+    }
+    reader.readAsArrayBuffer(file.slice(0, 131072)) // just to get exif
   }
   componentWillMount () {
     // setup store
@@ -167,7 +298,7 @@ class App extends Component {
     setup()
   }
   render() {
-    const {init, updatePreviewLength, length, scale} = this.props
+    const {init, updatePreviewLength, length, scale, startEditingPhoto, img: {blobUrl, name}} = this.props
     if (!init) return null
     return (
       <Fragment>
@@ -182,64 +313,63 @@ class App extends Component {
             <EditPhoto updatePhoto={this.updateImage} />
             <Guides />
             <Upload onChange={this.handleFileChange} />
-          </Canvas>
+          </Canvas> 
         </Main>
         <Sidebar> 
           <Fragment>
             <Section>
-              <SectionTitle>Colors</SectionTitle>
               <div>
-                {coloring.map(({light, dark}, i) => (
+                {coloring.map(({light, dark, fill}, i) => (
                   <Swatch
                     key={i}
+                    fill={fill}
                     colorLight={light}
                     colorDark={dark} />
                 ))}
               </div>
             </Section>
-            <Section>
-              <SectionTitle>Scale</SectionTitle>
-              <Slider
-                min={1}
-                max={4}
-                step={.05}
-                value={scale || 1}
-                defaultValue={scale || 1}
-                onChange={this.handleScaleChange} />
-            </Section>
-            <Section>
-              <SectionTitle>Rings</SectionTitle>
-              <Slider
-                min={rings.min}
-                max={rings.max}
-                step={1}
-                defaultValue={rings.default}
-                onChange={this.handleRingChange} />
-            </Section>
-            <Section>
-              <SectionTitle>Contrast</SectionTitle>
-              <Slider
-                startCenter
-                min={contrastVals.min}
-                max={contrastVals.max}
-                step={contrastVals.step}
-                defaultValue={contrastVals.default}
-                onChange={this.handleContrastChange} />
-            </Section>
-            <Section>
-              <SectionTitle>Brightness</SectionTitle>
-              <Slider
-                startCenter
-                min={contrastVals.min}
-                max={contrastVals.max}
-                step={contrastVals.step}
-                defaultValue={contrastVals.default}
-                onChange={this.handleContrastChange} />
-            </Section>
           </Fragment>
         </Sidebar>
-        <div style={{position: 'fixed', right: '25px', top: '25px'}}>
+        <div style={{position: 'absolute', right: '0', top: '0', width: '300px', height: '100%', padding: 40}}>
+          {/*<SectionImage
+            blobUrl={blobUrl}
+            handleFile={this.handleFile}
+            handleFileChange={this.handleFileChange}
+            startEditingPhoto={startEditingPhoto}
+            name={name} />*/}
           <Size />
+          <SectionSlider 
+            title={'Scale'}
+            min={1}
+            max={4}
+            onValueChange={(v) => (`${parseInt(v * 100)}%`)}
+            step={.05}
+            value={scale || 1}
+            defaultValue={scale || 1}
+            onChange={this.handleScaleChange}
+            />
+          <SectionSlider 
+            title={'Contrast'}
+            startCenter
+            onValueChange={(v) => {
+              if (v > 0) { return `+${v}` }
+              if (v === 0) { return `${String.fromCharCode(177)}${v}` }
+              if (v < 0) { return v }
+            }}
+            min={contrastVals.min}
+            max={contrastVals.max}
+            step={contrastVals.step}
+            defaultValue={contrastVals.default}
+            onChange={this.handleContrastChange}
+            />
+          <SectionSlider 
+            title={'Rings'}
+            min={rings.min}
+            max={rings.max}
+            step={1}
+            defaultValue={rings.default}
+            onChange={this.handleRingChange}
+            />
           <DownloadSvg />
         </div>
       </Fragment> 
@@ -253,12 +383,12 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    addFilter: () => dispatch(addFilter('spiral', {rings: rings.default}, ['#fff'], ['#000'])),
+    addFilter: () => dispatch(addFilter('spiral', {rings: rings.default}, coloring[0].light, coloring[0].dark, coloring[0].fill)),
     setup: () => dispatch(setup()),
     updateRings: (rings) => dispatch(updateFilter(undefined, {rings})),
     startEditingPhoto: () => dispatch(startEditingPhoto()),
     endEditingPhoto: () => dispatch(endEditingPhoto()),
-    addImgData: (blobUrl, contrast, scale, width, height, data) => dispatch(addImgData(blobUrl, contrast, scale, width, height, data)),
+    addImgData: (blobUrl, contrast, scale, width, height, data, orientation, name) => dispatch(addImgData(blobUrl, contrast, scale, width, height, data, orientation, name)),
     updateImgPos: (scale, cx, cy) => dispatch(updateImgPos(scale, cx, cy)),
     updateContrast: (contrast) => dispatch(updateContrast(contrast))
   }

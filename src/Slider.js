@@ -4,6 +4,15 @@ import styled from 'styled-components'
 const sliderThumbSize = '12px'
 const trackColor = '#979797'
 
+const SliderContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  margin: 12px 0 0;
+  line-height: 0;
+`
+
 // used http://danielstern.ca/range.css/ as a starting pt for cross-browser styles
 const SliderInput = styled.input`
   &[type=range] {
@@ -146,34 +155,34 @@ const TrackBeforeSlider = styled.div`
 
 // TODO: while dragging keep pointer
 class Slider extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      value: this.props.defaultValue,
-      dragging: false,
-      hover: false
-    }
-    this.onChange = (e) => {
-      const value = Number(e.target.value)
-      this.setState({value})
-      this.props.onChange(value)
-    } 
-    this.dragging = () => {
-      this.setState({dragging: false})
+  state = {
+    dragging: false,
+    hover: false
+  }
+  dragging = () => {
+    this.setState({dragging: false}, () => {
       document.body.classList.remove('grabbing')
       document.removeEventListener('mouseup', this.dragging)
-    }
-    this.onMouseDown = () => {
-      this.setState({dragging: true})
+    })
+  }
+  onMouseDown = () => {
+    this.setState({dragging: true}, () => {
       document.body.classList.add('grabbing')
       document.addEventListener('mouseup', this.dragging)
-    }
-    this.onMouseEnter = () => { this.setState({hover: true}) }
-    this.onMouseLeave = () => { this.setState({hover: false}) }
+    })
   }
+  onMouseEnter = () => { this.setState({hover: true}) }
+  onMouseLeave = () => { this.setState({hover: false}) }
   render () {
-    const {min, max, step, startCenter} = this.props 
-    const {value} = this.state
+    const {
+      onChange,
+      value,
+      startCenter,
+      max,
+      min,
+      step
+    } = this.props
+    const {dragging, hover} = this.state
     let trackBeforeSliderStyle = {}
     if (startCenter) {
       // is this to the right or left of slider?
@@ -189,11 +198,10 @@ class Slider extends Component {
       }
     }
     let className = ''
-    if (this.state.dragging) className = 'grabbing'
-    else if (this.state.hover) className = 'hover'
-    
+    if (dragging) className = 'grabbing'
+    else if (hover) className = 'hover'
     return (
-      <div style={{position: 'relative', width: '100%', height: 'auto', padding: 0, margin: '12px 0 0', lineHeight: 0}}>
+      <SliderContainer>
         <SliderInput
           className={className}
           onMouseDown={this.onMouseDown}
@@ -204,12 +212,11 @@ class Slider extends Component {
           max={max}
           step={step}
           defaultValue={value}
-          onChange={this.onChange} />
-        <TrackBeforeSlider
-          style={trackBeforeSliderStyle} />
-      </div>
+          onChange={onChange} />
+        <TrackBeforeSlider style={trackBeforeSliderStyle} />
+      </SliderContainer>
     )
   }
-}
+} 
 
 export default Slider

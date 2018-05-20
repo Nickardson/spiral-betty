@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
+import Edit from './Edit'
 
 // TODO: !!Add CC credit
 import img from './assets/noun_218424_cc.svg'
@@ -18,6 +19,8 @@ class Upload extends PureComponent {
           borderRadius: '100%',
           width: '100%',
           height: '100%',
+          cursor: 'pointer',
+          border: '1px solid rgba(0,0,0,.25)',
           backgroundColor: '#efefef',
           position: 'absolute'}}>
         <img
@@ -45,7 +48,7 @@ class Upload extends PureComponent {
             textAlign: 'center',
             transform: 'translate(-50%, -50%)',
           }}>
-          Drag photo or<br />click to upload
+          click to upload image
         </div>
         <input
           type='file'

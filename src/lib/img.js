@@ -7,7 +7,7 @@ const getImageData = (
     img.src = imageSrc
     img.style.display = 'none'
     document.body.appendChild(img)
-
+    
     img.onload = () => {
       const {width, height} = img
       

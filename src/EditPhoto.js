@@ -9,13 +9,15 @@ const Container = styled.div`
   position: absolute;
 `
 const ImgBg = styled.div`
-  background-color: #777;
+  background-color: var(--accent);
+  opacity: .4;
 `
 const CircleClip = styled.div`
   clip-path: circle(50%);
   pointer-events: none;
   width: 100%;
   height: 100%;
+  background-color: #fff;
   position: absolute;
   overflow: hidden;
 `
@@ -173,7 +175,8 @@ class EditPhoto extends Component {
       <Container
         style={{
           pointerEvents: active ? '' : 'none',
-          opacity: active ? 1 : 0
+          opacity: active ? 1 : 0,
+          transition: '.5s'
         }}>
         <ImgBg style={photoStyle} />
         <ImgMove

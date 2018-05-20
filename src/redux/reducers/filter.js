@@ -8,6 +8,7 @@ const filter = (state = {}, action) => {
         data: action.data || {},
         colorLight: action.colorLight,
         colorDark: action.colorDark,
+        fill: action.fill,
         invert: action.invert !== undefined ? action.invert : false
       }
     case 'UPDATE_FILTER':
@@ -17,6 +18,7 @@ const filter = (state = {}, action) => {
         data: action.data || state.data,
         colorLight: action.colorLight || state.colorLight,
         colorDark: action.colorDark || state.colorDark,
+        fill: action.fill || state.fill,
         invert: action.invert !== undefined ? action.invert : state.invert
       }
     default:

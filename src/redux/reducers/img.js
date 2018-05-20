@@ -15,6 +15,7 @@ const img = (state = {}, action) => {
         width: action.width, // full size img does not change
         height: action.height, // full size img does not change
         data: action.data,
+        name: action.name,
         cx: action.width / 2,
         cy: action.height / 2
       }  

@@ -1,26 +1,21 @@
-import React, {Component, Fragment} from 'react'
+import React, {Component} from 'react'
+import Section from './Section'
+import { SectionTitle } from './Text'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
 import {updatePreviewLength} from './redux/actions'
 
 const DD = styled.div`
-  margin-right: 20px;
-  height: 46px;
   position: relative;
-  display: inline-block;
-  text-align: center;
+  z-index: 10000;
 `
 
 const Btn = styled.button`
   padding: 0;
+  text-align: left;
   width: 100%;
   height: 100%
-  font-weight: 800;
-  color: #AEAEAE;
-  text-transform: uppercase;
-  font-size: 12px;
   cursor: pointer;
-  letter-spacing: .2px;
   border: none;
   transition: .2s;
   background-color: transparent;
@@ -39,7 +34,7 @@ const Arrow = styled.div`
   display: inline-block;
   margin-left: 10px;
   top: -2px;
-  transition: .4s ease-in-out;
+  transition: .2s ease-in-out;
   &.hover {
     border-left: 2px solid var(--accent);
     border-bottom: 2px solid var(--accent);
@@ -49,7 +44,7 @@ const Drawer = styled.div`
   position: absolute;
   background-color: #fff;
   right: 0;
-  top: 46px;
+  top: 35px;
   width: 100%;
   border: 1px solid #aaa;
   transition: .15s ease-in-out;
@@ -59,12 +54,17 @@ const Li = styled.li`
   font-size: 11px;
   font-weight: 800;
   text-align: center;
+  cursor: pointer;
   color: #999;
   padding: 17px 13px;
   white-space: nowrap;
   border-bottom: 1px solid #efefef;
+  transition: .2s;
   &:last-of-type {
     border-bottom: none;
+  }
+  &:hover {
+    color: var(--accent);
   }
 `
 
@@ -77,8 +77,14 @@ class Size extends Component {
     }
     this.onMouseEnter = () => {this.setState({hover: true})}
     this.onMouseLeave = () => {this.setState({hover: false})}
+    this.outSideClick = () => {
+      console.log('here')
+      this.setState({open: false})
+      document.removeEventListener('mouseup', this.outSideClick)
+    }
     this.onClick = () => {
       this.setState({open: !this.state.open})
+      document.addEventListener('mouseup', this.outSideClick)
     }
     this.originalSize
   }
@@ -102,76 +108,45 @@ class Size extends Component {
     ]
     const types = ['svg', 'jpg']
     return (
-      <Fragment>
-      <DD>
-        <Btn
-          onMouseLeave={this.onMouseLeave}
-          onMouseEnter={this.onMouseEnter}
-          onClick={this.onClick}> 
-            Size:
-            <span
-              style={{
-                color: 'var(--accent)',
-                textTransform: 'none',
-                marginLeft: 6
-              }}>
-              {`${length || 0}`}&#215;{`${length || 0}`}
-            </span>
-            <Arrow className={this.state.hover ? 'hover' : ''} />
-        </Btn>
-        <Drawer
-          style={{
-            width: 200,
-            pointerEvents: this.state.open ? 'all' : 'none',
-            opacity: this.state.open ? '1' : '0',
-            transform: this.state.open ? '' : 'translateY(-20px)'
-          }}>
-          <ul>
-            {sizes.map(({length, name}, i) => {
-              return (
-                <Li 
-                  key={i}
-                  onClick={() => {updatePreviewLength(length)}}>
-                  {name}
-                </Li>
-              )
-            })}
-          </ul>
-        </Drawer>
-      </DD>
-      <DD style={{width: 140}}>
-        <Btn
-          onMouseLeave={this.onMouseLeave}
-          onMouseEnter={this.onMouseEnter}
-          onClick={this.onClick}>
-            Filetype:
-            <span
-              style={{
-                color: 'var(--accent)',
-                marginLeft: 6
-              }}>
-              svg
-            </span>
-            <Arrow className={this.state.hover ? 'hover' : ''} />
-        </Btn>
-        <Drawer
-          style={{
-            pointerEvents: this.state.open ? 'all' : 'none',
-            opacity: this.state.open ? '1' : '0',
-            transform: this.state.open ? '' : 'translateY(-20px)'
-          }}>
-          <ul>
-            {types.map((name) => {
-              return (
-                <Li key={name}>
-                  {name}
-                </Li>
-              )
-            })}
-          </ul>
-        </Drawer>
-      </DD>
-      </Fragment>
+      <Section>
+        <DD>
+          <Btn
+            onMouseLeave={this.onMouseLeave}
+            onMouseEnter={this.onMouseEnter}
+            onClick={this.onClick}> 
+            <SectionTitle style={{marginBottom: 0}}>
+              Size
+              <span
+                style={{
+                  float: 'right',
+                  color: 'var(--accent)',
+                  textTransform: 'none',
+                }}>
+                {'Fit to screen'}
+                <Arrow className={this.state.hover ? 'hover' : ''} />
+              </span>
+            </SectionTitle>
+          </Btn>
+          <Drawer
+            style={{
+              pointerEvents: this.state.open ? 'all' : 'none',
+              opacity: this.state.open ? '1' : '0',
+              transform: this.state.open ? '' : 'translateY(-20px)'
+            }}>
+            <ul>
+              {sizes.map(({length, name}, i) => {
+                return (
+                  <Li 
+                    key={i}
+                    onClick={() => {updatePreviewLength(length)}}>
+                    {name}
+                  </Li>
+                )
+              })}
+            </ul>
+          </Drawer>
+        </DD>
+      </Section>
     )
   }
 }

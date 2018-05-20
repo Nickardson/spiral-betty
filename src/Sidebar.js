@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 const Container = styled.div`
   position: fixed;
-  width: ${60 * 2 + 15 + 35 * 2}px;
+  width: ${250}px;
   height: 100%;
   padding: 35px;
   overflow-y: auto; 

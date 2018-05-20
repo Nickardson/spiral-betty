@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
+import SpiralLine from './SpiralLine'
+import SpiralCircle from './SpiralCircle'
 import {getPoints, createPath} from './lib/spiral'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
+import {startEditingPhoto} from './redux/actions'
 
 const {layout: {ids: {spiralSvg}}, easing} = require('./lib/constants')
 
@@ -21,6 +24,7 @@ const Svg = styled.svg`
     fill: #fff;
   }
 `
+
 
 // TODO: move functions into own file
 class Spiral extends Component {
@@ -47,7 +51,7 @@ class Spiral extends Component {
         })
         document.getElementById(this.animMaskId).getElementsByTagName('path')[j].setAttribute("d", p)
       })
-      const nextCount = loopsInfo.length > 100 ? count + 10 : count + 2 // go faster when we have more rings
+      const nextCount = loopsInfo.length > 100 ? count + 5 : count + 2 // go faster when we have more rings
       requestAnimationFrame((hrt) => { this.animate({outter, inner, loopsInfo, count: nextCount})})
     } else {
       // When animation is done... remove animating mask entirely... no longer needed
@@ -74,6 +78,20 @@ class Spiral extends Component {
     loopLength = loopLength - offset // new length
     
     return {start, loopLength}
+  }
+  getLoops = () => {
+    const {loopIndexes, outter, inner} = this.getPointsFromProps(this.props)
+    let loops = []
+    const loopsLength = loopIndexes.length
+    for (let i = 0; i < loopsLength; i++) {
+      const start = loopIndexes[i]
+      const end = i + 1 === loopsLength ? outter.length : loopIndexes[i + 1] + 1
+      loops.push(createPath({
+        outter: outter.slice(start, end),
+        inner: inner.slice(start, end)
+      }))
+    }
+    return loops
   }
   getLoopsInfoAndAddEmptyPathsToMask = () => {
     const {loopIndexes, outter, inner} = this.getPointsFromProps(this.props)
@@ -131,7 +149,7 @@ class Spiral extends Component {
     })
   }
   render () {
-    const { editing, imgData, width, scale, colorLight, colorDark, height, mouseEnter, mouseLeave } = this.props
+    const { editing, startEditingPhoto, imgData, width, scale, colorLight, colorDark, height, mouseEnter, mouseLeave, fill } = this.props
     if (!imgData || editing) return null
     const points = this.getPointsFromProps(this.props)
     const d = createPath(points)
@@ -151,20 +169,27 @@ class Spiral extends Component {
           {/* Animation mask */}
           <mask id={this.animMaskId}></mask>
         </defs>
-        <circle
-          onMouseEnter={active && mouseEnter ? mouseEnter : undefined}
-          onMouseLeave={active && mouseLeave ? mouseLeave: undefined}
-          style={{cursor: active ? 'pointer' : 'default'}}
-          fill={colorLight}
+        <SpiralCircle
+          defPrefix={'main'}
+          onMouseUp={() => {startEditingPhoto()}}
+          onMouseEnter={mouseEnter}
+          onMouseLeave={mouseLeave}
+          style={{
+            cursor: active ? 'pointer' : 'default',
+            pointerEvents: 'all'
+          }}
           r={radius}
           cx={radius}
-          cy={radius} />
-        <g mask={`url(#${this.animMaskId})`}>
-          <rect
-            mask={`url(#${maskId})`}
-            width={'100%'}
-            height={'100%'}
-            fill={colorDark} />
+          cy={radius}
+          color={colorLight}
+          fill={fill.background} />
+        <g mask={`url(#${this.animMaskId})`} style={{pointerEvents: 'none'}}> 
+          <SpiralLine
+            loops={fill.line === 'dual' ? this.getLoops() : undefined}
+            defPrefix={'main'}
+            maskId={maskId}
+            color={colorDark}
+            fill={fill.line} />
         </g>
       </Svg>
     )
@@ -172,11 +197,12 @@ class Spiral extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const {editing: {editing}, filter: {data: {rings}, colorLight, colorDark}, img: {cx, cy, contrast, scale, data: imgData, width, height}} = state
+  const {editing: {editing}, filter: {data: {rings}, colorLight, colorDark, fill}, img: {cx, cy, contrast, scale, data: imgData, width, height}} = state
   return {
     rings,
-    colorLight: colorLight[0],
-    colorDark: colorDark[0],
+    colorLight,
+    colorDark,
+    fill,
     cx,
     cy,
     contrast,
@@ -187,7 +213,13 @@ const mapStateToProps = (state) => {
     editing
   }
 }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    startEditingPhoto: () => dispatch(startEditingPhoto())
+  }
+}
 
 export default connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(Spiral)

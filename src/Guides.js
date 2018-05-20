@@ -57,7 +57,7 @@ const BorderHoriz = styled.div`
 `
 
 const Guides = ({active}) => (
-  <Border style={{opacity: active ? 1 : 0}}>
+  <Border style={{opacity: active ? 1 : 0, pointerEvents: 'none'}}>
     <div style={{clipPath: 'circle(50%)', position: 'absolute', width: '100%', height: '100%'}}>
     <BorderLeft />
     <BorderTop />

@@ -17,14 +17,16 @@ const updateContrast = (contrast) => ({
   type: 'UPDATE_IMG_CONTRAST',
   contrast
 })
-const addImgData = (blobUrl, contrast, scale, width, height, data) => ({
+const addImgData = (blobUrl, contrast, scale, width, height, data, orientation, name) => ({
   type: 'ADD_IMG_DATA',
   blobUrl,
   contrast,
   scale,
   width,
   height,
-  data
+  data,
+  orientation,
+  name
 })
 const updateImgPos = (scale, cx, cy) => ({
   type: 'UPDATE_IMG_POSITION',
@@ -34,20 +36,22 @@ const updateImgPos = (scale, cx, cy) => ({
 })
 
 // Filter
-const addFilter = (name, data, colorLight, colorDark, invert) => ({
+const addFilter = (name, data, colorLight, colorDark, fill, invert) => ({
   type: 'ADD_FILTER',
   name,
   data,
   colorLight,
   colorDark,
+  fill,
   invert
 })
-const updateFilter = (name, data, colorLight, colorDark, invert) => ({
+const updateFilter = (name, data, colorLight, colorDark, fill, invert) => ({
   type: 'UPDATE_FILTER',
   name,
   data,
   colorLight,
   colorDark,
+  fill,
   invert
 })
 
