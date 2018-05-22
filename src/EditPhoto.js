@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
+import { blobExifTransform } from './lib/img'
 
 const Container = styled.div`
   width: 100%;
@@ -35,10 +36,6 @@ class EditPhoto extends Component {
       drag: false
     }
     this.movePhotoId = 'edit-photo'
-    this.onDragStart = (e) => { this._onDragStart(e) }
-    this.onMouseDown = (e) => { this._onMouseDown(e) }
-    this.onMouseUp = (e) => { this._onMouseUp(e) }
-    this.onMouseMove = (e) => { this._onMouseMove(e) }
     this.clicksOutsideOfPhoto = (e) => {
       const {cx, cy, width, height, length, scale} = this.props
       const {x, y} = this.state
@@ -60,54 +57,28 @@ class EditPhoto extends Component {
       }
     }
   }
-  _onDragStart (e) {
+  onDragStart = (e) => {
     e.preventDefault()
   }
-  _onMouseDown (e) {
+  onMouseDown = (e) => {
     e.preventDefault()
     const {pageX: startX, pageY: startY} = e
     this.startX = startX
     this.startY = startY
     this.setState({drag: true})
   }
-  _onMouseUp (e) {
+  onMouseUp = (e) => {
     this.setState({drag: false})
   }
-  _getPxDim ({width, height, scale, length}) {    
-    const isLandscape = width > height
-    const ratio = width / height
-    
-    return {
-      width: isLandscape ? length * ratio * scale : length * scale,
-      height: isLandscape ? length * scale : length / ratio * scale
-    }
-  }
-  _getTopLeft ({cx, cy, width, height, pxWidth, pxHeight, length, offsetX, offsetY}) {
-    // - Delta from center of photo at display px
-    const pxPhotoCX = (cx / width) * pxWidth
-    const pxPhotoCY = (cy / height) * pxHeight
-    
-    const radius = length / 2 // of art, also center pt of art
-    
-    const left = radius - pxPhotoCX + offsetX
-    const top = radius - pxPhotoCY + offsetY
-    return {
-      left,
-      top
-    }
-  }
-  _onMouseMove (e) {
-    const {pageX, pageY} = e
+  onMouseMove = (e) => {
     const {length, width, height, scale, cx, cy} = this.props
+    const {pageX, pageY} = e
     const {startX, startY} = this
-    
+          
     const deltaX = pageX - startX
     const deltaY = pageY - startY
-                
+        
     this.setState(({x: prevX, y: prevY}) => {
-      let x = prevX + deltaX
-      let y = prevY + deltaY
-      
       // Get next l, r, t, b
       const {width: pxWidth, height: pxHeight} = this._getPxDim({
         width,
@@ -115,6 +86,11 @@ class EditPhoto extends Component {
         scale,
         length
       })
+      
+      // Default x and y
+      let x = prevX + deltaX
+      let y = prevY + deltaY
+      
       const {top, left} = this._getTopLeft({
         cx,
         cy,
@@ -133,18 +109,41 @@ class EditPhoto extends Component {
       const imgToPhotoRatio = pxWidth / width
       const imgCx = cx * imgToPhotoRatio
       const imgCy = cy * imgToPhotoRatio
-
+            
       if (left >= 0) { x = imgCx - (length / 2) }
       if (right < length) { x = imgCx - (pxWidth - length / 2)  }
       if (top >= 0) { y = imgCy - (length / 2) }
       if (bottom < length) { y = imgCy - (pxHeight - length / 2) }
-      
+            
       return {x, y}
     })
     
     // Update next starting pt
     this.startX = pageX
     this.startY = pageY
+  }
+  _getPxDim ({width, height, scale, length}) {    
+    const isLandscape = width > height
+    const ratio = width / height
+    
+    return {
+      width: isLandscape ? length * ratio * scale : length * scale,
+      height: isLandscape ? length * scale : length / ratio * scale
+    }
+  }
+  _getTopLeft ({cx, cy, width, height, pxWidth, pxHeight, length, offsetX, offsetY, flippedLengths}) {
+    // - Delta from center of photo at display px
+    const pxPhotoCX = (cx / width) * pxWidth
+    const pxPhotoCY = (cy / height) * pxHeight
+    
+    const radius = length / 2 // of art, also center pt of art
+    
+    const left = radius - pxPhotoCX + offsetX
+    const top = radius - pxPhotoCY + offsetY
+    return {
+      left,
+      top
+    }
   }
   componentWillReceiveProps (nextProps) {
     const {active: nextActive} = nextProps
@@ -157,20 +156,35 @@ class EditPhoto extends Component {
     }
   }
   render () {
-    const {blobUrl, length, width, height, scale, cx, cy, active} = this.props
+    const {blobUrl, length, width, height, scale, cx, cy, active, flippedLengths, transform} = this.props
     const {drag, x: offsetX, y: offsetY} = this.state
     if (!blobUrl) return null
-
-    const {width: pxWidth, height: pxHeight} = this._getPxDim({width, height, scale, length})
-    const {top, left} = this._getTopLeft({cx, cy, width, height, pxWidth, pxHeight, length, offsetX, offsetY})
             
+    const {width: pxWidth, height: pxHeight} = this._getPxDim({width, height, scale, length})
+    
+    const {top, left} = this._getTopLeft({
+      cx,
+      cy,
+      width,
+      height,
+      pxWidth,
+      pxHeight,
+      length,
+      offsetX,
+      offsetY
+    })
+    
+    // Fixes any issues with matrix to get same starting point as 1-4 orientations
+    const flippedTransform = flippedLengths ? `translate(${(pxWidth - pxHeight) / 2}px, ${(pxHeight - pxWidth) / 2}px)` : ''
+    
     const photoStyle = {
-      transform: `translate(${left}px, ${top}px)`,
-      width: pxWidth,
-      height: pxHeight,
+      transformOrigin: 'center',
+      transform: `translate(${left}px, ${top}px) ${flippedTransform} ${transform}`,
+      width: flippedLengths ? pxHeight : pxWidth,
+      height: flippedLengths ? pxWidth : pxHeight,
       position: 'absolute'
     }
-        
+            
     return (
       <Container
         style={{
@@ -187,12 +201,13 @@ class EditPhoto extends Component {
           onMouseUp={!drag ? undefined : this.onMouseUp}
           alt={'Uploaded artwork'}
           src={blobUrl}
-          style={photoStyle} />
+          style={photoStyle}
+          />
         <CircleClip>
           <img
             alt={'Uploaded artwork'}
             src={blobUrl}
-            style={photoStyle} />
+            style={photoStyle} /> 
         </CircleClip>
       </Container>
     )
@@ -200,8 +215,9 @@ class EditPhoto extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const {img: {cx, cy, scale, width, height, blobUrl}, preview: {length}, editing: {editing: active}} = state
-  return {length, active, cx, cy, scale, width, height, blobUrl}
+  const {img: {cx, cy, scale, width, height, blobUrl, orientation}, preview: {length}, editing: {editing: active}} = state
+  const {flippedLengths, transform} = blobExifTransform(orientation)
+  return {length, active, cx, cy, scale, width, height, blobUrl, width, height, flippedLengths, transform}
 }
 export default connect(
   mapStateToProps

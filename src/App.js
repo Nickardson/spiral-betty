@@ -157,7 +157,6 @@ const coloring = [
       background: 'flood'
     }
   }
-  
 ]
 
 const rings = {
@@ -227,18 +226,17 @@ class App extends Component {
   }
   handleFile = (url, file) => {
     // TODO: get img data for 2x the size of the spiral length
-    getImageData(url).then(({status, width, height, imgData: data}) => {
-      if (status === 'ok') { 
-        const {startEditingPhoto, addImgData} = this.props
-        startEditingPhoto()
-        // TODO: Orientation in parallel with getImageData
-        this.getOrientation(file, (val) => {
-          addImgData(url, contrastVals.default, 1, width, height, data, val || 1, file.name)
-        })
-      } else {
-        // TODO: error with img have a warning of some sort
-        console.error('something has gone terribly wrong we need to add an warning')
-      }
+    this.getOrientation(file, (orientation) => {
+      getImageData(url, orientation).then(({status, width, height, imgData: data}) => {
+        if (status === 'ok') { 
+          const {startEditingPhoto, addImgData} = this.props
+            startEditingPhoto()
+            addImgData(url, contrastVals.default, 1, width, height, data, orientation || 1, file.name)
+        } else {
+          // TODO: error with img have a warning of some sort
+          console.error('something has gone terribly wrong we need to add an warning')
+        }
+      })
     })
   }
   handleFileChange = (e) => {
@@ -316,19 +314,17 @@ class App extends Component {
           </Canvas> 
         </Main>
         <Sidebar> 
-          <Fragment>
-            <Section>
-              <div>
-                {coloring.map(({light, dark, fill}, i) => (
-                  <Swatch
-                    key={i}
-                    fill={fill}
-                    colorLight={light}
-                    colorDark={dark} />
-                ))}
-              </div>
-            </Section>
-          </Fragment>
+          <Section>
+            <div>
+              {coloring.map(({light, dark, fill}, i) => (
+                <Swatch
+                  key={i}
+                  fill={fill}
+                  colorLight={light}
+                  colorDark={dark} />
+              ))}
+            </div>
+          </Section>
         </Sidebar>
         <div style={{position: 'absolute', right: '0', top: '0', width: '300px', height: '100%', padding: 40}}>
           {/*<SectionImage

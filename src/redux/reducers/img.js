@@ -16,6 +16,7 @@ const img = (state = {}, action) => {
         height: action.height, // full size img does not change
         data: action.data,
         name: action.name,
+        orientation: action.orientation !== undefined && action.orientation > 0 ? action.orientation : 1,
         cx: action.width / 2,
         cy: action.height / 2
       }  
