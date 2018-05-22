@@ -49,7 +49,7 @@ const getPoints = ({imgData, contrast, scale, cx, cy, width, height, maxLoops = 
   const chord = .619
 
   // Line thickness
-  const maxThickness = deltaRadius * .45
+  const maxThickness = deltaRadius * .42
   const minThickness = maxThickness / 6
   
   let angle = 0

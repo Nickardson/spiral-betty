@@ -162,7 +162,7 @@ const coloring = [
 const rings = {
   default: 40,
   min: 6,
-  max: 180
+  max: 160
 }
 
 const contrastVals = {
@@ -337,7 +337,7 @@ class App extends Component {
           <SectionSlider 
             title={'Scale'}
             min={1}
-            max={4}
+            max={3}
             onValueChange={(v) => (`${parseInt(v * 100)}%`)}
             step={.05}
             value={scale || 1}
