@@ -217,7 +217,7 @@ class EditPhoto extends Component {
 const mapStateToProps = (state) => {
   const {img: {cx, cy, scale, width, height, blobUrl, orientation}, preview: {length}, editing: {editing: active}} = state
   const {flippedLengths, transform} = blobExifTransform(orientation)
-  return {length, active, cx, cy, scale, width, height, blobUrl, width, height, flippedLengths, transform}
+  return {length, active, cx, cy, scale, blobUrl, width, height, flippedLengths, transform}
 }
 export default connect(
   mapStateToProps

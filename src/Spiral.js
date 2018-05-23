@@ -185,7 +185,6 @@ class Spiral extends Component {
           fill={fill.background} />
         <g mask={`url(#${this.animMaskId})`} style={{pointerEvents: 'none'}}> 
           <SpiralLine
-            loops={fill.line === 'dual' ? this.getLoops() : undefined}
             defPrefix={'main'}
             maskId={maskId}
             color={colorDark}

@@ -4,7 +4,6 @@ import Section from './Section'
 import Slider from './Slider'
 import SliderController from './SliderController'
 import styled from 'styled-components'
-import { connect } from 'react-redux'
 
 const Value = styled.span`
   text-align: right;

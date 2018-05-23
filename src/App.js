@@ -144,17 +144,17 @@ const coloring = [
     }
   }, {
     light: ['#fff'],
-    dark: ['cyan', 'red'],
-    fill: {
-      line: 'dual',
-      background: 'flood'
-    }
-  }, {
-    light: ['#fff'],
     dark: ['cyan', 'lime'],
     fill: {
       line: 'linear-gradient',
       background: 'flood'
+    }
+  }, , {
+    light: ['cyan', 'lime'],
+    dark: ['black'],
+    fill: {
+      line: 'flood',
+      background: 'linear-gradient'
     }
   }
 ]
