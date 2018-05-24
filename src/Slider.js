@@ -65,12 +65,14 @@ const SliderInput = styled.input`
 &[type=range]::-moz-range-thumb {
   box-shadow: none;
   border: none;
+  box-sizing: border-box;
   height: ${sliderThumbSize};
   width: ${sliderThumbSize};
   border-radius: 100%;
   background: var(--accent);
+  border: 2px solid transparent;
   cursor: grab;
-  transition: background-color .15s;
+  transition: background-color .15s, transform .2s, border .5s;
 }
 &[type=range]::-ms-track {
   width: 100%;
