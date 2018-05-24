@@ -1,15 +1,32 @@
-import {contrastVal} from './img'
+import {contrastColor, keepChannelInRange, valueColor} from './img'
 
 const getAngle = (loop, chord, b) => (
   chord / ((loop * b + (loop + 1) * b) / 2)
 )
 
-const getDarknessOfPoint = ({x, y, width, imgData, contrast}) => {
+const getDarknessOfPoint = ({x, y, width, imgData, contrast, lightness}) => {
   var i = y * (width * 4) + x * 4
-  const r = contrastVal(imgData[i], contrast)
-  const g = contrastVal(imgData[i + 1], contrast)
-  const b = contrastVal(imgData[i + 2], contrast)
+  
+  // init values
+  let r = imgData[i]
+  let g = imgData[i + 1]
+  let b = imgData[i + 2]
   const a = imgData[i + 3]
+    
+  // Lightness
+  r = valueColor(r, lightness)
+  g = valueColor(g, lightness)
+  b = valueColor(b, lightness)
+  
+  // Contrast
+  r = contrastColor(r, contrast)
+  g = contrastColor(g, contrast)
+  b = contrastColor(b, contrast)
+  
+  // Keep in range
+  r = keepChannelInRange(r)
+  g = keepChannelInRange(g)
+  b = keepChannelInRange(b)
   
   const weighted = (0.3 * r) + (0.59 * g) + (0.11 * b)
   const darkness = (1 - weighted / 256) * (a / 255)
@@ -32,7 +49,7 @@ const makeUnitCircle = (divisions) => { // gets first ring's values then we can 
   })
 }
 
-const getPoints = ({imgData, contrast, scale, cx, cy, width, height, maxLoops = 50}) => {
+const getPoints = ({imgData, lightness, contrast, scale, cx, cy, width, height, maxLoops = 50}) => {
   const scaledWidth = width / scale
   const scaledHeight = height / scale
   const outter = []
@@ -68,7 +85,8 @@ const getPoints = ({imgData, contrast, scale, cx, cy, width, height, maxLoops = 
         y: Math.round(pY),
         width,
         imgData,
-        contrast
+        contrast,
+        lightness: lightness / 100
       })
       const thickness = Math.max(value * maxThickness, minThickness)
       

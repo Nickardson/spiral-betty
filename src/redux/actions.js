@@ -17,7 +17,11 @@ const updateContrast = (contrast) => ({
   type: 'UPDATE_IMG_CONTRAST',
   contrast
 })
-const addImgData = (blobUrl, contrast, scale, width, height, data, orientation, name) => ({
+const updateLightness = (lightness) => ({
+  type: 'UPDATE_IMG_LIGHTNESS',
+  lightness
+})
+const addImgData = (blobUrl, contrast, lightness, scale, width, height, data, orientation, name) => ({
   type: 'ADD_IMG_DATA',
   blobUrl,
   contrast,
@@ -26,7 +30,8 @@ const addImgData = (blobUrl, contrast, scale, width, height, data, orientation, 
   height,
   data,
   orientation,
-  name
+  name,
+  lightness
 })
 const updateImgPos = (scale, cx, cy) => ({
   type: 'UPDATE_IMG_POSITION',
@@ -66,6 +71,7 @@ export {
   endEditingPhoto,
   updatePreviewLength,
   updateContrast,
+  updateLightness,
   addImgData,
   updateImgPos,
   addFilter,

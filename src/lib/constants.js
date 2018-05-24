@@ -15,7 +15,10 @@ const easing = {
   easeInOut: (k) => ( .5*(Math.sin((k - .5)*Math.PI) + 1) )
 }
 
+const maskId = 'mask'
+
 export {
   easing,
-  layout
+  layout,
+  maskId
 }

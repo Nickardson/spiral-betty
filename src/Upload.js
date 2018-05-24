@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import Edit from './Edit'
 
 // TODO: !!Add CC credit
 import img from './assets/noun_218424_cc.svg'

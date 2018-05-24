@@ -101,13 +101,26 @@ const findCanvasDim = ({width, height}) => {
 }
 
 
-
-// Range: 0 to 129.5
-// Source explanation: http://www.dfstudios.co.uk/articles/programming/image-programming-algorithms/image-processing-algorithms-part-5-contrast-adjustment/
-// Source: https://stackoverflow.com/questions/10521978/html5-canvas-image-contrast?noredirect=1&lq=1
-const contrastVal = (value, contrast) => {
+// Contrast to color Channel
+// - Range: 0 to 129.5
+// - Source explanation: http://www.dfstudios.co.uk/articles/programming/image-programming-algorithms/image-processing-algorithms-part-5-contrast-adjustment/
+// - Source: https://stackoverflow.com/questions/10521978/html5-canvas-image-contrast?noredirect=1&lq=1
+const contrastColor = (colorChannel, contrast) => {
   const factor = (259 * (contrast + 255)) / (255 * (259 - contrast))
-  return Math.max(Math.min(factor * (value - 128) + 128, 255), 0)
+  return factor * (colorChannel - 128) + 128
+}
+
+// Lightens/Darkens color channel
+// - Source: https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
+const valueColor = (colorChannel, percent) => {
+  const t = percent < 0 ? 0 : 255 
+  const p = percent < 0 ? percent * -1 : percent
+  return Math.round((t - colorChannel) * p ) + colorChannel
+}
+
+// Keeps color in 0-255 range
+const keepChannelInRange = (colorChannel) => {
+  return Math.max(Math.min(colorChannel, 255), 0)
 }
 
 const orientTransforms = (orientation) => {
@@ -143,4 +156,4 @@ const blobExifTransform = (orientation) => {
   }
 }
 
-export {getImageData, contrastVal, blobExifTransform}
+export {getImageData, contrastColor, blobExifTransform, keepChannelInRange, valueColor}

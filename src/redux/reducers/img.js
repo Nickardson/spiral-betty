@@ -6,6 +6,11 @@ const img = (state = {}, action) => {
         ...state,
         contrast: action.contrast
       }
+    case 'UPDATE_IMG_LIGHTNESS':
+      return {
+        ...state,
+        lightness: action.lightness
+      }
     case 'ADD_IMG_DATA':
       // Start fresh
       return {
@@ -16,6 +21,7 @@ const img = (state = {}, action) => {
         height: action.height, // full size img does not change
         data: action.data,
         name: action.name,
+        lightness: action.lightness,
         orientation: action.orientation !== undefined && action.orientation > 0 ? action.orientation : 1,
         cx: action.width / 2,
         cy: action.height / 2

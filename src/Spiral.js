@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 import {startEditingPhoto} from './redux/actions'
 
-const {layout: {ids: {spiralSvg}}, easing} = require('./lib/constants')
+const {layout: {ids: {spiralSvg}}, easing, maskId} = require('./lib/constants')
 
 const Svg = styled.svg`
   transition: .05s;
@@ -24,7 +24,6 @@ const Svg = styled.svg`
     fill: #fff;
   }
 `
-
 
 // TODO: move functions into own file
 class Spiral extends Component {
@@ -136,9 +135,10 @@ class Spiral extends Component {
     }
     return {outter, inner, loopsInfo}
   }
-  getPointsFromProps ({cx, cy, contrast, scale, width, height, imgData, rings}) {
+  getPointsFromProps ({cx, cy, contrast, lightness, scale, width, height, imgData, rings}) {
     return getPoints({
       contrast,
+      lightness,
       cx,
       cy,
       scale,
@@ -151,21 +151,16 @@ class Spiral extends Component {
   render () {
     const { editing, startEditingPhoto, imgData, width, scale, colorLight, colorDark, height, mouseEnter, mouseLeave, fill } = this.props
     if (!imgData || editing) return null
-    const points = this.getPointsFromProps(this.props)
-    const d = createPath(points)
     const active = !!imgData && !editing
     const svgLength = Math.min(width / scale, height / scale)
     const radius = svgLength / 2
     const viewBox = `0 0 ${svgLength} ${svgLength}`
-    const maskId = 'mask'
     return (
       <Svg
         id={spiralSvg}
         viewBox={viewBox}
         style={{opacity: active ? 1 : 0}}>
         <defs>
-          {/* Main mask */}
-          <mask id={maskId}><path d={d} /></mask>
           {/* Animation mask */}
           <mask id={this.animMaskId}></mask>
         </defs>
@@ -196,7 +191,7 @@ class Spiral extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const {editing: {editing}, filter: {data: {rings}, colorLight, colorDark, fill}, img: {cx, cy, contrast, scale, data: imgData, width, height}} = state
+  const {editing: {editing}, filter: {data: {rings}, colorLight, colorDark, fill}, img: {cx, cy, contrast, lightness, scale, data: imgData, width, height}} = state
   return {
     rings,
     colorLight,
@@ -209,7 +204,8 @@ const mapStateToProps = (state) => {
     imgData,
     width,
     height,
-    editing
+    editing,
+    lightness
   }
 }
 const mapDispatchToProps = (dispatch) => {

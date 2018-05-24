@@ -1,13 +1,14 @@
 import React, {PureComponent} from 'react'
-import Spiral from './Spiral'
+import SpiralMask from './SpiralMask'
 import { connect } from 'react-redux'
 
 class Filter extends PureComponent {
   render () {
-    switch (this.props.name) {
+    const {name} = this.props
+    switch (name) {
       case 'spiral':
         return (
-          <Spiral />
+          <SpiralMask />
         )
       default:
         return null

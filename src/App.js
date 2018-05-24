@@ -6,20 +6,18 @@ import Upload from './Upload'
 import Canvas from './Canvas'
 import Guides from './Guides'
 import EditPhoto from './EditPhoto'
-import Sidebar from './Sidebar'
 import Swatch from './Swatch'
+import Sidebar from './Sidebar'
 import Filter from './Filter'
+import FilterMask from './FilterMask'
 import DownloadSvg from './DownloadSvg'
 import Size from './Size'
-import { SectionTitle } from './Text'
 import Section from './Section'
 import SectionSlider from './SectionSlider'
-import SectionImage from './sidebar/SectionImage'
 
-import {addFilter, setup, updatePreviewLength, updateImgPos, updateFilter, startEditingPhoto, updateContrast, endEditingPhoto, addImgData} from './redux/actions'
+import {addFilter, setup, updateImgPos, updateFilter, startEditingPhoto, updateContrast, endEditingPhoto, addImgData, updateLightness} from './redux/actions'
 import {getImageData} from './lib/img'
 import styled from 'styled-components'
-const {layout: {sidebar: {width}}} = require('./lib/constants')
 
 const Main = styled.div`
   position: absolute;
@@ -27,6 +25,14 @@ const Main = styled.div`
   overflow: auto;
   left: 235px;
   width: calc(100% - 550px);
+`
+
+const Hidden = styled.div`
+  pointer-events: none;
+  position: absolute;
+  left: -100%;
+  top: -100%;
+  z-index: -1000;
 `
 
 const coloring = [
@@ -144,12 +150,12 @@ const coloring = [
     }
   }, {
     light: ['#fff'],
-    dark: ['cyan', 'lime'],
+    dark: ['cyan', 'blue'],
     fill: {
       line: 'linear-gradient',
       background: 'flood'
     }
-  }, , {
+  }, {
     light: ['cyan', 'lime'],
     dark: ['black'],
     fill: {
@@ -167,8 +173,15 @@ const rings = {
 
 const contrastVals = {
   default: 0,
-  min: -75,
-  max: 75,
+  min: -100,
+  max: 100,
+  step: 1
+}
+
+const lightnessVals = {
+  default: 0,
+  min: -50,
+  max: 50,
   step: 1
 }
 
@@ -213,16 +226,20 @@ class App extends Component {
         updateImgPos(scale, cx, cy)
       }
     }
-    this.handleContrastChange = (val) => {
-      const {updateContrast} = this.props
-      updateContrast(val)
-    }
-    this.updateImage = (updates) => {
-      const {scale, cx, cy} = updates
-      const {updateImgPos, endEditingPhoto} = this.props
-      updateImgPos(scale, cx, cy)
-      endEditingPhoto()
-    }
+  }
+  handleContrastChange = (val) => {
+    const {updateContrast} = this.props
+    updateContrast(val)
+  }
+  handleLightnessChange = (val) => {
+    const {updateLightness} = this.props
+    updateLightness(val)
+  }
+  updateImage = (updates) => {
+    const {scale, cx, cy} = updates
+    const {updateImgPos, endEditingPhoto} = this.props
+    updateImgPos(scale, cx, cy)
+    endEditingPhoto()
   }
   handleFile = (url, file) => {
     // TODO: get img data for 2x the size of the spiral length
@@ -231,7 +248,7 @@ class App extends Component {
         if (status === 'ok') { 
           const {startEditingPhoto, addImgData} = this.props
             startEditingPhoto()
-            addImgData(url, contrastVals.default, 1, width, height, data, orientation || 1, file.name)
+            addImgData(url, contrastVals.default, lightnessVals.default, 1, width, height, data, orientation || 1, file.name)
         } else {
           // TODO: error with img have a warning of some sort
           console.error('something has gone terribly wrong we need to add an warning')
@@ -270,7 +287,7 @@ class App extends Component {
         if (marker === 0xFFE1) {
           if (view.getUint32(offset += 2, false) !== 0x45786966) return callback(-1)
 
-          var little = view.getUint16(offset += 6, false) == 0x4949
+          var little = view.getUint16(offset += 6, false) === 0x4949
           offset += view.getUint32(offset + 4, little)
           var tags = view.getUint16(offset, little)
           offset += 2
@@ -296,7 +313,7 @@ class App extends Component {
     setup()
   }
   render() {
-    const {init, updatePreviewLength, length, scale, startEditingPhoto, img: {blobUrl, name}} = this.props
+    const {init, length, scale, img: {blobUrl}} = this.props
     if (!init) return null
     return (
       <Fragment>
@@ -314,7 +331,7 @@ class App extends Component {
           </Canvas> 
         </Main>
         <Sidebar> 
-          <Section>
+          {!!blobUrl && <Section>
             <div>
               {coloring.map(({light, dark, fill}, i) => (
                 <Swatch
@@ -324,7 +341,7 @@ class App extends Component {
                   colorDark={dark} />
               ))}
             </div>
-          </Section>
+          </Section>}
         </Sidebar>
         <div style={{position: 'absolute', right: '0', top: '0', width: '300px', height: '100%', padding: 40}}>
           {/*<SectionImage
@@ -338,7 +355,7 @@ class App extends Component {
             title={'Scale'}
             min={1}
             max={3}
-            onValueChange={(v) => (`${parseInt(v * 100)}%`)}
+            onValueChange={(v) => { return `${v * 100}%` }}
             step={.05}
             value={scale || 1}
             defaultValue={scale || 1}
@@ -359,6 +376,20 @@ class App extends Component {
             onChange={this.handleContrastChange}
             />
           <SectionSlider 
+            title={'Lightness'}
+            startCenter
+            onValueChange={(v) => {
+              if (v > 0) { return `+${v}` }
+              if (v === 0) { return `${String.fromCharCode(177)}${v}` }
+              if (v < 0) { return v }
+            }}
+            min={lightnessVals.min}
+            max={lightnessVals.max}
+            step={lightnessVals.step}
+            defaultValue={lightnessVals.default}
+            onChange={this.handleLightnessChange}
+            />
+          <SectionSlider 
             title={'Rings'}
             min={rings.min}
             max={rings.max}
@@ -368,6 +399,9 @@ class App extends Component {
             />
           <DownloadSvg />
         </div>
+        <Hidden>
+          <FilterMask />
+        </Hidden>
       </Fragment> 
     )
   }
@@ -384,9 +418,10 @@ const mapDispatchToProps = (dispatch) => {
     updateRings: (rings) => dispatch(updateFilter(undefined, {rings})),
     startEditingPhoto: () => dispatch(startEditingPhoto()),
     endEditingPhoto: () => dispatch(endEditingPhoto()),
-    addImgData: (blobUrl, contrast, scale, width, height, data, orientation, name) => dispatch(addImgData(blobUrl, contrast, scale, width, height, data, orientation, name)),
+    addImgData: (blobUrl, contrast, lightness, scale, width, height, data, orientation, name) => dispatch(addImgData(blobUrl, contrast, lightness, scale, width, height, data, orientation, name)),
     updateImgPos: (scale, cx, cy) => dispatch(updateImgPos(scale, cx, cy)),
-    updateContrast: (contrast) => dispatch(updateContrast(contrast))
+    updateContrast: (contrast) => dispatch(updateContrast(contrast)),
+    updateLightness: (lightness) => dispatch(updateLightness(lightness))
   }
 }
 
