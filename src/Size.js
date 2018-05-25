@@ -115,7 +115,7 @@ class Size extends Component {
             onMouseEnter={this.onMouseEnter}
             onClick={this.onClick}> 
             <SectionTitle style={{marginBottom: 0}}>
-              Size
+              Preview
               <span
                 style={{
                   float: 'right',

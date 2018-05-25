@@ -8,6 +8,7 @@ import Guides from './Guides'
 import EditPhoto from './EditPhoto'
 import Swatch from './Swatch'
 import Sidebar from './Sidebar'
+import DemoImage from './DemoImage'
 import Filter from './Filter'
 import FilterMask from './FilterMask'
 import DownloadSvg from './DownloadSvg'
@@ -344,12 +345,6 @@ class App extends Component {
           </Section>}
         </Sidebar>
         <div style={{position: 'absolute', right: '0', top: '0', width: '300px', height: '100%', padding: 40}}>
-          {/*<SectionImage
-            blobUrl={blobUrl}
-            handleFile={this.handleFile}
-            handleFileChange={this.handleFileChange}
-            startEditingPhoto={startEditingPhoto}
-            name={name} />*/}
           <Size />
           <SectionSlider 
             title={'Scale'}
@@ -398,6 +393,9 @@ class App extends Component {
             onChange={this.handleRingChange}
             />
           <DownloadSvg />
+          <DemoImage
+            blobUrl={blobUrl}
+            handleFile={this.handleFile} />
         </div>
         <Hidden>
           <FilterMask />
