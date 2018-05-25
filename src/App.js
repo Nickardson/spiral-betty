@@ -350,7 +350,7 @@ class App extends Component {
             title={'Scale'}
             min={1}
             max={3}
-            onValueChange={(v) => { return `${v * 100}%` }}
+            onValueChange={(v) => { return `${Math.round(v * 100)}%` }}
             step={.05}
             value={scale || 1}
             defaultValue={scale || 1}
