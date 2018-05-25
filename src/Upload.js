@@ -1,64 +1,60 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import IconPhotoPlaceholder from './IconPhotoPlaceholder'
+import {UploadText} from './Text'
 
-// TODO: !!Add CC credit
-import img from './assets/noun_218424_cc.svg'
+import styled from 'styled-components'
 
-class Upload extends PureComponent {
+const Label = styled.label`
+  transition: .2s;
+  border-radius: 100%;
+  cursor: pointer;
+  background-color: #efefef;
+`
+
+// TODO: animation timing, store as var
+class Upload extends Component {
+  state = {hover: false}
+  onMouseEnter = () => { this.setState({hover: true}) }
+  onMouseLeave = () => { this.setState({hover: false}) }
   render () {
     const {onChange, blobUrl} = this.props
     const active = !blobUrl
+    const {hover} = this.state
     return (
-      <label
+      <Label
+        className='pos-full'
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
         style={{
           pointerEvents: active ? '' : 'none',
           opacity: active ? 1 : 0,
-          transition: '.2s',
-          overflow: 'hidden',
-          borderRadius: '100%',
-          width: '100%',
-          height: '100%',
-          cursor: 'pointer',
-          border: '1px solid rgba(0,0,0,.25)',
-          backgroundColor: '#efefef',
-          position: 'absolute'}}>
-        <img
-          src={img}
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 100
-          }} />
+          border: hover ? '3px solid var(--accent)' : '1px solid rgba(0,0,0,.25)',
+        }}>
+        <IconPhotoPlaceholder length={100} className="pos-center" active={hover} />
         <div
-          style={{
-            color: '#999',
-            borderRadius: '5px',
-            position: 'absolute',
-            height: 20,
-            marginTop: 55,
-            textTransform: 'uppercase',
-            lineHeight: 1.5,
-            left: '50%',
-            top: '50%',
-            fontSize: 12,
-            width: 220,
-            textAlign: 'center',
-            transform: 'translate(-50%, -50%)',
-          }}>
-          click to upload image
+          className='pos-center'
+          style={{marginTop: 68}}>
+          <UploadText
+            style={{
+              textAlign: 'center',
+              color: hover ? 'var(--accent)' : '',
+              transition: '.2s'
+            }}>
+            + Upload image
+          </UploadText>
         </div>
+        {/* Hide input so we can style label */}
         <input
           type='file'
           onChange={onChange}
           style={{
-            zIndex: -2,
+            zIndex: -1000,
             position: 'absolute',
-            left: '-100%',
-            top: '-100%'
+            left: '-10000%',
+            top: '-10000%'
           }}/>
-      </label>
+      </Label>
     )
   }
 }

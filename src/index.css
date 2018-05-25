@@ -26,6 +26,14 @@ p, h1, h2, h3, h4, h5, h6 {
   margin-bottom: 10px;
 }
 
+.pos-full {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+
 .pos-center {
   position: absolute;
   left: 50%;

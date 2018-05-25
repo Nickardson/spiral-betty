@@ -50,7 +50,7 @@ class Spiral extends Component {
         })
         document.getElementById(this.animMaskId).getElementsByTagName('path')[j].setAttribute("d", p)
       })
-      const nextCount = loopsInfo.length > 100 ? count + 5 : count + 2 // go faster when we have more rings
+      const nextCount = loopsInfo.length > 100 ? count + 10 : count + 4 // go faster when we have more rings
       requestAnimationFrame((hrt) => { this.animate({outter, inner, loopsInfo, count: nextCount})})
     } else {
       // When animation is done... remove animating mask entirely... no longer needed
