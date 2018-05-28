@@ -1,30 +1,27 @@
 import React, { Fragment } from 'react'
+import SvgDefsGrad from './SvgDefsGrad'
 
 const SpiralCircle = ({
   colorData: {
     colors,
-    fill: {type: fillType}
+    fill: {type: fillType, attr}
   },
   radius,
   defPrefix,
   ...props
 }) => {
+  const gradId = `${defPrefix}-bg-grad`
   switch (fillType) {
     case 'linear-gradient':
-      const gradId = `${defPrefix}-bg-grad`
+    case 'radial-gradient':
       return (
         <Fragment>
           <defs>
-            <linearGradient id={gradId}>
-              {colors.map(({color, offset}, i) => {
-                return (
-                  <stop
-                    key={i}
-                    offset={`${offset}%`}
-                    stopColor={color} />
-                )
-              })}
-            </linearGradient>
+            <SvgDefsGrad
+              type={fillType === 'linear-gradient' ? 'linear' : 'radial'}
+              {...(attr || {})}
+              colors={colors}
+              gradId={gradId} />
           </defs>
           <circle
             {...props}

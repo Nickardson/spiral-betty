@@ -450,7 +450,13 @@ const coloring = [
     },
     dark: {
       fill: {
-        type: 'linear-gradient'
+        type: 'linear-gradient',
+        attr: {
+          x1: '0',
+          x2: '0',
+          y1: '0',
+          y2: '100%'
+        }
       },
       colors: [{
         color: 'cyan',
@@ -476,13 +482,49 @@ const coloring = [
     },
     light: {
       fill: {
-        type: 'linear-gradient'
+        type: 'linear-gradient',
+        attr: {
+          x1: '0',
+          x2: '100%',
+          y1: '0',
+          y2: '0'
+        }
       },
       colors: [{
         color: 'cyan',
-        offset: 0
+        offset: 50
       }, {
         color: 'blue',
+        offset: 100
+      }]
+    }
+  },
+  {
+    fill: {
+      line: 'dark',
+      background: 'light'
+    },
+    dark: {
+      fill: {
+        type: 'radial-gradient'
+      },
+      colors: [{
+        color: 'cyan',
+        offset: 50
+      }, {
+        color: 'blue',
+        offset: 100
+      }]
+    },
+    light: {
+      fill: {
+        type: 'radial-gradient'
+      },
+      colors: [{
+        color: 'red',
+        offset: 0
+      }, {
+        color: 'pink',
         offset: 100
       }]
     }
