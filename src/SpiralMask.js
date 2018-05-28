@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react'
-import {getPoints, createPath} from './lib/spiral'
+import {getPoints, createPath, createPathThumb} from './lib/spiral'
 import { connect } from 'react-redux'
 
-const {maskId} = require('./lib/constants')
+const {maskId, maskIdThumb} = require('./lib/constants')
 
 // TODO: move functions into own file
 class SpiralMask extends PureComponent {
@@ -24,6 +24,7 @@ class SpiralMask extends PureComponent {
     if (!imgData) return null
     const points = this.getPointsFromProps(this.props)
     const d = createPath(points)
+    const d2 = createPathThumb(points)
     const svgLength = Math.min(width / scale, height / scale)
     const viewBox = `0 0 ${svgLength} ${svgLength}`
     return (
@@ -32,7 +33,12 @@ class SpiralMask extends PureComponent {
           <mask
             fill='#fff'
             id={maskId}>
-              <path d={d} />
+            <path d={d} />
+          </mask>
+          <mask
+            fill='#fff'
+            id={maskIdThumb}>
+            <path d={d2} />
           </mask>
         </defs>
       </svg>

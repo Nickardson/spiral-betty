@@ -1,24 +1,28 @@
 import React, { Fragment } from 'react'
 
 const SpiralLine = ({
-  fill,
   maskId,
-  color,
-  defPrefix
+  defPrefix,
+  colorData: {
+    colors,
+    fill: {type: fillType}
+  }
 }) => {
-  switch (fill) {
+  switch (fillType) {
     case 'linear-gradient':
       const gradId = `${defPrefix}-line-grad`
       return (
         <Fragment>
           <defs>
             <linearGradient id={gradId}>
-              <stop
-                offset="0%"
-                stopColor={color[0]} />
-              <stop
-                offset="100%"
-                stopColor={color[1]} />
+              {colors.map(({color, offset}, i) => {
+                return (
+                  <stop
+                    key={i}
+                    offset={`${offset}%`}
+                    stopColor={color} />
+                )
+              })}
             </linearGradient>
           </defs>
           <rect
@@ -36,7 +40,7 @@ const SpiralLine = ({
             mask={`url(#${maskId})`}
             width={'100%'}
             height={'100%'}
-            fill={color[0]} />
+            fill={colors[0].color} />
         </Fragment>
       )
   }

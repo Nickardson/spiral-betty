@@ -41,23 +41,17 @@ const updateImgPos = (scale, cx, cy) => ({
 })
 
 // Filter
-const addFilter = (name, data, colorLight, colorDark, fill, invert) => ({
+const addFilter = (name, data, colorIndex) => ({
   type: 'ADD_FILTER',
   name,
   data,
-  colorLight,
-  colorDark,
-  fill,
-  invert
+  colorIndex
 })
-const updateFilter = (name, data, colorLight, colorDark, fill, invert) => ({
+const updateFilter = (name, colorIndex, data) => ({
   type: 'UPDATE_FILTER',
   name,
-  data,
-  colorLight,
-  colorDark,
-  fill,
-  invert
+  colorIndex,
+  data
 })
 
 // Setup

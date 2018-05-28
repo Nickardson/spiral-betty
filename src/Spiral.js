@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 import {startEditingPhoto} from './redux/actions'
 
-const {layout: {ids: {spiralSvg}}, easing, maskId} = require('./lib/constants')
+const {layout: {ids: {spiralSvg}}, easing, maskId, coloring} = require('./lib/constants')
 
 const Svg = styled.svg`
   transition: .05s;
@@ -149,12 +149,18 @@ class Spiral extends Component {
     })
   }
   render () {
-    const { editing, startEditingPhoto, imgData, width, scale, colorLight, colorDark, height, mouseEnter, mouseLeave, fill } = this.props
+    const { editing, startEditingPhoto, imgData, width, scale, colorIndex, height, mouseEnter, mouseLeave } = this.props
     if (!imgData || editing) return null
     const active = !!imgData && !editing
     const svgLength = Math.min(width / scale, height / scale)
     const radius = svgLength / 2
     const viewBox = `0 0 ${svgLength} ${svgLength}`
+    
+    const colorData = coloring[colorIndex]
+    const {fill: {line, background}} = colorData
+    const bgColorData = colorData[background]
+    const lineColorData = colorData[line]
+    
     return (
       <Svg
         id={spiralSvg}
@@ -173,17 +179,13 @@ class Spiral extends Component {
             cursor: active ? 'pointer' : 'default',
             pointerEvents: 'all'
           }}
-          r={radius}
-          cx={radius}
-          cy={radius}
-          color={colorLight}
-          fill={fill.background} />
+          radius={radius}
+          colorData={bgColorData} />
         <g mask={`url(#${this.animMaskId})`} style={{pointerEvents: 'none'}}> 
           <SpiralLine
             defPrefix={'main'}
             maskId={maskId}
-            color={colorDark}
-            fill={fill.line} />
+            colorData={lineColorData} />
         </g>
       </Svg>
     )
@@ -191,12 +193,10 @@ class Spiral extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const {editing: {editing}, filter: {data: {rings}, colorLight, colorDark, fill}, img: {cx, cy, contrast, lightness, scale, data: imgData, width, height}} = state
+  const {editing: {editing}, filter: {data: {rings}, colorIndex}, img: {cx, cy, contrast, lightness, scale, data: imgData, width, height}} = state
   return {
     rings,
-    colorLight,
-    colorDark,
-    fill,
+    colorIndex,
     cx,
     cy,
     contrast,

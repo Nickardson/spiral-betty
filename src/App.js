@@ -17,6 +17,7 @@ import Section from './Section'
 import SectionSlider from './SectionSlider'
 
 import {addFilter, setup, updateImgPos, updateFilter, startEditingPhoto, updateContrast, endEditingPhoto, addImgData, updateLightness} from './redux/actions'
+import {coloring} from './lib/constants'
 import {getImageData} from './lib/img'
 import styled from 'styled-components'
 
@@ -35,136 +36,6 @@ const Hidden = styled.div`
   top: -100%;
   z-index: -1000;
 `
-
-const coloring = [
-  {
-    light: ['#00e5c8'],
-    dark: ['#851f73'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#fff'],
-    dark: ['#000'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#fff'],
-    dark: ['#f00'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#f3dd6d'],
-    dark: ['#810065'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#D7C9B8'],
-    dark: ['#3D3536'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#00fcff'],
-    dark: ['#0028e6'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#ff4137'],
-    dark: ['#1c3c63'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#88dbdf'],
-    dark: ['#981012'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#fef08d'],
-    dark: ['#037a44'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#43fd90'],
-    dark: ['#05407a'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#fff809'],
-    dark: ['#dc51d2'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#90d3ca'],
-    dark: ['#513750'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#ff6436'],
-    dark: ['#1e3265'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#9defe1'],
-    dark: ['#e72b3c'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#f03061'],
-    dark: ['#2e3060'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#fff639'],
-    dark: ['#4a1bcd'],
-    fill: {
-      line: 'flood',
-      background: 'flood'
-    }
-  }, {
-    light: ['#fff'],
-    dark: ['cyan', 'blue'],
-    fill: {
-      line: 'linear-gradient',
-      background: 'flood'
-    }
-  }, {
-    light: ['cyan', 'lime'],
-    dark: ['black'],
-    fill: {
-      line: 'flood',
-      background: 'linear-gradient'
-    }
-  }
-]
 
 const rings = {
   default: 40,
@@ -332,17 +203,20 @@ class App extends Component {
           </Canvas> 
         </Main>
         <Sidebar> 
-          {!!blobUrl && <Section>
+          {!!blobUrl &&
+            <Section>
             <div>
               {coloring.map(({light, dark, fill}, i) => (
                 <Swatch
+                  index={i}
                   key={i}
-                  fill={fill}
-                  colorLight={light}
-                  colorDark={dark} />
+                  light={light}
+                  dark={dark}
+                  fill={fill} />
               ))}
             </div>
-          </Section>}
+          </Section>
+          }
         </Sidebar>
         <div style={{position: 'absolute', right: '0', top: '0', width: '300px', height: '100%', padding: 40}}>
           <Size />
@@ -411,9 +285,9 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    addFilter: () => dispatch(addFilter('spiral', {rings: rings.default}, coloring[0].light, coloring[0].dark, coloring[0].fill)),
+    addFilter: () => dispatch(addFilter('spiral', {rings: rings.default}, 0)),
     setup: () => dispatch(setup()),
-    updateRings: (rings) => dispatch(updateFilter(undefined, {rings})),
+    updateRings: (rings) => dispatch(updateFilter(undefined, undefined, {rings})),
     startEditingPhoto: () => dispatch(startEditingPhoto()),
     endEditingPhoto: () => dispatch(endEditingPhoto()),
     addImgData: (blobUrl, contrast, lightness, scale, width, height, data, orientation, name) => dispatch(addImgData(blobUrl, contrast, lightness, scale, width, height, data, orientation, name)),

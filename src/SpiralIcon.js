@@ -1,34 +1,43 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import SpiralCircle from './SpiralCircle'
+import SpiralLine from './SpiralLine'
+const { maskIdThumb } = require('./lib/constants')
 
-const SpiralIcon = ({imgData, width, scale, height, fill, cx, cy, contrast, lightness, rings}) => {
-  if (!imgData) return null
+const SpiralIcon = ({
+  index,
+  dark,
+  light,
+  imgData,
+  width,
+  scale,
+  height,
+  fill
+}) => {
   const svgLength = Math.min(width / scale, height / scale)
   const viewBox = `0 0 ${svgLength} ${svgLength}`
+  const radius = svgLength / 2
   return (
     <svg viewBox={viewBox}>
-      <rect
-        //key={`${scale}-${cx}-${cy}-${contrast}-${lightness}-${rings}`} // force repaints for stupid Safari
-        fill={fill}
-        mask='url(#mask)'
-        width='100%'
-        height='100%' />
+      <SpiralCircle
+        radius={radius}
+        colorData={fill.background === 'dark' ? dark : light}
+        defPrefix={`s-${index}-`} />
+      <SpiralLine
+        defPrefix={`s-${index}-`}
+        maskId={maskIdThumb}
+        colorData={fill.line === 'dark' ? dark : light}
+        />
     </svg>
   )
 }
 
 const mapStateToProps = (state) => {
-  const {filter: {data: {rings}}, img: {scale, data: imgData, cx, cy, contrast, lightness, width, height}} = state
+  const {img: {scale, width, height}} = state
   return {
     scale,
-    imgData,
     width,
-    height,
-    lightness,
-    contrast,
-    cx,
-    cy,
-    rings
+    height
   }
 }
 

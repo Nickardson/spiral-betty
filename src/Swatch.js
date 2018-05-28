@@ -2,6 +2,8 @@ import React, {Component} from 'react'
 import styled from 'styled-components'
 import SpiralIcon from './SpiralIcon'
 
+import chroma from 'chroma-js'
+
 import { connect } from 'react-redux'
 import { updateFilter } from './redux/actions'
 
@@ -24,35 +26,43 @@ const Container = styled.div`
 `
 
 class Swatch extends Component {
-  constructor (props) {
-    super(props)
-    this.onClick = () => {
-      const {colorDark, colorLight, fill, updateFilter} = this.props
-      updateFilter(colorLight, colorDark, fill)
-      document.documentElement.style.setProperty('--accent', colorDark[0])
-    }
+  findDarkestColor (colors) {
+    let darkest
+    colors.forEach(({color}) => {
+      if (darkest === undefined) darkest = color
+      else {
+        if (chroma(darkest).luminance() > chroma(color).luminance()) {
+          darkest = color
+        }
+      }
+    })
+    return darkest
+  }
+  onClick = () => {
+    const {index, updateFilter, dark} = this.props
+    updateFilter(index)
+    // Find darkest color in set
+
+    document.documentElement.style.setProperty('--accent', this.findDarkestColor(dark.colors))
   }
   render () {
-    const {colorDark, colorLight, light, dark} = this.props
-    const active = `${colorDark}` === `${dark}` && `${colorLight}` === `${light}`
+    const {dark, light, fill, index, colorIndex} = this.props
+    const activeClass = colorIndex === index ? 'active' : ''
     return (
-      <Container
-        onClick={this.onClick}
-        className={active ? 'active' : ''}
-        style={{background: colorLight.length === 1 ? colorLight[0] : ''}}>
-        <SpiralIcon fill={colorDark.length === 1 ? colorDark[0] : ''} />
+      <Container onClick={this.onClick} className={activeClass}>
+        <SpiralIcon dark={dark} light={light} fill={fill} index={index} />
       </Container>
     )
   }
 }
 
 const mapStateToProps = (state) => {
-  const {filter: {colorLight: light, colorDark: dark}} = state
-  return {light, dark}
+  const {filter: {colorIndex}} = state
+  return {colorIndex}
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateFilter: (colorLight, colorDark, fill) => dispatch(updateFilter(undefined, undefined, colorLight, colorDark, fill)),
+    updateFilter: (index) => dispatch(updateFilter(undefined, index)),
   }
 }
 
