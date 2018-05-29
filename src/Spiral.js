@@ -149,7 +149,7 @@ class Spiral extends Component {
     })
   }
   render () {
-    const { editing, startEditingPhoto, imgData, width, scale, colorIndex, height, mouseEnter, mouseLeave } = this.props
+    const { editing, startEditingPhoto, imgData, width, scale, colorIndex, height, mouseEnter, mouseLeave, cx, cy, rings, contrast, lightness } = this.props
     if (!imgData || editing) return null
     const active = !!imgData && !editing
     const svgLength = Math.min(width / scale, height / scale)
@@ -181,8 +181,11 @@ class Spiral extends Component {
           }}
           radius={radius}
           colorData={bgColorData} />
-        <g mask={`url(#${this.animMaskId})`} style={{pointerEvents: 'none'}}> 
+        <g
+          mask={`url(#${this.animMaskId})`}
+          style={{pointerEvents: 'none'}}> 
           <SpiralLine
+            key={`${scale}-${cx}-${cy}-${rings}-${contrast}-${lightness}-spiral`}
             defPrefix={'main'}
             maskId={maskId}
             colorData={lineColorData} />

@@ -9,10 +9,10 @@ const SpiralLine = ({
     fill: {type: fillType, attr}
   }
 }) => {
-  const gradId = `${defPrefix}-line-grad`
   switch (fillType) {
     case 'linear-gradient':
     case 'radial-gradient':
+      const gradId = `${defPrefix}-line-grad`
       return (
         <Fragment>
           <defs>

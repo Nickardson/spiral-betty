@@ -10,10 +10,10 @@ const SpiralCircle = ({
   defPrefix,
   ...props
 }) => {
-  const gradId = `${defPrefix}-bg-grad`
   switch (fillType) {
     case 'linear-gradient':
     case 'radial-gradient':
+      const gradId = `${defPrefix}-bg-grad`
       return (
         <Fragment>
           <defs>

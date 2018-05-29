@@ -531,10 +531,13 @@ const coloring = [
   }
 ]
 
+const maxThumbRings = 50 // specifically made for safari but will also apply to other browsers... helps repaing issues for safari
+
 export {
   easing,
   layout,
   maskId,
   maskIdThumb,
+  maxThumbRings,
   coloring
 }

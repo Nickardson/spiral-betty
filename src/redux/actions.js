@@ -59,6 +59,12 @@ const setup = () => ({
   type: 'STORE_INIT',
 })
 
+// Temp
+const addTempProp = (prop, value) => ({
+  type: 'TEMP',
+  prop,
+  value
+})
 
 export {
   startEditingPhoto,
@@ -70,5 +76,6 @@ export {
   updateImgPos,
   addFilter,
   updateFilter,
-  setup
+  setup,
+  addTempProp
 }

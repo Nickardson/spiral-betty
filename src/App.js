@@ -16,8 +16,8 @@ import Size from './Size'
 import Section from './Section'
 import SectionSlider from './SectionSlider'
 
-import {addFilter, setup, updateImgPos, updateFilter, startEditingPhoto, updateContrast, endEditingPhoto, addImgData, updateLightness} from './redux/actions'
-import {coloring} from './lib/constants'
+import {addFilter, setup, updateImgPos, addTempProp, updateFilter, startEditingPhoto, updateContrast, endEditingPhoto, addImgData, updateLightness} from './redux/actions'
+import {coloring, maxThumbRings} from './lib/constants'
 import {getImageData} from './lib/img'
 import styled from 'styled-components'
 
@@ -40,7 +40,8 @@ const Hidden = styled.div`
 const rings = {
   default: 40,
   min: 6,
-  max: 160
+  max: 160,
+  step: 1
 }
 
 const contrastVals = {
@@ -144,6 +145,10 @@ class App extends Component {
       // TODO: will need to give a warning if not supported
     }
   }
+  componentDidMount () {
+    // Is this safari?
+    if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) this.props.addTempProp('isSafari', true)
+  }
   getOrientation (file, callback) {
     // TODO: move to img utils
     // Source: https://stackoverflow.com/a/32490603/2824643
@@ -185,7 +190,7 @@ class App extends Component {
     setup()
   }
   render() {
-    const {init, length, scale, img: {blobUrl}} = this.props
+    const {init, length, scale, img: {blobUrl}, prefixKey} = this.props
     if (!init) return null
     return (
       <Fragment>
@@ -202,7 +207,7 @@ class App extends Component {
             <Upload onChange={this.handleFileChange} />
           </Canvas> 
         </Main>
-        <Sidebar> 
+        <Sidebar key={`${prefixKey}-svg`}> 
           {!!blobUrl &&
             <Section>
             <div>
@@ -262,7 +267,7 @@ class App extends Component {
             title={'Rings'}
             min={rings.min}
             max={rings.max}
-            step={1}
+            step={rings.step}
             defaultValue={rings.default}
             onChange={this.handleRingChange}
             />
@@ -280,8 +285,13 @@ class App extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const {setup: {init}, preview: {length}, img: {scale}, img} = state
-  return {init, length, scale, img}
+  const {setup: {init}, preview: {length}, img: {scale}, img, temp: {isSafari}} = state
+  let prefixKey = ''
+  if (isSafari) {
+    const {img: {cx, cy, contrast, lightness}, filter: {data: {rings}}} = state
+    prefixKey = `${scale}-${cx}-${cy}-${contrast}-${lightness}-${Math.min(rings, maxThumbRings)}`
+  }
+  return {init, length, scale, img, prefixKey}
 }
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -293,7 +303,8 @@ const mapDispatchToProps = (dispatch) => {
     addImgData: (blobUrl, contrast, lightness, scale, width, height, data, orientation, name) => dispatch(addImgData(blobUrl, contrast, lightness, scale, width, height, data, orientation, name)),
     updateImgPos: (scale, cx, cy) => dispatch(updateImgPos(scale, cx, cy)),
     updateContrast: (contrast) => dispatch(updateContrast(contrast)),
-    updateLightness: (lightness) => dispatch(updateLightness(lightness))
+    updateLightness: (lightness) => dispatch(updateLightness(lightness)),
+    addTempProp: (prop, value) => dispatch(addTempProp(prop, value))
   }
 }
 
