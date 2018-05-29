@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { blobExifTransform } from './lib/img'
 
+import { scaleInputId } from './lib/constants'
+
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -37,6 +39,9 @@ class EditPhoto extends Component {
     }
     this.movePhotoId = 'edit-photo'
     this.clicksOutsideOfPhoto = (e) => {
+      // Allow for scaling while editing
+      if (e.target.id === scaleInputId) return
+      
       const {cx, cy, width, height, length, scale} = this.props
       const {x, y} = this.state
       if (e.target.id !== this.movePhotoId) {

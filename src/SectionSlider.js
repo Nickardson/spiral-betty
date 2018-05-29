@@ -20,7 +20,8 @@ const SectionSlider = ({
   defaultValue,
   onChange,
   startCenter,
-  onValueChange
+  onValueChange,
+  sliderProps
 }) => {
   return (
     <SliderController
@@ -37,6 +38,7 @@ const SectionSlider = ({
             </SliderValue>
           </SectionTitle>
           <Slider
+            {...sliderProps}
             value={value}
             startCenter={startCenter}
             min={min}

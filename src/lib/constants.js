@@ -15,6 +15,7 @@ const easing = {
   easeInOut: (k) => (.5 * (Math.sin((k - .5) * Math.PI) + 1))
 }
 
+const scaleInputId = 'slider-scale'
 const maskId = 'mask'
 const maskIdThumb = 'mask-thumb'
 
@@ -539,5 +540,6 @@ export {
   maskId,
   maskIdThumb,
   maxThumbRings,
-  coloring
+  coloring,
+  scaleInputId
 }

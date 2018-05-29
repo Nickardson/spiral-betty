@@ -17,7 +17,7 @@ import Section from './Section'
 import SectionSlider from './SectionSlider'
 
 import {addFilter, setup, updateImgPos, addTempProp, updateFilter, startEditingPhoto, updateContrast, endEditingPhoto, addImgData, updateLightness} from './redux/actions'
-import {coloring, maxThumbRings} from './lib/constants'
+import {coloring, maxThumbRings, scaleInputId} from './lib/constants'
 import {getImageData} from './lib/img'
 import styled from 'styled-components'
 
@@ -226,6 +226,7 @@ class App extends Component {
         <div style={{position: 'absolute', right: '0', top: '0', width: '300px', height: '100%', padding: 40}}>
           <Size />
           <SectionSlider 
+            sliderProps={{id: scaleInputId}}
             title={'Scale'}
             min={1}
             max={3}

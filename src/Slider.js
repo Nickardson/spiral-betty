@@ -182,7 +182,8 @@ class Slider extends Component {
       startCenter,
       max,
       min,
-      step
+      step,
+      ...sliderProps
     } = this.props
     const {dragging, hover} = this.state
     let trackBeforeSliderStyle = {}
@@ -205,6 +206,7 @@ class Slider extends Component {
     return (
       <SliderContainer>
         <SliderInput
+          {...sliderProps}
           className={className}
           onMouseDown={this.onMouseDown}
           onMouseEnter={this.onMouseEnter}
