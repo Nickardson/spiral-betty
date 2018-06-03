@@ -114,23 +114,23 @@ class App extends Component {
     updateImgPos(scale, cx, cy)
     endEditingPhoto()
   }
-  handleFile = (url, file) => {
+  handleFile = (url, file, revokeUrl) => {
     // TODO: get img data for 2x the size of the spiral length
     this.getOrientation(file, (orientation) => {
       getImageData(url, orientation).then(({status, width, height, imgData: data}) => {
         if (status === 'ok') { 
           const {startEditingPhoto, addImgData} = this.props
-            startEditingPhoto()
-            addImgData(url, contrastVals.default, lightnessVals.default, 1, width, height, data, orientation || 1, file.name)
+          if (revokeUrl) window.URL.revokeObjectURL(revokeUrl) // we have had some success... now time to revoke old url
+          startEditingPhoto()
+          addImgData(url, contrastVals.default, lightnessVals.default, 1, width, height, data, orientation || 1, file.name)
         } else {
           // TODO: error with img have a warning of some sort
-          console.error('something has gone terribly wrong we need to add an warning')
+          console.error('Something has gone terribly wrong we need to add an warning')
         }
       })
     })
   }
   handleFileChange = (e) => {
-    // TODO: get exif orientation!!!
     const file = e.target.files[0]
     if (!file || !file.name) return
     const allowedFileExt = ['png', 'gif', 'jpg', 'jpeg']
@@ -140,14 +140,21 @@ class App extends Component {
       file.type.indexOf('image/') !== -1
     ) {
       const blobUrl = URL.createObjectURL(file)
-      this.handleFile(blobUrl, file)
+      const revokeUrl = this.props.blobUrl
+      this.handleFile(blobUrl, file, revokeUrl)
     } else {
       // TODO: will need to give a warning if not supported
     }
   }
   componentDidMount () {
-    // Is this safari?
-    if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) this.props.addTempProp('isSafari', true)
+    // Is this Safari?
+    if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
+      this.props.addTempProp('isSafari', true)
+    }
+    // Is this Firefox?
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+      this.props.addTempProp('isFirefox', true)
+    }
   }
   getOrientation (file, callback) {
     // TODO: move to img utils
@@ -184,7 +191,7 @@ class App extends Component {
     reader.readAsArrayBuffer(file.slice(0, 131072)) // just to get exif
   }
   componentWillMount () {
-    // setup store
+    // Setup store
     const {addFilter, setup} = this.props
     addFilter()
     setup()
@@ -286,13 +293,13 @@ class App extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const {setup: {init}, preview: {length}, img: {scale}, img, temp: {isSafari}} = state
+  const {setup: {init}, preview: {length}, img: {scale, blobUrl}, img, temp: {isSafari}} = state
   let prefixKey = ''
   if (isSafari) {
     const {img: {cx, cy, contrast, lightness}, filter: {data: {rings}}} = state
     prefixKey = `${scale}-${cx}-${cy}-${contrast}-${lightness}-${Math.min(rings, maxThumbRings)}`
   }
-  return {init, length, scale, img, prefixKey}
+  return {init, length, scale, img, prefixKey, blobUrl}
 }
 const mapDispatchToProps = (dispatch) => {
   return {
