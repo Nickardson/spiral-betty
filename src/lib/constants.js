@@ -12,7 +12,7 @@ const easing = {
   linear: (k) => (k),
   easeIn: (k) => (Math.pow(k, 1.675)),
   easeOut: (k) => (1 - Math.pow(1 - k, 1.675)),
-  easeInOut: (k) => (.5 * (Math.sin((k - .5) * Math.PI) + 1))
+  easeInOut: (k) => (0.5 * (Math.sin((k - 0.5) * Math.PI) + 1))
 }
 
 const scaleInputId = 'slider-scale'
@@ -23,7 +23,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -49,7 +49,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -75,7 +75,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -101,7 +101,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -127,7 +127,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -153,7 +153,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -179,7 +179,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -205,7 +205,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -231,7 +231,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -257,7 +257,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -283,7 +283,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -309,7 +309,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -335,7 +335,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -361,7 +361,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -387,7 +387,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -413,7 +413,7 @@ const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
+      background: 'light'
     },
     light: {
       fill: {
@@ -466,6 +466,39 @@ const coloring = [
         color: 'blue',
         offset: 100
       }]
+    }
+  },
+  {
+    fill: {
+      line: 'dark',
+      background: 'light'
+    },
+    light: {
+      fill: {
+        type: 'flood'
+      },
+      colors: [{
+        color: '#fff'
+      }]
+    },
+    dark: {
+      fill: {
+        type: 'linear-gradient',
+        attr: {
+          x1: '0',
+          x2: '0',
+          y1: '0',
+          y2: '100%'
+        }
+      },
+      colors: [
+        {
+          color: '#e03a9f',
+          offset: 0
+        }, {
+          color: '#ffad2c',
+          offset: 100
+        }]
     }
   },
   {
