@@ -40,7 +40,7 @@ class EditPhoto extends Component {
     this.movePhotoId = 'edit-photo'
     this.clicksOutsideOfPhoto = (e) => {
       // Allow for scaling while editing
-      if (e.target.id === scaleInputId) return
+      const endEditing = e.target.id === scaleInputId ? false : true
       
       const {cx, cy, width, height, length, scale} = this.props
       const {x, y} = this.state
@@ -55,7 +55,8 @@ class EditPhoto extends Component {
         this.props.updatePhoto((
           {
             cx: cx - (x * photoImgRatio),
-            cy: cy - (y * photoImgRatio)
+            cy: cy - (y * photoImgRatio),
+            endEditing
           }
         ))
         this.setState({x: 0, y: 0, drag: false})
@@ -206,8 +207,7 @@ class EditPhoto extends Component {
           onMouseUp={!drag ? undefined : this.onMouseUp}
           alt={'Uploaded artwork'}
           src={blobUrl}
-          style={photoStyle}
-          />
+          style={photoStyle} />
         <CircleClip>
           <img
             alt={'Uploaded artwork'}

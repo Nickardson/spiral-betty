@@ -77,12 +77,12 @@ class Upload extends Component {
         }}>
         <div className='pos-full' style={{backgroundColor: 'var(--accent)', transition: '.2s', borderRadius: '100%', opacity: showHover ? 0.2 : 0}} />
         <IconPhotoPlaceholder
-          length={100}
+          length={70}
           className="pos-center"
           active={showHover} />
         <div
           className='pos-center'
-          style={{marginTop: 68}}>
+          style={{marginTop: 60}}>
           <UploadText
             style={{
               textAlign: 'center',

@@ -109,10 +109,10 @@ class App extends Component {
     updateLightness(val)
   }
   updateImage = (updates) => {
-    const {scale, cx, cy} = updates
+    const {scale, cx, cy, endEditing} = updates
     const {updateImgPos, endEditingPhoto} = this.props
     updateImgPos(scale, cx, cy)
-    endEditingPhoto()
+    if (endEditing) endEditingPhoto()
   }
   handleFile = (url, file, revokeUrl) => {
     // TODO: get img data for 2x the size of the spiral length
@@ -241,8 +241,7 @@ class App extends Component {
             step={.05}
             value={scale || 1}
             defaultValue={scale || 1}
-            onChange={this.handleScaleChange}
-            />
+            onChange={this.handleScaleChange} />
           <SectionSlider 
             title={'Contrast'}
             startCenter
