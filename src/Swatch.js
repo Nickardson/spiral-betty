@@ -31,17 +31,17 @@ const Container = styled.div`
 class Swatch extends Component {
   findDarkestColor = () => {
     // const 
-    return 'yellow'
-    // let darkest
-    // colors.forEach(({color}) => {
-    //   if (darkest === undefined) darkest = color
-    //   else {
-    //     if (chroma(darkest).luminance() > chroma(color).luminance()) {
-    //       darkest = color
-    //     }
-    //   }
-    // })
-    // return darkest
+    const colors = coloring[this.props.colorIndex].dark.colors
+    let darkest
+    colors.forEach(({color}) => {
+      if (darkest === undefined) darkest = color
+      else {
+        if (chroma(darkest).luminance() > chroma(color).luminance()) {
+          darkest = color
+        }
+      }
+    })
+    return darkest
   }
   onClick = () => {
     const {colorIndex, updateFilter} = this.props
@@ -50,7 +50,7 @@ class Swatch extends Component {
     document.documentElement.style.setProperty('--accent', this.findDarkestColor())
   }
   render () {
-    const {index, colorIndex, activeIndex, width, height, length, scale, points} = this.props
+    const {colorIndex, activeIndex, width, height, length, scale, points} = this.props
     const activeClass = colorIndex === activeIndex ? 'active' : ''
     return (
       <Container
