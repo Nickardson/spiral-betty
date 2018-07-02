@@ -1,11 +1,14 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
-import SpiralIcon from './SpiralIcon'
+import SpiralCanvas from './SpiralCanvas'
+
 
 import chroma from 'chroma-js'
 
 import { connect } from 'react-redux'
 import { updateFilter } from './redux/actions'
+
+const {coloring} = require('./lib/constants')
 
 const Container = styled.div`
   width: 80px;
@@ -26,31 +29,40 @@ const Container = styled.div`
 `
 
 class Swatch extends Component {
-  findDarkestColor (colors) {
-    let darkest
-    colors.forEach(({color}) => {
-      if (darkest === undefined) darkest = color
-      else {
-        if (chroma(darkest).luminance() > chroma(color).luminance()) {
-          darkest = color
-        }
-      }
-    })
-    return darkest
+  findDarkestColor = () => {
+    // const 
+    return 'yellow'
+    // let darkest
+    // colors.forEach(({color}) => {
+    //   if (darkest === undefined) darkest = color
+    //   else {
+    //     if (chroma(darkest).luminance() > chroma(color).luminance()) {
+    //       darkest = color
+    //     }
+    //   }
+    // })
+    // return darkest
   }
   onClick = () => {
-    const {index, updateFilter, dark} = this.props
-    updateFilter(index)
+    const {colorIndex, updateFilter} = this.props
+    updateFilter(colorIndex)
     // Find darkest color in set
-
-    document.documentElement.style.setProperty('--accent', this.findDarkestColor(dark.colors))
+    document.documentElement.style.setProperty('--accent', this.findDarkestColor())
   }
   render () {
-    const {dark, light, fill, index, colorIndex} = this.props
-    const activeClass = colorIndex === index ? 'active' : ''
+    const {index, colorIndex, activeIndex, width, height, length, scale, points} = this.props
+    const activeClass = colorIndex === activeIndex ? 'active' : ''
     return (
-      <Container onClick={this.onClick} className={activeClass}>
-        <SpiralIcon dark={dark} light={light} fill={fill} index={index} />
+      <Container
+        onClick={this.onClick}
+        className={activeClass}>
+        <SpiralCanvas
+          length={length}
+          points={points}
+          colorIndex={colorIndex}
+          width={width}
+          height={height}
+          scale={scale} />
       </Container>
     )
   }
@@ -58,7 +70,7 @@ class Swatch extends Component {
 
 const mapStateToProps = (state) => {
   const {filter: {colorIndex}} = state
-  return {colorIndex}
+  return {activeIndex: colorIndex}
 }
 const mapDispatchToProps = (dispatch) => {
   return {

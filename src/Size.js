@@ -92,7 +92,7 @@ class Size extends Component {
     // setup store
     const width = window.innerWidth
     const height = window.innerHeight
-    const sidebar = document.getElementById('sidebar').getBoundingClientRect().width
+    const sidebar = 0 //document.getElementById('sidebar').getBoundingClientRect().width
     const {updatePreviewLength} = this.props
     this.originalSize = Math.min(width - sidebar - 100, height - 100)
     updatePreviewLength(this.originalSize)

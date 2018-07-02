@@ -196,7 +196,7 @@ class EditPhoto extends Component {
         style={{
           pointerEvents: active ? '' : 'none',
           opacity: active ? 1 : 0,
-          transition: '.5s'
+          transition: '.2s'
         }}>
         <ImgBg style={photoStyle} />
         <ImgMove

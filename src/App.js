@@ -6,15 +6,15 @@ import Upload from './Upload'
 import Canvas from './Canvas'
 import Guides from './Guides'
 import EditPhoto from './EditPhoto'
-import Swatch from './Swatch'
 import Sidebar from './Sidebar'
 import DemoImage from './DemoImage'
 import Filter from './Filter'
 import FilterMask from './FilterMask'
-import DownloadSvg from './DownloadSvg'
+import DownloadCanvas from './DownloadCanvas'
 import Size from './Size'
 import Section from './Section'
 import SectionSlider from './SectionSlider'
+import Swatches from './Swatches'
 
 import {addFilter, setup, updateImgPos, addTempProp, updateFilter, startEditingPhoto, updateContrast, endEditingPhoto, addImgData, updateLightness} from './redux/actions'
 import {coloring, maxThumbRings, scaleInputId} from './lib/constants'
@@ -197,7 +197,7 @@ class App extends Component {
     setup()
   }
   render() {
-    const {init, length, scale, img: {blobUrl}, prefixKey} = this.props
+    const {init, length, scale, img: {blobUrl, data: imgData}, prefixKey} = this.props
     if (!init) return null
     return (
       <Fragment>
@@ -215,20 +215,7 @@ class App extends Component {
           </Canvas> 
         </Main>
         <Sidebar key={`${prefixKey}-svg`}> 
-          {!!blobUrl &&
-            <Section>
-            <div>
-              {coloring.map(({light, dark, fill}, i) => (
-                <Swatch
-                  index={i}
-                  key={i}
-                  light={light}
-                  dark={dark}
-                  fill={fill} />
-              ))}
-            </div>
-          </Section>
-          }
+          <Swatches />
         </Sidebar>
         <div style={{position: 'absolute', right: '0', top: '0', width: '300px', height: '100%', padding: 40}}>
           <Size />
@@ -278,7 +265,7 @@ class App extends Component {
             defaultValue={rings.default}
             onChange={this.handleRingChange}
             />
-          <DownloadSvg />
+          <DownloadCanvas />
           <DemoImage
             blobUrl={blobUrl}
             handleFile={this.handleFile} />
@@ -296,7 +283,7 @@ const mapStateToProps = (state) => {
   let prefixKey = ''
   if (isSafari) {
     const {img: {cx, cy, contrast, lightness}, filter: {data: {rings}}} = state
-    prefixKey = `${scale}-${cx}-${cy}-${contrast}-${lightness}-${Math.min(rings, maxThumbRings)}`
+    // prefixKey = `${scale}-${cx}-${cy}-${contrast}-${lightness}-${Math.min(rings, maxThumbRings)}`
   }
   return {init, length, scale, img, prefixKey, blobUrl}
 }

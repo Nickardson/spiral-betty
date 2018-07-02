@@ -185,7 +185,7 @@ class Spiral extends Component {
           mask={`url(#${this.animMaskId})`}
           style={{pointerEvents: 'none'}}> 
           <SpiralLine
-            key={`${scale}-${cx}-${cy}-${rings}-${contrast}-${lightness}-spiral`}
+            // key={`${scale}-${cx}-${cy}-${rings}-${contrast}-${lightness}-spiral`}
             defPrefix={'main'}
             maskId={maskId}
             colorData={lineColorData} />

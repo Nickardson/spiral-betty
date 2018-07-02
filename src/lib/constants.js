@@ -3,7 +3,8 @@ const layout = {
     width: 135 + 35 * 2
   },
   ids: {
-    spiralSvg: 'svg-filter'
+    spiralSvg: 'svg-filter',
+    spiralCanvas: 'canvas-spiral'
   }
 }
 
@@ -453,10 +454,10 @@ const coloring = [
       fill: {
         type: 'linear-gradient',
         attr: {
-          x1: '0',
-          x2: '0',
-          y1: '0',
-          y2: '100%'
+          x1: 0,
+          x2: 0,
+          y1: 0,
+          y2: 1
         }
       },
       colors: [{
@@ -464,7 +465,7 @@ const coloring = [
         offset: 0
       }, {
         color: 'blue',
-        offset: 100
+        offset: 1
       }]
     }
   },
@@ -485,10 +486,10 @@ const coloring = [
       fill: {
         type: 'linear-gradient',
         attr: {
-          x1: '0',
-          x2: '0',
-          y1: '0',
-          y2: '100%'
+          x1: 0,
+          x2: 0,
+          y1: 0,
+          y2: 1
         }
       },
       colors: [
@@ -497,7 +498,7 @@ const coloring = [
           offset: 0
         }, {
           color: '#ffad2c',
-          offset: 100
+          offset: 1
         }]
     }
   },
@@ -518,18 +519,18 @@ const coloring = [
       fill: {
         type: 'linear-gradient',
         attr: {
-          x1: '0',
-          x2: '100%',
-          y1: '0',
-          y2: '0'
+          x1: 0,
+          x2: 1,
+          y1: 0,
+          y2: 0
         }
       },
       colors: [{
         color: 'cyan',
-        offset: 50
+        offset: .5
       }, {
         color: 'blue',
-        offset: 100
+        offset: 1
       }]
     }
   },
@@ -540,26 +541,42 @@ const coloring = [
     },
     dark: {
       fill: {
-        type: 'radial-gradient'
+        type: 'radial-gradient',
+        attr: {
+          r1: 0,
+          r2: .5,
+          x1: .5,
+          x2: .5,
+          y1: .5,
+          y2: .5
+        }
       },
       colors: [{
         color: 'cyan',
-        offset: 50
+        offset: .5
       }, {
         color: 'blue',
-        offset: 100
+        offset: 1
       }]
     },
     light: {
       fill: {
-        type: 'radial-gradient'
+        type: 'radial-gradient',
+        attr: {
+          r1: 0,
+          r2: .5,
+          x1: .5,
+          x2: .5,
+          y1: .5,
+          y2: .5
+        }
       },
       colors: [{
         color: 'red',
         offset: 0
       }, {
         color: 'pink',
-        offset: 100
+        offset: 1
       }]
     }
   }
