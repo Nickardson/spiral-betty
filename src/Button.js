@@ -6,7 +6,7 @@ const Button = styled.button`
   color: #fff;
   font-size: 20px;
   text-transform: uppercase;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 15.5px;
   border-radius: 46px;
   cursor: pointer;
@@ -20,5 +20,16 @@ const Button = styled.button`
     background-color: #eee;
   }
 `
+const SecondaryButton = styled.button`
+  color: #777;
+  font-weight: 700;
+  font-size: 11.5px;
+  cursor: pointer;
+  border: none;
+  transition: .2s;
+  &:hover {
+    color: var(--accent);
+  }
+`
 
-export default Button
+export {Button, SecondaryButton}

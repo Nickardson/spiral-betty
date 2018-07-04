@@ -11,6 +11,8 @@ const img = (state = {}, action) => {
         ...state,
         lightness: action.lightness
       }
+    case 'CLEAR_IMG':
+      return {}
     case 'ADD_IMG_DATA':
       // Start fresh
       return {

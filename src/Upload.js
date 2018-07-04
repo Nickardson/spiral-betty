@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import IconPhotoPlaceholder from './IconPhotoPlaceholder'
-import {UploadText} from './Text'
+import WorkspaceIconAndText from './WorkspaceIconAndText'
 
 import styled from 'styled-components'
 
@@ -76,22 +75,7 @@ class Upload extends Component {
           border: showHover ? `3px ${line} var(--accent)` : `1px ${line} rgba(0,0,0,.25)`,
         }}>
         <div className='pos-full' style={{backgroundColor: 'var(--accent)', transition: '.2s', borderRadius: '100%', opacity: showHover ? 0.2 : 0}} />
-        <IconPhotoPlaceholder
-          length={70}
-          className="pos-center"
-          active={showHover} />
-        <div
-          className='pos-center'
-          style={{marginTop: 60}}>
-          <UploadText
-            style={{
-              textAlign: 'center',
-              color: showHover ? 'var(--accent)' : '',
-              transition: '.2s'
-            }}>
-            {blobUrl ? '+ Replace image' : '+ Upload image'}
-          </UploadText>
-        </div>
+        <WorkspaceIconAndText active={showHover} text={blobUrl ? '+ Replace image' : '+ Upload image'} type='placeholder' />
         {/* Hide input so we can style label */}
         <input
           type='file'

@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { blobExifTransform } from './lib/img'
-
 import { scaleInputId } from './lib/constants'
 
 const Container = styled.div`

@@ -2,6 +2,21 @@ import React, { Component } from 'react'
 import {coloring} from './lib/constants'
 import {startEditingPhoto} from './redux/actions'
 import { connect } from 'react-redux'
+import styled from 'styled-components'
+
+const Canvas = styled.canvas`
+  ${(props) => props.highlight ? `
+      transition: transform .2s, box-shadow .2s .1s;
+      box-shadow: 0 0 0 0px rgba(255,255,255,0);
+      &:hover {
+        transform: scale(1.25);
+        border: 3px solid ${props.accent};
+        z-index: 1000000; // absurd number on purpose
+        box-shadow: 0 0 0 6px ${props.highlight};
+      }
+    ` : ''
+  }
+`
 
 const getFillType = (ctx, {colors, fill, fill: {attr}}, len) => {
   let x1, y1, r1, x2, y2, r2, grad
@@ -41,12 +56,12 @@ class SpiralCanvas extends Component {
     this.updateCanvas()
   }
   updateCanvas = () => {
-    if (!this.refs.canvas) return
+    if (!this.canvas) return
 
     const {width, scale: s, height, colorIndex, length: canvasLength, points} = this.props
     const imgLength = Math.min(width / s, height / s)
     const {inner, outter} = points || {}
-    const ctx = this.refs.canvas.getContext('2d')
+    const ctx = this.canvas.getContext('2d')
     ctx.scale(this.multiplier, this.multiplier)
     ctx.clearRect(0, 0, canvasLength, canvasLength)
 
@@ -88,17 +103,23 @@ class SpiralCanvas extends Component {
     
   }
   render () {
-    const { length, startEditingPhoto, id } = this.props
+    const { length, startEditingPhoto, id, highlight, accent, onMouseEnter, onMouseLeave } = this.props
     return (
-      <canvas
+      <Canvas
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        highlight={highlight}
+        accent={accent}
         id={id}
         onClick={id && startEditingPhoto}
-        ref="canvas"
+        innerRef={(x) => this.canvas = x}
         width={length * this.multiplier}
         height={length * this.multiplier}
         style={{
-          width: length,
-          height: length,
+          cursor: 'pointer',
+          borderRadius: '100%',
+          width: '100%',
+          height: '100%',
           position: 'absolute',
           left: 0,
           top: 0,

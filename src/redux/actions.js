@@ -21,6 +21,9 @@ const updateLightness = (lightness) => ({
   type: 'UPDATE_IMG_LIGHTNESS',
   lightness
 })
+const clearImg = () => ({
+  type: 'CLEAR_IMG'
+})
 const addImgData = (blobUrl, contrast, lightness, scale, width, height, data, orientation, name) => ({
   type: 'ADD_IMG_DATA',
   blobUrl,
@@ -77,5 +80,6 @@ export {
   addFilter,
   updateFilter,
   setup,
-  addTempProp
+  addTempProp,
+  clearImg
 }

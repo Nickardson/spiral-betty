@@ -1,8 +1,6 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import SpiralCanvas from './SpiralCanvas'
-
-
 import chroma from 'chroma-js'
 
 import { connect } from 'react-redux'
@@ -52,11 +50,15 @@ class Swatch extends Component {
   render () {
     const {colorIndex, activeIndex, width, height, length, scale, points} = this.props
     const activeClass = colorIndex === activeIndex ? 'active' : ''
+    const highlight = chroma(this.findDarkestColor()).alpha(0.3).css()
+    console.log(highlight)
     return (
       <Container
         onClick={this.onClick}
         className={activeClass}>
         <SpiralCanvas
+          accent={this.findDarkestColor()}
+          highlight={highlight}
           length={length}
           points={points}
           colorIndex={colorIndex}

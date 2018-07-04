@@ -7,7 +7,7 @@ import styled from 'styled-components'
 
 const Value = styled.span`
   text-align: right;
-  color: var(--accent);
+  color: #999;
   float: right;
 `
 const SliderValue = ({ children }) => ( <Value>{children}</Value> )

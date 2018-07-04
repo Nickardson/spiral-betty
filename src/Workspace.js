@@ -5,12 +5,13 @@ import { connect } from 'react-redux'
 const Container = styled.div`
   left: 50%;
   top: 50%;
+  margin-top: -8px;
   transform: translate(-50%, -50%);
   position: absolute;
 `
 
-const Canvas = ({children, length}) => (
-  <Container
+const Workspace = ({children, length}) => (
+  <Container 
     style={{
       width: length,
       height: length,
@@ -29,4 +30,4 @@ const mapStateToProps = (state) => {
 }
 export default connect(
   mapStateToProps
-)(Canvas)
+)(Workspace)
