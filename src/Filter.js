@@ -43,6 +43,7 @@ class Filter extends Component {
               return (
                 <div>
                   <SpiralCanvas
+                    animate
                     onMouseEnter={this.onMouseEnter}
                     onMouseLeave={this.onMouseLeave}
                     id={layout.ids.spiralCanvas}

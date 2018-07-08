@@ -51,7 +51,6 @@ class Swatch extends Component {
     const {colorIndex, activeIndex, width, height, length, scale, points} = this.props
     const activeClass = colorIndex === activeIndex ? 'active' : ''
     const highlight = chroma(this.findDarkestColor()).alpha(0.3).css()
-    console.log(highlight)
     return (
       <Container
         onClick={this.onClick}

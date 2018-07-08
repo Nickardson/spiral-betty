@@ -7,14 +7,18 @@ const {layout: {ids: {spiralCanvas}}} = require('./lib/constants')
 class DownloadSvg extends Component {
   onClick () {
     const canvas = document.getElementById(spiralCanvas)
-    const href = canvas.toDataURL('image/jpeg', 1.0)
-    const dt = new Date();
-    var downloadLink = document.createElement("a")
-    downloadLink.href = href   
-    downloadLink.download = `spiralbetty_${dt.getTime()}.jpg`
-    document.body.appendChild(downloadLink)
-    downloadLink.click()
-    document.body.removeChild(downloadLink)
+    // Issues with downloading large canvas: https://stackoverflow.com/questions/37135417/download-canvas-as-png-in-fabric-js-giving-network-error
+    canvas.toBlob(function(blob) {
+      const href = URL.createObjectURL(blob)
+      const dt = new Date();
+      var downloadLink = document.createElement("a")
+      downloadLink.href = href   
+      downloadLink.download = `spiralbetty_${dt.getTime()}.jpg`
+      document.body.appendChild(downloadLink)
+      downloadLink.click()
+      document.body.removeChild(downloadLink)
+      URL.revokeObjectURL(href)
+    }, 'image/jpeg', 0.95)
   }
   render () {
     const {editing, imgData} = this.props
