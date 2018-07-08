@@ -170,15 +170,7 @@ class App extends Component {
   handleFileChange = e => {
     const file = e.target.files[0]
     if (!file || !file.name) return
-    const allowedFileExt = ['png', 'gif', 'jpg', 'jpeg']
-    const ext = file.name
-      .split('.')
-      .slice(-1)[0]
-      .toLowerCase()
-    if (
-      allowedFileExt.indexOf(ext) !== -1 &&
-      file.type.indexOf('image/') !== -1
-    ) {
+    if (file.type.indexOf('image/') !== -1) {
       const blobUrl = URL.createObjectURL(file)
       const revokeUrl = this.props.blobUrl
       this.handleFile(blobUrl, file, revokeUrl)

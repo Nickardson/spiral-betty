@@ -9,18 +9,20 @@ import { updateFilter } from './redux/actions'
 const {coloring} = require('./lib/constants')
 
 const Container = styled.div`
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px;
+  cursor: pointer;
+`
+const SwatchOutline = styled.div`
   width: 80px;
   height: 80px;
-  border-radius: 100%;
-  float: left;
-  margin: 0 8px 8px 0;
-  border: 1px solid #979797;
   position: relative;
-  cursor: pointer;
+  border-radius: 100%;
   transition: .2s;
-  &:nth-of-type(even) {
-    margin-right: 0px;
-  }
+  border: 1px solid #979797;
   &.active {
     border: 3px solid var(--accent);
   }
@@ -52,9 +54,8 @@ class Swatch extends Component {
     const activeClass = colorIndex === activeIndex ? 'active' : ''
     const highlight = chroma(this.findDarkestColor()).alpha(0.3).css()
     return (
-      <Container
-        onClick={this.onClick}
-        className={activeClass}>
+      <Container onClick={this.onClick}>
+        <SwatchOutline className={activeClass}>
         <SpiralCanvas
           accent={this.findDarkestColor()}
           highlight={highlight}
@@ -64,6 +65,7 @@ class Swatch extends Component {
           width={width}
           height={height}
           scale={scale} />
+          </SwatchOutline>
       </Container>
     )
   }
