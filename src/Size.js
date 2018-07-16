@@ -3,7 +3,14 @@ import Section from './Section'
 import { SectionTitle } from './Text'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
-import {updatePreviewLength} from './redux/actions'
+import {updatePreview} from './redux/actions'
+
+const sizes = [
+  {length: this.originalSize, retina: 1, name: 'Fit to screen'},
+  {length: 168, retina: 2, name: 'Facebook Profile'},
+  {length: 200, retina: 2, name: 'Twitter Profile'},
+  {length: 614, retina: 2, name: 'Instagram Post'},
+]
 
 const DD = styled.div`
   position: relative;
@@ -69,46 +76,43 @@ const Li = styled.li`
 `
 
 class Size extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      open: false,
-      hover: false
-    }
-    this.onMouseEnter = () => {this.setState({hover: true})}
-    this.onMouseLeave = () => {this.setState({hover: false})}
-    this.outSideClick = () => {
-      console.log('here')
-      this.setState({open: false})
-      document.removeEventListener('mouseup', this.outSideClick)
-    }
-    this.onClick = () => {
-      this.setState({open: !this.state.open})
-      document.addEventListener('mouseup', this.outSideClick)
-    }
-    this.originalSize
+  state = {
+    open: false,
+    hover: false
+  }
+  onMouseEnter = () => {this.setState({hover: true})}
+  onMouseLeave = () => {this.setState({hover: false})}
+  findFit = () => {
+    const main = document.getElementById('main').getBoundingClientRect()
+    console.log(main)
+    return Math.min(main.width - 20, main.height - 100)
+  }
+  outSideClick = () => {
+    this.setState({open: false})
+    document.removeEventListener('mouseup', this.outSideClick)
+  }
+  onClick = () => {
+    this.setState({open: !this.state.open})
+    document.addEventListener('mouseup', this.outSideClick)
+  }
+  onResize = () => {
+    const l = this.findFit()
+    const {name, length, updatePreview} = this.props
+    if (sizes[0].name === name && l !== length) updatePreview(this.findFit(), sizes[0].name)
   }
   componentDidMount () {
     // setup store
-    const width = window.innerWidth
-    const height = window.innerHeight
-    const sidebar = 0 //document.getElementById('sidebar').getBoundingClientRect().width
-    const {updatePreviewLength} = this.props
-    this.originalSize = Math.min(width - sidebar - 100, height - 100)
-    updatePreviewLength(this.originalSize)
+    const {updatePreview} = this.props
+    updatePreview(this.findFit(), sizes[0].name)
+    window.addEventListener('resize', this.onResize)
+  }
+  componentWillUnmount () {
+    window.removeEventListener('resize', this.onResize)
   }
   render () {
-    const {updatePreviewLength, length} = this.props
-    // TODO: add icons... hold this info elsewhere and add original size
-    const sizes = [
-      {length: this.originalSize, retina: 1, name: 'Fit to screen'},
-      {length: 168, retina: 2, name: 'Facebook Profile'},
-      {length: 200, retina: 2, name: 'Twitter Profile'},
-      {length: 614, retina: 2, name: 'Instagram Post'},
-    ]
-    const types = ['svg', 'jpg']
+    const {updatePreview, name: currentName, disabled} = this.props
     return (
-      <Section>
+      <Section style={{pointerEvents: disabled ? 'none' : '', opacity: disabled ? .15 : 1}}>
         <DD>
           <Btn
             onMouseLeave={this.onMouseLeave}
@@ -119,10 +123,10 @@ class Size extends Component {
               <span
                 style={{
                   float: 'right',
-                  color: 'var(--accent)',
+                  color: disabled ? '#777' : 'var(--accent)',
                   textTransform: 'none',
                 }}>
-                {'Fit to screen'}
+                {currentName}
                 <Arrow className={this.state.hover ? 'hover' : ''} />
               </span>
             </SectionTitle>
@@ -138,7 +142,9 @@ class Size extends Component {
                 return (
                   <Li 
                     key={i}
-                    onClick={() => {updatePreviewLength(length)}}>
+                    onClick={() => {
+                      updatePreview(i !== 0 ? length : this.findFit(), name)}
+                    }>
                     {name}
                   </Li>
                 )
@@ -152,13 +158,13 @@ class Size extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const {preview: {length}} = state
-  return {length}
+  const {preview: {length, name}} = state
+  return {length, name}
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updatePreviewLength: (length) => dispatch(updatePreviewLength(length))
+    updatePreview: (length, name) => dispatch(updatePreview(length, name))
   }
 }
 

@@ -25,8 +25,8 @@ class SpiralPointsGetter extends Component {
   }
   componentWillUnmount () {
     if (this.props.delayUntilMouseUp) {
-      document.removeEventListener('mousedown', this._mouseDown)
-      document.removeEventListener('mousedown', this._mouseUp)
+      window.removeEventListener('mousedown', this._mouseDown)
+      window.removeEventListener('mouseup', this._mouseUp)
     }
   }
   render() {

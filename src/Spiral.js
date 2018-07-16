@@ -36,7 +36,7 @@ class Spiral extends Component {
     if (!this.props.editing && prevProps.editing) {
       const {outter, inner, loopsInfo} = this.getLoopsInfoAndAddEmptyPathsToMask()
       // Start the animation
-      requestAnimationFrame((hrt) => { this.animate({outter, inner, loopsInfo, count: 0})})
+      requestAnimationFrame(() => { this.animate({outter, inner, loopsInfo, count: 0})})
       
     }
   }

@@ -15,19 +15,23 @@ const SliderContainer = styled.div`
 
 // used http://danielstern.ca/range.css/ as a starting pt for cross-browser styles
 const SliderInput = styled.input`
-  &[type=range] {
-  -webkit-appearance: none;
-  width: 100%;
+  ${props => props.disabled ? 'pointer-events: none;' : ''}
+  /* For ms */
+  color: ${props => props.disabled ? 'rgb(238, 238, 238)' : 'var(--accent)'};
   height: 11px;
-  margin: 0;
-  padding: 0;
-  line-height: 0;
-  background-color: transparent;
+  &[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+    background-color: transparent;
 }
 &[type=range]:focus {
   outline: none;
   border: none;
 }
+/* Webkit */
 &[type=range]::-webkit-slider-runnable-track {
   -webkit-appearance: none;
   width: 100%;
@@ -35,6 +39,9 @@ const SliderInput = styled.input`
   cursor: pointer;
   box-shadow: none;
   background: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45.44%, ${trackColor} 45.45%, ${trackColor} 54.54%, rgba(0,0,0,0) 54.55%, rgba(0,0,0,0) 100%);
+  ${props => {if (props.disabled) {
+    return 'background: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45.44%, rgb(238, 238, 238) 45.45%, rgb(238, 238, 238) 54.54%, rgba(0,0,0,0) 54.55%, rgba(0,0,0,0) 100%);'
+  }}}
   border-radius: 0px;
 }
 &[type=range]::-webkit-slider-thumb {
@@ -43,13 +50,14 @@ const SliderInput = styled.input`
   height: ${sliderThumbSize};
   width: ${sliderThumbSize};
   border-radius: 100%;
-  background: var(--accent);
+  background: ${props => props.disabled ? 'rgb(238, 238, 238)' : 'var(--accent)'};
   cursor: grab;
   -webkit-appearance: none;
   margin-top: -1px;
   border: 2px solid transparent;
-  transition: background-color .15s, transform .2s, border .5s;
+  transition: background-color .1s, transform .1s, border .4s;
 }
+/* FF */
 &::-moz-focus-outer {
   border: 0;
 }
@@ -60,8 +68,10 @@ const SliderInput = styled.input`
   border-radius: 0px;
   height: 11px;
   background: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45.44%, ${trackColor} 45.45%, ${trackColor} 54.54%, rgba(0,0,0,0) 54.55%, rgba(0,0,0,0) 100%);
+  ${props => {if (props.disabled) {
+    return 'background: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45.44%, rgb(238, 238, 238) 45.45%, rgb(238, 238, 238) 54.54%, rgba(0,0,0,0) 54.55%, rgba(0,0,0,0) 100%);'
+  }}}
 }
-
 &[type=range]::-moz-range-thumb {
   box-shadow: none;
   border: none;
@@ -69,44 +79,42 @@ const SliderInput = styled.input`
   height: ${sliderThumbSize};
   width: ${sliderThumbSize};
   border-radius: 100%;
-  background: var(--accent);
+  background: ${props => props.disabled ? 'rgb(238, 238, 238)' : 'var(--accent)'};
   border: 2px solid transparent;
   cursor: grab;
-  transition: background-color .15s, transform .2s, border .5s;
+  transition: background-color .1s, transform .1s, border .4s;
 }
 &[type=range]::-ms-track {
   width: 100%;
+  height: 11px;
   cursor: pointer;
   border-color: transparent;
   color: transparent;
-  height: 11px;
   background-image: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45.44%, ${trackColor} 45.45%, ${trackColor} 54.54%, rgba(0,0,0,0) 54.55%, rgba(0,0,0,0) 100%);
+  ${props => {if (props.disabled) {
+    return 'background: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45.44%, rgb(238, 238, 238) 45.45%, rgb(238, 238, 238) 54.54%, rgba(0,0,0,0) 54.55%, rgba(0,0,0,0) 100%);'
+  }}}
 }
 &[type=range]::-ms-fill-lower {
-  background: #2b6699;
+  background-color: transparent;
   border: none;
-  border-radius: 0px;
   box-shadow: none;
 }
 &[type=range]::-ms-fill-upper {
-  background: ${trackColor};
+  background: transparent;
   border: none;
-  border-radius: 0px;
   box-shadow: none;
 }
 &[type=range]::-ms-thumb {
-  box-shadow: none;
+  background-color: currentColor;
   border: none;
-  height: ${sliderThumbSize};
-  width: ${sliderThumbSize};
-  border-radius: 100%;
-  background: var(--accent);
-  cursor: grab;
-  height: 1px;
-  transition: background-color .15s;
+  cursor: pointer;
+  width: 10px;
+  height: 10px;
 }
-&[type=range]:focus::-ms-fill-lower {
-  background: ${trackColor};
+&[type=range]::-ms-thumb:hover {
+  width: 10px;
+  height: 10px;
 }
 &.hover::-webkit-slider-thumb {
   transform: scale(2);
@@ -117,9 +125,11 @@ const SliderInput = styled.input`
   border: 2px solid rgba(255,255,255,.8);
 } 
 &.hover::-ms-thumb {
-  transform: scale(2);
-  border: 2px solid rgba(255,255,255,.8);
-} 
+  transform: scale(1) !important;
+  border: none;
+  width: 10px;
+  height: 10px;
+}
 &.grabbing.grabbing::-webkit-slider-thumb {
   cursor: grabbing !important;
   transform: scale(1.65);
@@ -132,8 +142,8 @@ const SliderInput = styled.input`
 }
 &.grabbing.grabbing::-ms-thumb {
   cursor: grabbing !important;
-  transform: scale(1.65);
-  border: 2px solid transparent;
+  transform: scale(1);
+  border: none;
 }
 &.grabbing.grabbing::-webkit-slider-runnable-track {
   cursor: grabbing !important;
@@ -146,11 +156,15 @@ const SliderInput = styled.input`
 }
 `
 const TrackBeforeSlider = styled.div`
+  /* For ms */
+  /* @media screen { @media (min-width: 0px) {
+    display: none;
+  } } */
   position: absolute;
   width: 100%;
   height: 3px;
   top: 4px;
-  background-color: var(--accent);
+  background-color: ${props => props.disabled ? 'rgb(238, 238, 238)' : 'var(--accent)'};
   pointer-events: none;
   transition: background-color .15s;
 `
@@ -183,6 +197,7 @@ class Slider extends Component {
       max,
       min,
       step,
+      disabled,
       ...sliderProps
     } = this.props
     const {dragging, hover} = this.state
@@ -207,6 +222,7 @@ class Slider extends Component {
       <SliderContainer>
         <SliderInput
           {...sliderProps}
+          disabled={disabled}
           className={className}
           onMouseDown={this.onMouseDown}
           onMouseEnter={this.onMouseEnter}
@@ -217,7 +233,7 @@ class Slider extends Component {
           step={step}
           defaultValue={value}
           onChange={onChange} />
-        <TrackBeforeSlider style={trackBeforeSliderStyle} />
+        <TrackBeforeSlider disabled={disabled} style={trackBeforeSliderStyle} />
       </SliderContainer>
     )
   }

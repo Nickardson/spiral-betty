@@ -2,11 +2,11 @@ import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import './App.css'
 
+import Logo from './Logo'
 import Upload from './Upload'
 import Workspace from './Workspace'
 import Guides from './Guides'
 import EditPhoto from './EditPhoto'
-import Sidebar from './Sidebar'
 import DemoImage from './DemoImage'
 import Filter from './Filter'
 import FilterMask from './FilterMask'
@@ -34,11 +34,19 @@ import styled from 'styled-components'
 import { SecondaryButton } from './Button';
 
 const Main = styled.div`
-  position: absolute;
+  flex: 1;
+  order: 1;
   height: 100%;
-  overflow: auto;
-  left: 235px;
-  width: calc(100% - 550px);
+  position: relative;
+`
+
+const Sidebar = styled.div`
+  flex: 0 0 173px; 
+  order: 2;
+  background-color: #fff;
+  height: 100%;
+  padding: 20px 15px;
+  overflow-y: auto; 
 `
 
 const Hidden = styled.div`
@@ -137,6 +145,10 @@ class App extends Component {
     updateImgPos(scale, cx, cy)
     if (endEditing) endEditingPhoto()
   }
+  clearImg = () => {
+    window.URL.revokeObjectURL(this.props.blobUrl)
+    this.props.clearImg()
+  }
   handleFile = (url, file, revokeUrl) => {
     // TODO: get img data for 2x the size of the spiral length
     this.getOrientation(file, orientation => {
@@ -172,7 +184,7 @@ class App extends Component {
     if (!file || !file.name) return
     if (file.type.indexOf('image/') !== -1) {
       const blobUrl = URL.createObjectURL(file)
-      const revokeUrl = this.props.blobUrl
+      const {blobUrl: revokeUrl} = this.props
       this.handleFile(blobUrl, file, revokeUrl)
     } else {
       // TODO: will need to give a warning if not supported
@@ -229,17 +241,13 @@ class App extends Component {
       clearImg,
       scale,
       editing,
+      animating,
       img: { blobUrl, data: imgData }
     } = this.props
     if (!init) return null
     return (
-      <Fragment>
-        <Main
-          style={{
-            minWidth: (length || 0) + 100,
-            minHeight: (length || 0) + 100,
-            overflow: 'hidden'
-          }}>
+      <div style={{display: 'flex', width: '100%', height: '100vh', overflow: 'hidden'}}>
+        <Main id='main'>
           <Workspace>
             <Filter />
             <EditPhoto updatePhoto={this.updateImage} />
@@ -253,29 +261,31 @@ class App extends Component {
                     position: 'absolute',
                     bottom: -30,
                     left: '50%',
-                    transform: 'translate(-50%)'
+                    transform: 'translate(-50%)',
+                    whiteSpace: 'nowrap'
                   }}>
-                  <span style={{top: '-1px', position: 'relative'}}>&times;</span> Clear image
+                  <span style={{top: '-1px', position: 'relative'}}>&times;</span> Remove image
                 </SecondaryButton>
               )}
           </Workspace>
         </Main>
-        {!!imgData && (
-          <Sidebar>
-            <Swatches />
-          </Sidebar>
-        )}
+        <Sidebar>
+          {!!imgData && !editing && !animating && <Swatches />}
+        </Sidebar>
         <div
           style={{
-            position: 'absolute',
-            right: '0',
+            flex: '0 0 280px',
+            order: 0,
             top: '0',
-            width: '300px',
+            zIndex: 1,
+            backgroundColor: '#fff',
             height: '100%',
-            padding: 40
+            padding: '35px 40px 40px'
           }}>
-          <Size />
+          <Logo disabled={editing || animating} style={{width: '138%', position: 'relative', marginBottom: '8px'}} />
+          <Size disabled={editing || animating} />
           <SectionSlider
+            disabled={animating}
             sliderProps={{ id: scaleInputId }}
             title={'Scale'}
             min={1}
@@ -289,6 +299,7 @@ class App extends Component {
             onChange={this.handleScaleChange}
           />
           <SectionSlider
+            disabled={editing || animating}
             title={'Contrast'}
             startCenter
             onValueChange={v => {
@@ -309,6 +320,7 @@ class App extends Component {
             onChange={this.handleContrastChange}
           />
           <SectionSlider
+            disabled={editing || animating}
             title={'Lightness'}
             startCenter
             onValueChange={v => {
@@ -329,6 +341,7 @@ class App extends Component {
             onChange={this.handleLightnessChange}
           />
           <SectionSlider
+            disabled={editing || animating}
             title={'Rings'}
             min={rings.min}
             max={rings.max}
@@ -342,7 +355,7 @@ class App extends Component {
         <Hidden>
           <FilterMask />
         </Hidden>
-      </Fragment>
+      </div>
     )
   }
 }
@@ -353,9 +366,10 @@ const mapStateToProps = state => {
     setup: { init },
     preview: { length },
     img: { scale, blobUrl },
-    img
+    img,
+    temp: {animating}
   } = state
-  return { init, length, scale, img, blobUrl, editing }
+  return { init, length, scale, img, blobUrl, editing, animating }
 }
 const mapDispatchToProps = dispatch => {
   return {

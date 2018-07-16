@@ -1,6 +1,7 @@
 import React from 'react'
 
-const IconMove = ({length, ...props}) => {
+const IconMove = ({length, ...props, active}) => {
+  if (!active) return null
   return (
     <div
       style={{

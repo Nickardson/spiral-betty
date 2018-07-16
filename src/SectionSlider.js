@@ -21,7 +21,8 @@ const SectionSlider = ({
   onChange,
   startCenter,
   onValueChange,
-  sliderProps
+  sliderProps,
+  disabled = false
 }) => {
   return (
     <SliderController
@@ -33,11 +34,12 @@ const SectionSlider = ({
           value
         }) => (
         <Section>
-          <SectionTitle>{title} <SliderValue>
+          <SectionTitle style={{opacity: disabled ? .2 : 1}}>{title} <SliderValue>
             {onValueChange ? onValueChange(value) : value}
             </SliderValue>
           </SectionTitle>
           <Slider
+            disabled={disabled}
             {...sliderProps}
             value={value}
             startCenter={startCenter}

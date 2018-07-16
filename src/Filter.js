@@ -5,8 +5,8 @@ import { connect } from 'react-redux'
 import { layout } from './lib/constants'
 import chroma from 'chroma-js'
 import WorkspaceIconAndText from './WorkspaceIconAndText'
+import {addTempProp} from './redux/actions'
 
-import { UploadText } from './Text'
 const { coloring } = require('./lib/constants')
 
 class Filter extends Component {
@@ -32,9 +32,10 @@ class Filter extends Component {
     return darkest
   }
   render() {
-    const { name, length, colorIndex, imgData } = this.props
+    const { name, length, colorIndex, imgData, editing, setAnimationValue, animating } = this.props
     if (!imgData) return null
     const accent = this.findDarkestColor()
+    const maxSize = 2000
     switch (name) {
       case 'spiral':
         return (
@@ -42,41 +43,54 @@ class Filter extends Component {
             {({ points, width, height, scale }) => {
               return (
                 <div>
+                  {/* Interactive asset */}
                   <SpiralCanvas
+                    onStartAnimation={() => {setAnimationValue(true)}}
+                    onEndAnimation={() => {setAnimationValue(false)}}
                     animate
+                    editing={editing}
+                    interactive
                     onMouseEnter={this.onMouseEnter}
                     onMouseLeave={this.onMouseLeave}
+                    width={width}
+                    height={height}
+                    scale={scale}
+                    points={points}
+                    length={Math.min(length, maxSize)}
+                    colorIndex={colorIndex}
+                  />
+                  {/* Downloading asset */}
+                  <SpiralCanvas
                     id={layout.ids.spiralCanvas}
                     width={width}
                     height={height}
                     scale={scale}
                     points={points}
-                    length={length}
+                    length={maxSize}
+                    style={{position: 'absolute', zIndex: -1}}
                     colorIndex={colorIndex}
                   />
-                  <div
-                    style={{
-                      opacity: this.state.hover ? 1 : 0,
-                      //boxShadow: 'inset 0 0 500px var(--accent)',
-                      transition: '.2s',
-                      border: '3px solid var(--accent)',
-                      borderRadius: '100%',
-                      pointerEvents: 'none',
-                      position: 'absolute',
-                      width: '100%',
-                      height: '100%',
-                      backgroundColor: `${chroma(accent)
-                        .luminance(0.68)
-                        .alpha(0.9)
-                        .css()}`
-                    }}
-                  />
-                  {this.state.hover && (
-                    <WorkspaceIconAndText
-                      active={this.state.hover}
-                      text={'Click to move'}
-                      type="move" />
-                  )}
+                  {!animating &&
+                    <Fragment>
+                      <div
+                        style={{
+                          opacity: this.state.hover ? 1 : 0,
+                          transition: '.2s',
+                          border: '3px solid var(--accent)',
+                          borderRadius: '100%',
+                          pointerEvents: 'none',
+                          position: 'absolute',
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: 'rgba(255,255,255,.3)'
+                        }}
+                      />
+                      <WorkspaceIconAndText
+                        active={this.state.hover}
+                        text={'Click to edit'}
+                        type="move" />
+                    </Fragment>
+                  }
                 </div>
               )
             }}
@@ -90,11 +104,21 @@ class Filter extends Component {
 
 const mapStateToProps = state => {
   const {
+    editing: {editing},
     filter: { name, colorIndex },
     preview: { length },
-    img: { data: imgData }
+    img: { data: imgData },
+    temp: {animating}
   } = state
-  return { name, length, colorIndex, imgData }
+  return { name, length, colorIndex, imgData, 
+    editing, animating
+  }
 }
 
-export default connect(mapStateToProps)(Filter)
+const mapDispatchToProps = dispatch => {
+  return {
+    setAnimationValue: (value) => dispatch(addTempProp('animating', value))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Filter)

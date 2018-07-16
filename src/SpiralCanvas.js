@@ -2,20 +2,107 @@ import React, { PureComponent } from 'react'
 import {coloring} from './lib/constants'
 import {startEditingPhoto} from './redux/actions'
 import { connect } from 'react-redux'
-import styled from 'styled-components'
+import styled, {keyframes} from 'styled-components'
+const {easing} = require('./lib/constants')
+
+const getLoopStartLengthAndOffset = ({offsetFactor, i, loopIndexes, loopsLength, sideLength, onlyOffset = false}) => { 
+  // Regular start without offset yet (basically at deg 0)
+  let start = loopIndexes[i] 
+  
+  // Loop if we went all the way around
+  let length = i < loopsLength - 1
+    ? loopIndexes[i + 1] - start + 1 // not last loop: get length (next start - this start, and add 1 to link loops)
+    : sideLength - start // last loop: full length of points - this start
+
+  // Apply offsets to the start/length
+  const percentStart = (i % offsetFactor) / offsetFactor
+  const offset = Math.floor(percentStart * length)
+  
+  if (onlyOffset) return {offset}
+  
+  start = start + offset // new start
+  length = length - offset // new length
+  
+  return {start, length}
+}
+const getLoopsInfo = (points) => {
+  const {loopIndexes, outter} = points
+  const sideLength = outter.length
+  const loopsLength = loopIndexes.length
+  const loopsInfo = []
+  const offsetFactor = 8 // segments where animation starts divide up 360 by this
+  // Loop through loops :)
+  for (let i = 0; i < loopsLength; i++) { 
+    // Where to start each loop
+    let {start, length} = getLoopStartLengthAndOffset({
+      offsetFactor,
+      i,
+      loopIndexes,
+      loopsLength,
+      sideLength
+    })
+
+    // If next loop has an offset... we'll want to add that to our length
+    let nextOffset = 0
+    if (i !== (loopsLength - 1)) { // don't do this for last loop
+      ({offset: nextOffset} = getLoopStartLengthAndOffset({
+        offsetFactor,
+        i: i + 1,
+        loopIndexes,
+        loopsLength,
+        sideLength,
+        onlyOffset: true
+      }))
+    }
+
+    loopsInfo.push({
+      length: length + nextOffset,
+      start
+    })      
+  }
+  return loopsInfo
+}
+
+const bounceIn = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  70% {
+    transform: scale(1.26);
+  }
+  100% {
+    transform: scale(1.25);
+  }
+`;
+const bounceOut = keyframes`
+  0% {
+    transform: scale(1.25);
+  }
+  70% {
+    transform: scale(.985);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
 
 const Canvas = styled.canvas`
+  transition: border .2s;
   ${(props) => props.highlight ? `
-      transition: transform .2s, box-shadow .2s .1s;
+      border: 0px solid rgba(255,255,255,0);
       box-shadow: 0 0 0 0px rgba(255,255,255,0);
+      animation: ${bounceOut} both .15s;
       &:hover {
-        transform: scale(1.25);
+        box-shadow: 0 0 0 4px ${props.highlight};
+        animation: ${bounceIn} both .25s;
         border: 3px solid ${props.accent};
         z-index: 1000000; // absurd number on purpose
-        box-shadow: 0 0 0 6px ${props.highlight};
       }
     ` : ''
   }
+  ${(props) => props.active ? `
+    border: 3px solid ${props.accent};
+  ` : ''}
 `
 
 const getFillType = (ctx, {colors, fill, fill: {attr}}, len) => {
@@ -48,18 +135,47 @@ const getFillType = (ctx, {colors, fill, fill: {attr}}, len) => {
   }
 }
 
-class SpiralCanvas extends PureComponent {
+class SpiralCanvas extends React.Component {
   multiplier =  window.devicePixelRatio || 1
+  animate = (loopsInfo, count, onComplete) => {
+    if (count <= 100) {
+      // Only animate to count 100
+      this.updateCanvas(loopsInfo, count)
+      requestAnimationFrame(() => { this.animate(loopsInfo, count + 2, onComplete)})
+    } else {
+      onComplete()
+    }
+  }
   componentDidMount () {
-    this.updateCanvas()
+    const {animate, points, editing, onEndAnimation: onComplete, onStartAnimation} = this.props
+    if (animate) {
+      if (!editing) {
+        const loopsInfo = getLoopsInfo(points)
+        // Start the animation
+        requestAnimationFrame(() => { this.animate(loopsInfo, 0, onComplete)})
+        onStartAnimation()
+      }
+    } else {
+      this.updateCanvas()
+    }    
   }
-  componentDidUpdate() {
-    this.updateCanvas()
-    console.log(this.props)
+  componentDidUpdate(prevProps) {
+    const {animate, points, editing, onEndAnimation: onComplete, onStartAnimation} = this.props
+    if (animate) {
+      if (!editing && prevProps.editing) {
+        const loopsInfo = getLoopsInfo(points)
+        // Start the animation
+        requestAnimationFrame(() => { this.animate(loopsInfo, 0, onComplete)})
+        onStartAnimation()
+      } else {
+        this.updateCanvas()
+      }
+    } else {
+      this.updateCanvas()
+    }   
   }
-  updateCanvas = () => {
+  updateCanvas = (loopsInfo, count) => {
     if (!this.canvas) return
-
     const {width, scale: s, height, colorIndex, length, points} = this.props
     const imgLength = Math.min(width / s, height / s)
     const {inner, outter} = points || {}
@@ -84,35 +200,59 @@ class SpiralCanvas extends PureComponent {
       ctx.arc(length / 2, length / 2, length / 2, 0, 2 * Math.PI)
       ctx.fill()
 
-      // Line
-      ctx.beginPath()
+      // Lines
       getFillType(ctx, lineColorData, length)
-      for (let i = 0, len = inner.length; i < len; i++) {
-        const [x, y] = inner[i]
-        if (i === 0) {
-          ctx.moveTo(x * scale, y * scale)
-        } else {
+      if (loopsInfo) {
+        loopsInfo.forEach(({start, length}) => {
+          const index = start + (easing.easeInOut(count / 100) * length)
+          const outterLoop = outter.slice(start, index)
+          const innerLoop = inner.slice(start, index)
+          ctx.beginPath()
+          for (let i = 0, len = innerLoop.length; i < len; i++) {
+            const [x, y] = innerLoop[i]
+            if (i === 0) {
+              ctx.moveTo(x * scale, y * scale)
+            } else {
+              ctx.lineTo(x * scale, y * scale)
+            }
+          }
+          for (let i = 0, len = outterLoop.length; i < len; i++) {
+            const [x, y] = outterLoop[(len - 1) - i]
+            ctx.lineTo(x * scale, y * scale)
+          }
+          ctx.closePath()
+          ctx.fill()
+        })
+      } else {
+        ctx.beginPath()
+        for (let i = 0, len = inner.length; i < len; i++) {
+          const [x, y] = inner[i]
+          if (i === 0) {
+            ctx.moveTo(x * scale, y * scale)
+          } else {
+            ctx.lineTo(x * scale, y * scale)
+          }
+        }
+        for (let i = 0, len = outter.length; i < len; i++) {
+          const [x, y] = outter[(len - 1) - i]
           ctx.lineTo(x * scale, y * scale)
         }
+        ctx.closePath()
+        ctx.fill()
       }
-      for (let i = 0, len = outter.length; i < len; i++) {
-        const [x, y] = outter[(len - 1) - i]
-        ctx.lineTo(x * scale, y * scale)
-      }
-      ctx.closePath()
-      ctx.fill()
     }
   }
   render () {
-    const { length, startEditingPhoto, id, highlight, accent, onMouseEnter, onMouseLeave } = this.props
+    const { length, startEditingPhoto, interactive, id, highlight, accent, onMouseEnter, onMouseLeave, style = {}, active } = this.props
     return (
       <Canvas
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         highlight={highlight}
         accent={accent}
+        active={active}
         id={id}
-        onClick={id && startEditingPhoto}
+        onClick={interactive && startEditingPhoto}
         innerRef={(x) => this.canvas = x}
         width={length * this.multiplier}
         height={length * this.multiplier}
@@ -124,6 +264,7 @@ class SpiralCanvas extends PureComponent {
           position: 'absolute',
           left: 0,
           top: 0,
+          ...style
         }} />
     )
   }

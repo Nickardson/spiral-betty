@@ -7,9 +7,10 @@ const endEditingPhoto = () => ({
 })
 
 // Preview
-const updatePreviewLength = (length) => ({
-  type: 'UPDATE_PREVIEW_LENGTH',
-  length
+const updatePreview = (length, name) => ({
+  type: 'UPDATE_PREVIEW',
+  length,
+  name
 })
 
 // Img
@@ -72,7 +73,7 @@ const addTempProp = (prop, value) => ({
 export {
   startEditingPhoto,
   endEditingPhoto,
-  updatePreviewLength,
+  updatePreview,
   updateContrast,
   updateLightness,
   addImgData,

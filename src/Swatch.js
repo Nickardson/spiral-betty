@@ -13,19 +13,14 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 5px;
+  margin: 2px;
   cursor: pointer;
 `
-const SwatchOutline = styled.div`
-  width: 80px;
-  height: 80px;
+const SwatchSize = styled.div`
+  width: 60px;
+  height: 60px;
   position: relative;
   border-radius: 100%;
-  transition: .2s;
-  border: 1px solid #979797;
-  &.active {
-    border: 3px solid var(--accent);
-  }
 `
 
 class Swatch extends Component {
@@ -51,21 +46,21 @@ class Swatch extends Component {
   }
   render () {
     const {colorIndex, activeIndex, width, height, length, scale, points} = this.props
-    const activeClass = colorIndex === activeIndex ? 'active' : ''
     const highlight = chroma(this.findDarkestColor()).alpha(0.3).css()
     return (
       <Container onClick={this.onClick}>
-        <SwatchOutline className={activeClass}>
-        <SpiralCanvas
-          accent={this.findDarkestColor()}
-          highlight={highlight}
-          length={length}
-          points={points}
-          colorIndex={colorIndex}
-          width={width}
-          height={height}
-          scale={scale} />
-          </SwatchOutline>
+        <SwatchSize>
+          <SpiralCanvas
+            active={colorIndex === activeIndex}
+            accent={this.findDarkestColor()}
+            highlight={highlight}
+            length={length}
+            points={points}
+            colorIndex={colorIndex}
+            width={width}
+            height={height}
+            scale={scale} />
+        </SwatchSize>
       </Container>
     )
   }
