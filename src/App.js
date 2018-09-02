@@ -367,7 +367,7 @@ class App extends Component {
           </div>
         </Main>
         <Sidebar>
-          <Logo disabled={editing || animating} style={{width: '100%', fill: '#777'}} />
+          <Logo style={{width: '100%', fill: '#777'}} />
           <div style={{marginTop: 5, fontSize: 9}}><Link href={'https://twitter.com/shalanahfaith'}>©2018 Shalanah Dawson</Link></div>
           <div style={{marginTop: 5, fontSize: 9}}>Free to use for non-commercial purposes.</div>
           {!!imgData && !editing && !animating && <Swatches />}
