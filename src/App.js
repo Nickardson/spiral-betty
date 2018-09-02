@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import './App.css'
 
+import {Link} from './Text'
+
 import Logo from './Logo'
 import Upload from './Upload'
 import Workspace from './Workspace'
@@ -59,10 +61,6 @@ const rings = {
   max: 160,
   step: 1
 }
-const Link = styled.a`
-  text-decoration: none;
-  color: var(--accent);
-`
 
 const NavLinks = styled.span`
   transition: .2s;
@@ -356,6 +354,10 @@ class App extends Component {
               {blobUrl && !animating && <SectionSliderScale key={editing ? 'scale' : attribute} {...this.getSliderProps()} />}
               </div> 
               <div style={{position: 'absolute', width: '80%', minWidth: 200, bottom: -100, left: '50%', transform: 'translate(-50%)'}}>
+                {/* TODO: use local storage to not show this if they have been here before */}
+                <DemoImage blobUrl={blobUrl} handleFile={this.handleFile} />
+              </div>
+              <div style={{position: 'absolute', width: '80%', minWidth: 200, bottom: -100, left: '50%', transform: 'translate(-50%)'}}>
               {blobUrl && !editing && !animating && <div style={{fontSize: 10, justifyContent: 'space-evenly', display: 'flex', alignItems: 'center', textTransform: "uppercase", textAlign: 'center'}}>
                 <NavLinks active={attribute === 'rings' && !editing} onClick={() => {addTempProp('attribute', 'rings')}}>Rings</NavLinks>
                 <NavLinks active={attribute === 'scale' || editing} onClick={() => {addTempProp('attribute', 'scale')}}>Scale</NavLinks>
@@ -366,10 +368,12 @@ class App extends Component {
           </Workspace>
           </div>
         </Main>
-        <Sidebar>
+        <Sidebar style={{transform: editing || animating ? 'translateX(300px)' : 'translateX(0px)', opacity: editing || animating ? '0' : '1', transition: '.5s'}}>
           <Logo style={{width: '100%', fill: '#777'}} />
-          <div style={{marginTop: 5, fontSize: 9}}><Link href={'https://twitter.com/shalanahfaith'}>©2018 Shalanah Dawson</Link></div>
-          <div style={{marginTop: 5, fontSize: 9}}>Free to use for non-commercial purposes.</div>
+          <div style={{marginTop: 5, fontSize: 9}}>
+            <Link target={'_blank'} href={'https://twitter.com/shalanahfaith'}>©2018 Shalanah Dawson</Link>
+          </div>
+          <div style={{marginTop: 5, fontSize: 9}}>Free to use downloads for non&#8209;commercial purposes.</div>
           {!!imgData && !editing && !animating && <Swatches />}
         </Sidebar>
         <div
@@ -389,7 +393,6 @@ class App extends Component {
           </SecondaryButton>}
           <Size disabled={editing || animating} />
           <DownloadCanvas />
-          <DemoImage blobUrl={blobUrl} handleFile={this.handleFile} />
         </div>
       </div>
     )

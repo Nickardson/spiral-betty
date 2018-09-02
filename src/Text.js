@@ -15,11 +15,10 @@ const UploadText = styled.h4`
   font-size: 11.5px;
   color: #555;
 `
-
 const P = styled.p`
   line-height: 1.4;
   font-weight: 400;
-  font-size: 11.5px;
+  font-size: 10px;
 `
 // TODO: also make for a tag
 const Link = styled.span` 

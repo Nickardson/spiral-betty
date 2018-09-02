@@ -96,8 +96,8 @@ class Size extends Component {
   }
   onResize = () => {
     const l = this.findFit()
-    const {name, length, updatePreview} = this.props
-    if (sizes[0].name === name && l !== length) updatePreview(this.findFit(), sizes[0].name)
+    const {name, updatePreview} = this.props
+    if (sizes[0].name === name) updatePreview(l, name)
   }
   componentDidMount () {
     // setup store
