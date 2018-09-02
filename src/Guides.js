@@ -56,9 +56,20 @@ const BorderHoriz = styled.div`
   background-color: var(--accent);
 `
 
-const Guides = ({active}) => (
-  <Border style={{opacity: active ? 1 : 0, pointerEvents: 'none'}}>
-    <div style={{clipPath: 'circle(50%)', position: 'absolute', width: '100%', height: '100%'}}>
+const Guides = ({ active }) => (
+  <Border
+    style={{
+      opacity: active ? 1 : 0,
+      pointerEvents: 'none'
+    }}>
+    <div
+      style={{
+        clipPath: 'circle(50%)',
+        borderRadius: '100%',
+        position: 'absolute',
+        width: '100%',
+        height: '100%'
+      }}>
       <BorderLeft />
       <BorderTop />
       <BorderRight />
@@ -69,10 +80,10 @@ const Guides = ({active}) => (
   </Border>
 )
 
-const mapStateToProps = (state) => {
-  const {editing: {editing}} = state
-  return {active: editing}
+const mapStateToProps = state => {
+  const {
+    editing: { editing }
+  } = state
+  return { active: editing }
 }
-export default connect(
-  mapStateToProps
-)(Guides)
+export default connect(mapStateToProps)(Guides)

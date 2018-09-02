@@ -36,16 +36,16 @@ const getDarknessOfPoint = ({x, y, width, imgData, contrast, lightness}) => {
 const getX = ({x, r, angle}) => ( Math.round((x + r * Math.cos(angle)) * 10) / 10 )
 const getY = ({y, r, angle}) => ( Math.round((y - r * Math.sin(angle)) * 10) / 10 )
 
-const getOutterAndInnerPoints = ({x, y, r, angle}) => {
-  const p1 = [getX({x, r, angle}), getY({y, r, angle})]
+const getOutterAndInnerPoints = ({x, y, rOutter, rInner, angle}) => {
+  const p1 = [getX({x, r: rOutter, angle}), getY({y, r: rOutter, angle})]
   const angle2 = angle + Math.PI
-  const p2 = [getX({x, r, angle: angle2}), getY({y, r, angle: angle2})]
+  const p2 = [getX({x, r: rInner, angle: angle2}), getY({y, r: rInner, angle: angle2})]
   return {p1, p2}
 }
 
 const makeUnitCircle = (divisions) => { // gets first ring's values then we can use the chord value
   return Array.from(Array(divisions).keys()).map((i) => {
-    return (i / (divisions - 1)) * 2 * Math.PI
+    return ((i + 1) / (divisions - 1)) * 2 * Math.PI
   })
 }
 
@@ -68,10 +68,13 @@ const getPoints = ({imgData, lightness, contrast, scale, cx, cy, width, height, 
   // Line thickness
   const maxThickness = deltaRadius * .42
   const minThickness = maxThickness / 6
+  const sampleDist = maxThickness * .25
   
-  let angle = 0
-  let firstRing = [...makeUnitCircle(minPointsOnCircle)]
+  let angle = Math.PI / 12
+  let firstRing = [] //[...makeUnitCircle(minPointsOnCircle)]
+  // console.log('start', firstRing)
   while (angle < maxAngle) {
+    // console.log(angle)
     const x = (b * angle) * Math.cos(angle)
     const y = (b * angle) * Math.sin(angle)
     const pX = cx + x // image/photo x
@@ -79,22 +82,40 @@ const getPoints = ({imgData, lightness, contrast, scale, cx, cy, width, height, 
     
     // Make sure within our circle
     // TODO: possibly get two points on either side of center pt
+    // TODO: make sure sample points are in as well
     if (pX <= width && pX >= 0 && pY <= height && pY >= 0) {
-      const {darkness: value} = getDarknessOfPoint({
-        x: Math.round(pX),
-        y: Math.round(pY),
+      // get darkness of points .25 away from point...
+      const outterPoint = {
+        x: Math.round(pX + sampleDist * Math.cos(angle)),
+        y: Math.round(pY + sampleDist * Math.sin(angle))
+      }
+      const innerPoint = {
+        x: Math.round(pX + sampleDist * Math.cos(angle + Math.PI)),
+        y: Math.round(pY + sampleDist * Math.sin(angle + Math.PI))
+      }
+      const {darkness: valueOutter} = getDarknessOfPoint({
+        ...outterPoint,
         width,
         imgData,
         contrast,
         lightness: lightness / 100
       })
-      const thickness = Math.max(value * maxThickness, minThickness)
+      const {darkness: valueInner} = getDarknessOfPoint({
+        ...innerPoint,
+        width,
+        imgData,
+        contrast,
+        lightness: lightness / 100
+      })
+      const thicknessOutter = Math.max(valueOutter * maxThickness, minThickness)
+      const thicknessInner = Math.max(valueInner * maxThickness, minThickness)
       
       // get two points 
       const {p1, p2} = getOutterAndInnerPoints({
         x: radius + x,
         y: radius - y,
-        r: thickness,
+        rOutter: thicknessOutter,
+        rInner: thicknessInner,
         angle
       })
       

@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 const Section = styled.div`
-  padding-bottom: 25px;
+  padding-bottom: 30px;
   :before {
     content: "";
     clear: both;

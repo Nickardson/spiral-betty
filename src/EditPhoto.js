@@ -37,30 +37,42 @@ class EditPhoto extends Component {
       drag: false
     }
     this.movePhotoId = 'edit-photo'
+    this.updateStore = (endEditing) => {
+      const {cx, cy, width, height, length, scale} = this.props
+      const {x, y} = this.state
+      const {width: imgWidth} = this._getPxDim({
+        width,
+        height,
+        scale,
+        length
+      })
+      const photoImgRatio =  width / imgWidth
+      this.props.updatePhoto((
+        {
+          cx: cx - (x * photoImgRatio),
+          cy: cy - (y * photoImgRatio),
+          endEditing // Allow for scaling while editing
+        }
+      ))
+      this.setState({x: 0, y: 0, drag: false})
+    }
     this.clicksOutsideOfPhoto = (e) => {
       // Allow for scaling while editing
       const endEditing = e.target.id === scaleInputId ? false : true
       
-      const {cx, cy, width, height, length, scale} = this.props
-      const {x, y} = this.state
       if (e.target.id !== this.movePhotoId) {
-        const {width: imgWidth} = this._getPxDim({
-          width,
-          height,
-          scale,
-          length
-        })
-        const photoImgRatio =  width / imgWidth
-        this.props.updatePhoto((
-          {
-            cx: cx - (x * photoImgRatio),
-            cy: cy - (y * photoImgRatio),
-            endEditing
-          }
-        ))
-        this.setState({x: 0, y: 0, drag: false})
+        this.updateStore(endEditing)
       }
     }
+  }
+  onKeyDown = (e) => {
+    const keyName = e.key
+    console.log(e)
+    if(['Escape', 'Enter', ' '].indexOf(keyName) !== -1) {
+      e.preventDefault()
+      this.updateStore(true)
+    }
+    console.log('keypress event\n\n' + 'key: ' + keyName)
   }
   onDragStart = (e) => {
     e.preventDefault()
@@ -155,9 +167,11 @@ class EditPhoto extends Component {
     const {active} = this.props
     if (!active && nextActive) {
       document.addEventListener('mousedown', this.clicksOutsideOfPhoto)
+      document.addEventListener('keydown', this.onKeyDown)
     }
     if (active && !nextActive) {
       document.removeEventListener('mousedown', this.clicksOutsideOfPhoto)
+      document.removeEventListener('keydown', this.onKeyDown)
     }
   }
   render () {
@@ -181,7 +195,7 @@ class EditPhoto extends Component {
     
     // Fixes any issues with matrix to get same starting point as 1-4 orientations
     const flippedTransform = flippedLengths ? `translate(${(pxWidth - pxHeight) / 2}px, ${(pxHeight - pxWidth) / 2}px)` : ''
-    
+
     const photoStyle = {
       transformOrigin: 'center',
       transform: `translate(${left}px, ${top}px) ${flippedTransform} ${transform}`,

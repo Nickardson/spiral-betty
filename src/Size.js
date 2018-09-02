@@ -7,9 +7,9 @@ import {updatePreview} from './redux/actions'
 
 const sizes = [
   {length: this.originalSize, retina: 1, name: 'Fit to screen'},
-  {length: 168, retina: 2, name: 'Facebook Profile'},
-  {length: 200, retina: 2, name: 'Twitter Profile'},
-  {length: 614, retina: 2, name: 'Instagram Post'},
+  {length: 168, name: 'Facebook'},
+  {length: 200, name: 'Twitter'},
+  {length: 614, name: 'Instagram'},
 ]
 
 const DD = styled.div`
@@ -84,8 +84,7 @@ class Size extends Component {
   onMouseLeave = () => {this.setState({hover: false})}
   findFit = () => {
     const main = document.getElementById('main').getBoundingClientRect()
-    console.log(main)
-    return Math.min(main.width - 20, main.height - 100)
+    return Math.min(main.width - 20, main.height - 150)
   }
   outSideClick = () => {
     this.setState({open: false})

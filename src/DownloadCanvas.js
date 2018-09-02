@@ -21,9 +21,10 @@ class DownloadSvg extends Component {
   }
   render () {
     const {editing, imgData, animating} = this.props
-    const disabled = !imgData || editing || animating
+    const disabled = !imgData
+    if (editing || animating) return null
     return (
-      <div><Button disabled={disabled} onClick={this.onClick}>Download</Button></div>
+      <Button disabled={disabled} onClick={this.onClick}>Download</Button>
     )
   }
 }

@@ -75,7 +75,7 @@ class Upload extends Component {
           border: showHover ? `3px ${line} var(--accent)` : `1px ${line} rgba(0,0,0,.25)`,
         }}>
         <div className='pos-full' style={{backgroundColor: 'var(--accent)', transition: '.2s', borderRadius: '100%', opacity: showHover ? 0.2 : 0}} />
-        <WorkspaceIconAndText active={showHover} text={blobUrl ? '+ Replace image' : '+ Upload image'} type='placeholder' />
+        <WorkspaceIconAndText active={showHover} showText={!blobUrl} text={blobUrl ? '+ Replace image' : '+ Upload image'} type='placeholder' />
         {/* Hide input so we can style label */}
         <input
           type='file'

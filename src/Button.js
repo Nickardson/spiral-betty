@@ -13,10 +13,13 @@ const Button = styled.button`
   border: none;
   transition: .2s;
   background-color: var(--accent);
-  &:not(:disabled):hover {
+  outline: none;
+  &:hover {
+    background-color: black;
   }
   &:disabled {
     cursor: default;
+    transition: none;
     background-color: #eee;
   }
 `

@@ -11,7 +11,8 @@ class Swatches extends Component {
       <Section>
         <SpiralPointsGetter delayUntilMouseUp>
           {({ points, width, height, scale }) => {
-            return <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center'}}>
+            return <div style={{display: 'flex', marginTop: 15, 
+            flexWrap: 'wrap', alignItems: 'center'}}>
               {coloring.map((d, i) => (
                 <Swatch
                   points={points}

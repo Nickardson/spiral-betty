@@ -12,7 +12,6 @@ const Container = styled.div`
   flex: 1 1 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
   margin: 2px;
   cursor: pointer;
 `
@@ -48,8 +47,8 @@ class Swatch extends Component {
     const {colorIndex, activeIndex, width, height, length, scale, points} = this.props
     const highlight = chroma(this.findDarkestColor()).alpha(0.3).css()
     return (
-      <Container onClick={this.onClick}>
-        <SwatchSize>
+      <Container>
+        <SwatchSize onClick={this.onClick}>
           <SpiralCanvas
             active={colorIndex === activeIndex}
             accent={this.findDarkestColor()}

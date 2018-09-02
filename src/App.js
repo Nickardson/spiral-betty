@@ -9,10 +9,9 @@ import Guides from './Guides'
 import EditPhoto from './EditPhoto'
 import DemoImage from './DemoImage'
 import Filter from './Filter'
-import FilterMask from './FilterMask'
 import DownloadCanvas from './DownloadCanvas'
 import Size from './Size'
-import SectionSlider from './SectionSlider'
+import SectionSliderScale from './SectionSliderScale'
 import Swatches from './Swatches'
 
 import {
@@ -35,26 +34,23 @@ import { SecondaryButton } from './Button';
 
 const Main = styled.div`
   flex: 1;
-  order: 1;
+  order: 0;
   height: 100%;
   position: relative;
+  z-index: 100;
 `
 
 const Sidebar = styled.div`
-  flex: 0 0 173px; 
-  order: 2;
+  flex: 0 0 250px; 
+  order: 1;
+  border-left: 1px solid #ccc;
   background-color: #fff;
   height: 100%;
   padding: 20px 15px;
   overflow-y: auto; 
 `
-
-const Hidden = styled.div`
-  pointer-events: none;
-  position: absolute;
-  left: -100%;
-  top: -100%;
-  z-index: -1000;
+const Drawer = styled.div`
+  height: 200px
 `
 
 const rings = {
@@ -63,6 +59,29 @@ const rings = {
   max: 160,
   step: 1
 }
+const Link = styled.a`
+  text-decoration: none;
+  color: var(--accent);
+`
+
+const NavLinks = styled.span`
+  transition: .2s;
+  font-weight: 800;
+  cursor: pointer;
+  color: #ccc;
+  padding: 5px 10px;
+  border-radius: 50px;
+  :hover {
+    color: #444;
+    background-color: #efefef;
+    scale: 1.1;
+  }
+  ${props => props.active ? `
+    color: var(--accent) !important;
+    background-color: transparent !important;
+  ` : ''}
+`
+
 
 const contrastVals = {
   default: 0,
@@ -78,57 +97,72 @@ const lightnessVals = {
   step: 1
 }
 
+const attributes = {
+  scale: {
+    name: 'Scale'
+  },
+  rings: {
+    name: 'Rings'
+  },
+  lightness: {
+    name: 'Lightness'
+  },
+  contrast: {
+    name: 'Contrast'
+  },
+  zoom: {
+    name: 'Zoom'
+  }
+}
+
 class App extends Component {
-  constructor() {
-    super()
-    this.handleRingChange = val => {
-      this.props.updateRings(val)
-    }
-    this.handleScaleChange = scale => {
-      const {
-        img: { scale: prevScale, cx: prevCx, cy: prevCy, width, height },
-        updateImgPos
-      } = this.props
-      if (prevScale <= scale) {
-        // Increasing in scale, we're good to go and update
-        updateImgPos(scale)
-      } else {
-        // Decreasing in scale, need to double check that cx & cy are still ok or fix
+  handleRingChange = val => {
+    this.props.updateRings(val)
+  }
+  handleScaleChange = scale => {
+    const {
+      img: { scale: prevScale, cx: prevCx, cy: prevCy, width, height },
+      updateImgPos
+    } = this.props
+    if (prevScale <= scale) {
+      // Increasing in scale, we're good to go and update
+      updateImgPos(scale)
+    } else {
+      // Decreasing in scale, need to double check that cx & cy are still ok or fix
 
-        // We need to make sure that we are still in bounds...
-        const isLandscape = width > height
+      // We need to make sure that we are still in bounds...
+      const isLandscape = width > height
 
-        // Starting pt... will change if not valid anymore
-        let cx = prevCx
-        let cy = prevCy
+      // Starting pt... will change if not valid anymore
+      let cx = prevCx
+      let cy = prevCy
 
-        // Fitting a square in our photo... what is the size of our photo area compared to our photo
-        const dzRad = isLandscape ? height / scale / 2 : width / scale / 2
+      // Fitting a square in our photo... what is the size of our photo area compared to our photo
+      const dzRad = isLandscape ? height / scale / 2 : width / scale / 2
 
-        // Find mix/max cx/cy for this new value
-        // Put this square in our photo upper left
-        const minCx = dzRad
-        const minCy = dzRad
-        // Put this square in our photo lower right
-        const maxCx = width - minCx
-        const maxCy = height - minCy
+      // Find mix/max cx/cy for this new value
+      // Put this square in our photo upper left
+      const minCx = dzRad
+      const minCy = dzRad
+      // Put this square in our photo lower right
+      const maxCx = width - minCx
+      const maxCy = height - minCy
 
-        // Is our current cx/cy fine?
-        if (prevCx < minCx) {
-          cx = minCx
-        }
-        if (prevCx > maxCx) {
-          cx = maxCx
-        }
-        if (prevCy < minCy) {
-          cy = minCy
-        }
-        if (prevCy > maxCy) {
-          cy = maxCy
-        }
-
-        updateImgPos(scale, cx, cy)
+      // Is our current cx/cy fine?
+      if (prevCx < minCx) {
+        cx = minCx
       }
+      if (prevCx > maxCx) {
+        cx = maxCx
+      }
+      if (prevCy < minCy) {
+        cy = minCy
+      }
+      if (prevCy > maxCy) {
+        cy = maxCy
+      }
+
+      updateImgPos(scale, cx, cy)
     }
   }
   handleContrastChange = val => {
@@ -155,7 +189,7 @@ class App extends Component {
       getImageData(url, orientation).then(
         ({ status, width, height, imgData: data }) => {
           if (status === 'ok') {
-            const { startEditingPhoto, addImgData } = this.props
+            const { startEditingPhoto, addImgData, addTempProp } = this.props
             if (revokeUrl) window.URL.revokeObjectURL(revokeUrl) // we have had some success... now time to revoke old url
             startEditingPhoto()
             addImgData(
@@ -230,16 +264,80 @@ class App extends Component {
   }
   componentWillMount() {
     // Setup store
-    const { addFilter, setup } = this.props
+    const { addFilter, setup, addTempProp } = this.props
     addFilter()
+    updateContrast(contrastVals.default),
+    updateLightness(lightnessVals.default)
+    addTempProp('attribute', 'rings')
     setup()
+  }
+  getSliderProps = () => {
+    const {blobUrl, attribute, editing, animating, scale, lightness, contrast, data} = this.props
+    let attr = editing ? 'scale' : attribute
+    if (!blobUrl) return {}
+    switch (attr) {
+      case 'scale':
+        return {
+          editing: editing,
+          disabled: animating,
+          sliderProps: { id: scaleInputId },
+          title: 'Scale',
+          min: 1,
+          max: 3,
+          onValueChange: v => {
+            return `${Math.round(v * 100)}%`
+          },
+          step: 0.05,
+          value: scale || 1,
+          defaultValue: scale || 1,
+          onChange: this.handleScaleChange
+        }
+      case 'rings':
+        return {
+          disabled: editing || animating,
+          title: 'Rings',
+          min: rings.min,
+          max: rings.max,
+          step: rings.step,
+          defaultValue: data.rings,
+          onChange: this.handleRingChange
+        }
+      case 'lightness':
+        return {
+          title: 'Lightness',
+          onValueChange: v => {
+            return `${Math.round(v/200 * 100 + 50)}%`
+          },
+          min: lightnessVals.min,
+          max: lightnessVals.max,
+          step: lightnessVals.step,
+          defaultValue: lightness,
+          onChange: this.handleLightnessChange
+        }
+      case 'contrast':
+        return {
+          title: 'Contrast',
+          onValueChange: v => {
+            return `${Math.round(v/200 * 100 + 50)}%`
+          },
+          min: contrastVals.min,
+          max: contrastVals.max,
+          step: contrastVals.step,
+          defaultValue: contrast,
+          onChange: this.handleContrastChange
+        }
+      default:
+        return {}
+    }
   }
   render() {
     const {
+      attribute,
       init,
       length,
       clearImg,
       scale,
+      addTempProp,
       editing,
       animating,
       img: { blobUrl, data: imgData }
@@ -248,113 +346,51 @@ class App extends Component {
     return (
       <div style={{display: 'flex', width: '100%', height: '100vh', overflow: 'hidden'}}>
         <Main id='main'>
+          <div style={{display: 'flex', height: 'calc(100% - 100px)'}}>
           <Workspace>
             <Filter />
             <EditPhoto updatePhoto={this.updateImage} />
             <Guides />
             <Upload onChange={this.handleFileChange} />
-            {blobUrl &&
-              !editing && (
-                <SecondaryButton
-                  onClick={clearImg}
-                  style={{
-                    position: 'absolute',
-                    bottom: -30,
-                    left: '50%',
-                    transform: 'translate(-50%)',
-                    whiteSpace: 'nowrap'
-                  }}>
-                  <span style={{top: '-1px', position: 'relative'}}>&times;</span> Remove image
-                </SecondaryButton>
-              )}
+              <div style={{position: 'absolute', width: '80%', minWidth: 200, bottom: -65, left: '50%', transform: 'translate(-50%)'}}>
+              {blobUrl && !animating && <SectionSliderScale key={editing ? 'scale' : attribute} {...this.getSliderProps()} />}
+              </div> 
+              <div style={{position: 'absolute', width: '80%', minWidth: 200, bottom: -100, left: '50%', transform: 'translate(-50%)'}}>
+              {blobUrl && !editing && !animating && <div style={{fontSize: 10, justifyContent: 'space-evenly', display: 'flex', alignItems: 'center', textTransform: "uppercase", textAlign: 'center'}}>
+                <NavLinks active={attribute === 'rings' && !editing} onClick={() => {addTempProp('attribute', 'rings')}}>Rings</NavLinks>
+                <NavLinks active={attribute === 'scale' || editing} onClick={() => {addTempProp('attribute', 'scale')}}>Scale</NavLinks>
+                <NavLinks active={attribute === 'lightness' && !editing} onClick={() => addTempProp('attribute', 'lightness')}>Lightness</NavLinks>
+                <NavLinks active={attribute === 'contrast' && !editing} onClick={() => addTempProp('attribute', 'contrast')}>Contrast</NavLinks>
+                </div>}
+              </div>
           </Workspace>
+          </div>
         </Main>
         <Sidebar>
+          <Logo disabled={editing || animating} style={{width: '100%', fill: '#777'}} />
+          <div style={{marginTop: 5, fontSize: 9}}><Link href={'https://twitter.com/shalanahfaith'}>©2018 Shalanah Dawson</Link></div>
+          <div style={{marginTop: 5, fontSize: 9}}>Free to use for non-commercial purposes.</div>
           {!!imgData && !editing && !animating && <Swatches />}
         </Sidebar>
         <div
           style={{
-            flex: '0 0 280px',
+            display: 'none',
+            visibility: editing || animating ? 'hidden' : '',
+            flex: '0 0 310px',
             order: 0,
             top: '0',
             zIndex: 1,
             backgroundColor: '#fff',
             height: '100%',
-            padding: '35px 40px 40px'
+            padding: '40px'
           }}>
-          <Logo disabled={editing || animating} style={{width: '138%', position: 'relative', marginBottom: '8px'}} />
+          {blobUrl && !animating && !editing && <SecondaryButton onClick={clearImg}>
+            <span>&times;</span> Remove image
+          </SecondaryButton>}
           <Size disabled={editing || animating} />
-          <SectionSlider
-            disabled={animating}
-            sliderProps={{ id: scaleInputId }}
-            title={'Scale'}
-            min={1}
-            max={3}
-            onValueChange={v => {
-              return `${Math.round(v * 100)}%`
-            }}
-            step={0.05}
-            value={scale || 1}
-            defaultValue={scale || 1}
-            onChange={this.handleScaleChange}
-          />
-          <SectionSlider
-            disabled={editing || animating}
-            title={'Contrast'}
-            startCenter
-            onValueChange={v => {
-              if (v > 0) {
-                return `+${v}`
-              }
-              if (v === 0) {
-                return `${String.fromCharCode(177)}${v}`
-              }
-              if (v < 0) {
-                return v
-              }
-            }}
-            min={contrastVals.min}
-            max={contrastVals.max}
-            step={contrastVals.step}
-            defaultValue={contrastVals.default}
-            onChange={this.handleContrastChange}
-          />
-          <SectionSlider
-            disabled={editing || animating}
-            title={'Lightness'}
-            startCenter
-            onValueChange={v => {
-              if (v > 0) {
-                return `+${v}`
-              }
-              if (v === 0) {
-                return `${String.fromCharCode(177)}${v}`
-              }
-              if (v < 0) {
-                return v
-              }
-            }}
-            min={lightnessVals.min}
-            max={lightnessVals.max}
-            step={lightnessVals.step}
-            defaultValue={lightnessVals.default}
-            onChange={this.handleLightnessChange}
-          />
-          <SectionSlider
-            disabled={editing || animating}
-            title={'Rings'}
-            min={rings.min}
-            max={rings.max}
-            step={rings.step}
-            defaultValue={rings.default}
-            onChange={this.handleRingChange}
-          />
           <DownloadCanvas />
           <DemoImage blobUrl={blobUrl} handleFile={this.handleFile} />
         </div>
-        <Hidden>
-          <FilterMask />
-        </Hidden>
       </div>
     )
   }
@@ -365,11 +401,12 @@ const mapStateToProps = state => {
     editing: { editing },
     setup: { init },
     preview: { length },
-    img: { scale, blobUrl },
+    img: { scale, blobUrl, lightness, contrast },
     img,
-    temp: {animating}
+    filter: {data},
+    temp: {animating, attribute}
   } = state
-  return { init, length, scale, img, blobUrl, editing, animating }
+  return { init, length, scale, img, blobUrl, editing, animating, attribute, lightness, contrast, data }
 }
 const mapDispatchToProps = dispatch => {
   return {
