@@ -5,7 +5,7 @@ import { P, Link } from './Text'
 class DemoImage extends Component {
   getDemoImg = () => {
     const {handleFile} = this.props
-    const url = document.location.href + 'assets/imgs/nancy-hime-12.jpg'
+    const url = document.location.href + 'assets/imgs/nancy-hime.jpg'
     fetch(url)
       .then(res => res.blob()) 
       .then(blob => {
@@ -21,6 +21,7 @@ class DemoImage extends Component {
         cursor: 'pointer'
         }}>
         <P
+          id={'try-demo-image'}
           style={{textAlign: 'center'}}
           onClick={this.getDemoImg}>
           Not sure what image to use?<br /><Link>Try a demo image</Link>

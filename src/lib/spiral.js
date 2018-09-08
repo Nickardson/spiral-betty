@@ -4,7 +4,7 @@ const getAngle = (loop, chord, b) => (
   chord / ((loop * b + (loop + 1) * b) / 2)
 )
 
-const getDarknessOfPoint = ({x, y, width, imgData, contrast, lightness}) => {
+const getValueOfPoint = ({x, y, width, imgData, contrast, invert, lightness}) => {
   var i = y * (width * 4) + x * 4
   
   // init values
@@ -29,8 +29,8 @@ const getDarknessOfPoint = ({x, y, width, imgData, contrast, lightness}) => {
   b = keepChannelInRange(b)
   
   const weighted = (0.3 * r) + (0.59 * g) + (0.11 * b)
-  const darkness = (1 - weighted / 256) * (a / 255)
-  return {darkness}
+  const value = invert ? 1 - ((1 - weighted / 256) * (a / 255)) : (1 - weighted / 256) * (a / 255)
+  return value
 }
 
 const getX = ({x, r, angle}) => ( Math.round((x + r * Math.cos(angle)) * 10) / 10 )
@@ -43,13 +43,13 @@ const getOutterAndInnerPoints = ({x, y, rOutter, rInner, angle}) => {
   return {p1, p2}
 }
 
-const makeUnitCircle = (divisions) => { // gets first ring's values then we can use the chord value
-  return Array.from(Array(divisions).keys()).map((i) => {
-    return ((i + 1) / (divisions - 1)) * 2 * Math.PI
-  })
-}
+// const makeUnitCircle = (divisions) => { // gets first ring's values then we can use the chord value
+//   return Array.from(Array(divisions).keys()).map((i) => {
+//     return ((i + 1) / (divisions - 1)) * 2 * Math.PI
+//   })
+// }
 
-const getPoints = ({imgData, lightness, contrast, scale, cx, cy, width, height, maxLoops = 50}) => {
+const getPoints = ({imgData, lightness, contrast, invert = false, scale, cx, cy, width, height, maxLoops = 50}) => {
   const scaledWidth = width / scale
   const scaledHeight = height / scale
   const outter = []
@@ -72,7 +72,6 @@ const getPoints = ({imgData, lightness, contrast, scale, cx, cy, width, height, 
   
   let angle = Math.PI / 12
   let firstRing = [] //[...makeUnitCircle(minPointsOnCircle)]
-  // console.log('start', firstRing)
   while (angle < maxAngle) {
     // console.log(angle)
     const x = (b * angle) * Math.cos(angle)
@@ -93,18 +92,20 @@ const getPoints = ({imgData, lightness, contrast, scale, cx, cy, width, height, 
         x: Math.round(pX + sampleDist * Math.cos(angle + Math.PI)),
         y: Math.round(pY + sampleDist * Math.sin(angle + Math.PI))
       }
-      const {darkness: valueOutter} = getDarknessOfPoint({
+      const valueOutter = getValueOfPoint({
         ...outterPoint,
         width,
         imgData,
         contrast,
+        invert,
         lightness: lightness / 100
       })
-      const {darkness: valueInner} = getDarknessOfPoint({
+      const valueInner = getValueOfPoint({
         ...innerPoint,
         width,
         imgData,
         contrast,
+        invert,
         lightness: lightness / 100
       })
       const thicknessOutter = Math.max(valueOutter * maxThickness, minThickness)

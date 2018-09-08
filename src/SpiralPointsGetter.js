@@ -36,6 +36,7 @@ class SpiralPointsGetter extends Component {
       lightness,
       cx,
       cy,
+      invert: false,
       scale,
       width,
       height,

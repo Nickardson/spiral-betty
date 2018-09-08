@@ -41,7 +41,8 @@ class Swatch extends Component {
     const {colorIndex, updateFilter} = this.props
     updateFilter(colorIndex)
     // Find darkest color in set
-    document.documentElement.style.setProperty('--accent', this.findDarkestColor())
+    const accent = this.findDarkestColor()
+    document.documentElement.style.setProperty('--accent', accent)
   }
   render () {
     const {colorIndex, activeIndex, width, height, length, scale, points} = this.props

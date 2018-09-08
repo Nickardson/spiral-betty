@@ -1,37 +1,41 @@
 import styled from 'styled-components'
 
 const Button = styled.button`
-  width: 100%;
-  height: 46px;
+  padding: 8px 17px;
   color: #fff;
-  font-size: 20px;
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 15.5px;
+  font-size: 11px;
   border-radius: 46px;
   cursor: pointer;
   border: none;
   transition: .2s;
   background-color: var(--accent);
   outline: none;
-  &:hover {
-    background-color: black;
+  &:hover, &:active {
+    background-color: #222;
   }
   &:disabled {
     cursor: default;
-    transition: none;
+    transition: none; 
     background-color: #eee;
   }
 `
-const SecondaryButton = styled.button`
+const SecondaryButton = Button.extend`
   color: #777;
-  font-weight: 700;
-  font-size: 11.5px;
-  cursor: pointer;
-  border: none;
-  transition: .2s;
-  &:hover {
+  box-sizing: border-box;
+  background-color: transparent;
+  border: 1px solid rgba(0,0,0,.2);
+  &:hover, &:active {
     color: var(--accent);
+    background-color: transparent;
+    border: 1px solid currentColor;
+    ${props => props.type === 'error' ? `
+      color: #a84343;
+    ` : ''}
+    ${props => props.type === 'subtle' ? `
+      color: var(--accent);
+    ` : ''}
   }
 `
 

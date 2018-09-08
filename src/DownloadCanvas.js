@@ -1,6 +1,4 @@
 import React, {Component} from 'react'
-import { connect } from 'react-redux'
-import  {Button} from './Button'
 
 const {layout: {ids: {spiralCanvas}}} = require('./lib/constants')
 
@@ -20,19 +18,12 @@ class DownloadSvg extends Component {
     }, 'image/jpeg', 0.95)
   }
   render () {
-    const {editing, imgData, animating} = this.props
-    const disabled = !imgData
-    if (editing || animating) return null
+    const {width = 2} = this.props
+    const strokeWidth = `${width}px`
     return (
-      <Button disabled={disabled} onClick={this.onClick}>Download</Button>
+      <svg viewBox='0 0 60 60' onClick={this.onClick} style={{position: 'relative', width: '100%', height: '100%'}}><g transform='translate(3 3)'><polyline points='12 29 12 41 42 41 42 29' style={{fill: 'none', stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth}}/><polyline points='35 26 27 34 19 26' style={{fill: 'none', stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth}}/><line x1='27' y1='34' x2='27' y2='11.3' style={{fill: 'none', stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth}}/></g></svg>
     )
   }
 }
 
-const mapStateToProps = (state) => {
-  const {editing: {editing}, img: {data: imgData}, temp: {animating}} = state
-  return {editing, imgData, animating}
-}
-export default connect(
-  mapStateToProps
-)(DownloadSvg)
+export default DownloadSvg

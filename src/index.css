@@ -11,7 +11,7 @@
 body {
   font-family: Montserrat, sans-serif;
   font-weight: 400;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.01em;
   margin: 0;
   padding: 0;
   color: #777;
@@ -58,4 +58,13 @@ ul, li {
 
 button {
   letter-spacing: inherit;
+  outline: none;
+  background: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus {
+  background: transparent;
+  outline: none;
 }

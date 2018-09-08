@@ -7,16 +7,24 @@ const Icon = styled.div`
   width: 100%;
   height: 100%;
   border-radius: 100%;
-  overflow: hidden;
+  overflow: hidden; 
   padding: 0;
   background-clip: padding-box;
+  clip-path: ${props => `circle(${props.length / 2}px at ${props.length / 2}px ${props.length / 2}px)`}; // for safari
 `
 const Border = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border: 3px solid #ccc;
+  transition: 1s;
+  border-radius: 100%;
   transition: 0.2s;
-  border: 2px solid #ccc;
   border-radius: 100%;
   &.active {
-    border: 3px solid var(--accent);
+    border-color: var(--accent);
   }
 `
 const Sky = styled.div`
@@ -72,11 +80,10 @@ const IconPhotoPlaceholder = ({ active, length, style = {}, ...props }) => {
         ...style
       }}
       {...props}>
-      <Icon className={activeClass}>
+      <Icon className={activeClass} length={length}>
         <Sky
           className={`pos-full`}
-          style={{ backgroundColor: active ? "var(--accent)" : "#ccc" }}
-        />
+          style={{ backgroundColor: active ? "var(--accent)" : "#ccc" }} />
         <Mountain1>
           <Mountain
             style={{

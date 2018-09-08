@@ -34,13 +34,12 @@ class Filter extends Component {
   render() {
     const { name, length, colorIndex, imgData, editing, setAnimationValue, animating } = this.props
     if (!imgData) return null
-    const accent = this.findDarkestColor()
     const maxSize = 2000
     switch (name) {
       case 'spiral':
         return (
           <SpiralPointsGetter>
-            {({ points, width, height, scale }) => {
+            {({ points, invertPoints, width, height, scale }) => {
               return (
                 <div>
                   {/* Interactive asset */}
@@ -55,7 +54,7 @@ class Filter extends Component {
                     width={width}
                     height={height}
                     scale={scale}
-                    points={points}
+                    points={coloring[colorIndex].fill.invert ? invertPoints : points}
                     length={Math.min(length, maxSize)}
                     colorIndex={colorIndex}
                   />
@@ -65,7 +64,7 @@ class Filter extends Component {
                     width={width}
                     height={height}
                     scale={scale}
-                    points={points}
+                    points={coloring[colorIndex].fill.invert ? invertPoints : points}
                     length={maxSize}
                     style={{position: 'absolute', zIndex: -1}}
                     colorIndex={colorIndex}
@@ -79,6 +78,7 @@ class Filter extends Component {
                           border: '3px solid var(--accent)',
                           borderRadius: '100%',
                           pointerEvents: 'none',
+                          lineHeight: 0,
                           position: 'absolute',
                           width: '100%',
                           height: '100%',
@@ -87,7 +87,7 @@ class Filter extends Component {
                       />
                       <WorkspaceIconAndText
                         active={this.state.hover}
-                        text={'Click to edit'}
+                        text={`Click to crop`}
                         type="move" />
                     </Fragment>
                   }

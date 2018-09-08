@@ -1,19 +1,45 @@
-import React from 'react'
-import { SectionTitle } from './Text'
-import Section from './Section'
+import React, {Fragment} from 'react'
 import Slider from './Slider'
 import SliderController from './SliderController'
 import styled from 'styled-components'
 
-const Value = styled.span`
-  text-align: right;
-  color: #999;
-  float: right;
+const Icon = styled.div`
+  cursor: pointer;
+  color: #979797;
+  background-color: #fff;
+  transition: .2s;
+  :hover {
+    color: var(--accent);
+    background-color: var(--accent);
+  }
 `
-const SliderValue = ({ style, children }) => ( <Value style={style}>{children}</Value> )
+export const InvertIcon = Icon.extend`
+  color: #979797;
+  border: 1px solid #979797;
+  :hover {
+    color: #fff;
+    background-color: var(--accent);
+    border: 2px solid var(--accent);
+  }
+`
+const Mark = styled.div`
+  color: currentColor;
+  transition: .3s;
+  svg * {
+    stroke-width: 5;
+    stroke-linejoin: round;
+    fill: transparent;
+    stroke: currentColor;
+    stroke-linecap: round;
+  }
+  :hover {
+    svg * {
+      color: #fff;
+    }
+  }
+`
 
 const SectionSliderScale = ({
-  title,
   min,
   max,
   step,
@@ -21,9 +47,9 @@ const SectionSliderScale = ({
   defaultValue,
   onChange,
   startCenter,
-  onValueChange,
   sliderProps,
-  disabled = false
+  disabled,
+  showBackground
 }) => {
   return (
     <SliderController
@@ -35,7 +61,7 @@ const SectionSliderScale = ({
           value
         }) => (
         <div style={{display: 'flex'}}>
-        <div style={{display: 'flex', flex: 1, backgroundColor: '#fff', border: editing ? '1px solid #efefef' : '1px solid transparent', padding: 10, borderRadius: 30}}>
+        <div style={{display: 'flex', flex: 1, backgroundColor: showBackground ? '#fff' : '', border: editing ? '1px solid #efefef' : '1px solid transparent', padding: 10, borderRadius: 30}} id={'slider-container'}>
           <div style={{width: 15}}/>
           <Slider
             style={{margin: '6px 0'}}
@@ -50,7 +76,9 @@ const SectionSliderScale = ({
             onChange={controllerOnChange} />
           <div style={{width: 15}}/>
         </div>
-        <div style={{width: editing ? 45 : 0, transition: '.1s'}}><div style={{width: '100%', borderRadius: '100%', backgroundColor: 'red', height: 45}}/></div>
+        {/* Done btn for scale */}
+        {editing && <Fragment><div style={{width: 8}}/>
+        <div style={{width: 45}}><Icon style={{width: '100%', borderRadius: '100%', height: 45}}><Mark><svg style={{width: '100%', height: '100%'}} viewBox='0 0 193.3 193.3'><polyline points='46.9 101.4 76.9 131.4 146.4 61.9'/></svg></Mark></Icon></div></Fragment>}
         </div>
         )
       }

@@ -1,23 +1,25 @@
 import React, {Component} from 'react'
 import Section from './Section'
-import { SectionTitle } from './Text'
+import {SecondaryButton} from './Button'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
 import {updatePreview} from './redux/actions'
 
 const sizes = [
   {length: this.originalSize, retina: 1, name: 'Fit to screen'},
-  {length: 168, name: 'Facebook'},
-  {length: 200, name: 'Twitter'},
+  {length: 168, name: 'Facebook profile'},
+  {length: 200, name: 'Twitter profile'},
   {length: 614, name: 'Instagram'},
 ]
 
 const DD = styled.div`
   position: relative;
   z-index: 10000;
+  @media only screen and (orientation: portrait) {
+    display: none;
+  }
 `
-
-const Btn = styled.button`
+const Btn = styled.div`
   padding: 0;
   text-align: left;
   width: 100%;
@@ -25,13 +27,12 @@ const Btn = styled.button`
   cursor: pointer;
   border: none;
   transition: .2s;
-  background-color: transparent;
   outline: none;
 `
 const Arrow = styled.div`
   position: relative;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   margin-top: -10px;
   transform-origin: center;
   transform: rotate(-45deg);
@@ -47,23 +48,39 @@ const Arrow = styled.div`
     border-bottom: 2px solid var(--accent);
   }
 `
+const arrowHeight = 12
 const Drawer = styled.div`
   position: absolute;
   background-color: #fff;
-  right: 0;
-  top: 35px;
-  width: 100%;
-  border: 1px solid #aaa;
-  transition: .15s ease-in-out;
+  left: 0;
+  top: 44px;
+  border-radius: 20px;
+  border: 1px solid #bbb;
+  transition: .1s ease-in-out;
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    top: -${arrowHeight}px;
+    left: 60px;
+    width: 0; 
+    height: 0; 
+    border-left: ${arrowHeight}px solid transparent;
+    border-right: ${arrowHeight}px solid transparent;
+    border-bottom: ${arrowHeight}px solid #bbb;
+  }
+  &::after {
+    top: ${-arrowHeight + 1}px;
+    border-bottom-color: #fff;
+  }
 `
 const Li = styled.li`
   text-transform: uppercase;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 700;
   text-align: center;
   cursor: pointer;
   color: #999;
-  padding: 17px 13px;
+  padding: 17px 25px;
   white-space: nowrap;
   border-bottom: 1px solid #efefef;
   transition: .2s;
@@ -84,14 +101,16 @@ class Size extends Component {
   onMouseLeave = () => {this.setState({hover: false})}
   findFit = () => {
     const main = document.getElementById('main').getBoundingClientRect()
-    return Math.min(main.width - 20, main.height - 150)
+    const horizontalPadding = window.innerWidth < 1000 ? 40 : 20
+    const verticalPadding = 100 + (window.innerHeight < 1000 ? 20 : 25)
+    return Math.min(main.width - horizontalPadding, main.height - verticalPadding)
   }
   outSideClick = () => {
     this.setState({open: false})
     document.removeEventListener('mouseup', this.outSideClick)
   }
-  onClick = () => {
-    this.setState({open: !this.state.open})
+  onClick = (e) => {
+    this.setState(({open}) => {return {open: !open}})
     document.addEventListener('mouseup', this.outSideClick)
   }
   onResize = () => {
@@ -116,19 +135,11 @@ class Size extends Component {
           <Btn
             onMouseLeave={this.onMouseLeave}
             onMouseEnter={this.onMouseEnter}
-            onClick={this.onClick}> 
-            <SectionTitle style={{marginBottom: 0}}>
-              Preview
-              <span
-                style={{
-                  float: 'right',
-                  color: disabled ? '#777' : 'var(--accent)',
-                  textTransform: 'none',
-                }}>
-                {currentName}
-                <Arrow className={this.state.hover ? 'hover' : ''} />
-              </span>
-            </SectionTitle>
+            onMouseUp={this.onClick}> 
+            <SecondaryButton>
+              {currentName}
+              <Arrow className={this.state.hover ? 'hover' : ''} />
+            </SecondaryButton>
           </Btn>
           <Drawer
             style={{
@@ -138,8 +149,10 @@ class Size extends Component {
             }}>
             <ul>
               {sizes.map(({length, name}, i) => {
+                const active = currentName === name
                 return (
                   <Li 
+                    style={{color: active ? '#222' : ''}}
                     key={i}
                     onClick={() => {
                       updatePreview(i !== 0 ? length : this.findFit(), name)}

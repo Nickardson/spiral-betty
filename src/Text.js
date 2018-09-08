@@ -20,10 +20,15 @@ const P = styled.p`
   font-weight: 400;
   font-size: 10px;
 `
-// TODO: also make for a tag
+
 const Link = styled.span` 
+  cursor: pointer;
   font-weight: 700;
   color: var(--accent);
+  text-decoration: none;
+  :hover {
+    text-decoration: underline;
+  }
 `
 
 export { SectionTitle, UploadText, P, Link }

@@ -3,7 +3,19 @@ import { connect } from 'react-redux'
 import Section from './Section'
 import Swatch from './Swatch'
 import SpiralPointsGetter from './SpiralPointsGetter'
+import styled from 'styled-components'
 const {coloring} = require('./lib/constants')
+
+const Container = styled.div`
+  display: flex;
+  margin-top: 15px; 
+  flex-wrap: wrap;
+  align-items: center;
+  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
+    margin-top: 0;
+    flex-wrap: nowrap;
+  }
+`
 
 class Swatches extends Component {
   render () {
@@ -11,8 +23,7 @@ class Swatches extends Component {
       <Section>
         <SpiralPointsGetter delayUntilMouseUp>
           {({ points, width, height, scale }) => {
-            return <div style={{display: 'flex', marginTop: 15, 
-            flexWrap: 'wrap', alignItems: 'center'}}>
+            return <Container>
               {coloring.map((d, i) => (
                 <Swatch
                   points={points}
@@ -24,7 +35,7 @@ class Swatches extends Component {
                   key={i}
                 />
               ))}
-              </div>
+              </Container>
             }
           }
         </SpiralPointsGetter>

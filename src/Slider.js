@@ -3,6 +3,8 @@ import styled from 'styled-components'
 
 const sliderThumbSize = '12px'
 const trackColor = '#979797'
+const hoverScale = 2.5
+const grabScale = 2
 
 const SliderContainer = styled.div`
   position: relative;
@@ -125,11 +127,11 @@ const SliderInput = styled.input`
   height: 10px;
 }
 &.hover::-webkit-slider-thumb {
-  transform: scale(2);
+  transform: scale(${hoverScale});
   border: 2px solid rgba(255,255,255,.8);
 } 
 &.hover::-moz-range-thumb {
-  transform: scale(2);
+  transform: scale(${hoverScale});
   border: 2px solid rgba(255,255,255,.8);
 } 
 &.hover::-ms-thumb {
@@ -138,36 +140,32 @@ const SliderInput = styled.input`
   width: 10px;
   height: 10px;
 }
-&.grabbing.grabbing::-webkit-slider-thumb {
+&.grabbing.grabbing::-webkit-slider-thumb, &:active::-webkit-slider-thumb {
   cursor: grabbing !important;
-  transform: scale(1.65);
+  transform: scale(${grabScale});
   border: 2px solid transparent;
 }
-&.grabbing.grabbing::-moz-range-thumb {
+&.grabbing.grabbing::-moz-range-thumb, &:active::-moz-range-thumb  {
   cursor: grabbing !important;
-  transform: scale(1.65);
+  transform: scale(${grabScale});
   border: 2px solid transparent;
 }
-&.grabbing.grabbing::-ms-thumb {
+&.grabbing.grabbing::-ms-thumb, &:active::-ms-thumb {
   cursor: grabbing !important;
   transform: scale(1);
   border: none;
 }
-&.grabbing.grabbing::-webkit-slider-runnable-track {
+&.grabbing.grabbing::-webkit-slider-runnable-track, &:active::-webkit-slider-runnable-track {
   cursor: grabbing !important;
 }
-&.grabbing.grabbing::-moz-range-track {
+&.grabbing.grabbing::-moz-range-track, &:active::-moz-range-track {
   cursor: grabbing !important;
 }
-&.grabbing.grabbing::-ms-track {
+&.grabbing.grabbing::-ms-track, &:active::-ms-track {
   cursor: grabbing !important;
 }
 `
 const TrackBeforeSlider = styled.div`
-  /* For ms */
-  /* @media screen { @media (min-width: 0px) {
-    display: none;
-  } } */
   position: absolute;
   width: 100%;
   height: 3px;

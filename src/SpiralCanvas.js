@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React from 'react'
 import {coloring} from './lib/constants'
 import {startEditingPhoto} from './redux/actions'
 import { connect } from 'react-redux'
@@ -92,11 +92,13 @@ const Canvas = styled.canvas`
       border: 0px solid rgba(255,255,255,0);
       box-shadow: 0 0 0 0px rgba(255,255,255,0);
       animation: ${bounceOut} both .15s;
-      &:hover {
-        box-shadow: 0 0 0 4px ${props.highlight};
-        animation: ${bounceIn} both .25s;
-        border: 3px solid ${props.accent};
-        z-index: 1000000; // absurd number on purpose
+      @media not all and (hover: none) {
+        &:hover {
+          box-shadow: 0 0 0 4px ${props.highlight};
+          animation: ${bounceIn} both .25s;
+          border: 3px solid ${props.accent};
+          z-index: 1000000; // absurd number on purpose
+        }
       }
     ` : ''
   }

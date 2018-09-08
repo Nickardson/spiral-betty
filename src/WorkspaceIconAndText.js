@@ -7,7 +7,8 @@ const WorkspaceIconAndText = ({active, text, type = 'placeholder', showText}) =>
   const backgroundColor = isPlaceholder ? '' : 'var(--accent)'
   const accent = isPlaceholder ? 'var(--accent)' : '#fff'
   const color = active ? accent : '#999'
-  const padding = isPlaceholder ? '' : '10px 20px'
+  const textTransform = 'uppercase'
+  const padding = isPlaceholder ? '' : '6px 10px 5px'
   return <div style={{pointerEvents: 'none'}}>
     {isPlaceholder && <IconPhotoPlaceholder
       length={70}
@@ -23,6 +24,7 @@ const WorkspaceIconAndText = ({active, text, type = 'placeholder', showText}) =>
           opacity: active || showText ? 1 : 0,
           backgroundColor,
           color,
+          textTransform,
           padding,
           borderRadius: '30px',
           transition: '.23s'

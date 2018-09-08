@@ -59,29 +59,30 @@ class EditPhoto extends Component {
     this.clicksOutsideOfPhoto = (e) => {
       // Allow for scaling while editing
       const endEditing = e.target.id === scaleInputId ? false : true
-      
-      if (e.target.id !== this.movePhotoId) {
+      if (e.target.id !== this.movePhotoId && e.target.id !== 'slider-container') {
         this.updateStore(endEditing)
       }
     }
   }
   onKeyDown = (e) => {
     const keyName = e.key
-    console.log(e)
     if(['Escape', 'Enter', ' '].indexOf(keyName) !== -1) {
       e.preventDefault()
       this.updateStore(true)
     }
-    console.log('keypress event\n\n' + 'key: ' + keyName)
   }
   onDragStart = (e) => {
     e.preventDefault()
   }
   onMouseDown = (e) => {
-    e.preventDefault()
-    const {pageX: startX, pageY: startY} = e
-    this.startX = startX
-    this.startY = startY
+    if (e.type === 'touchstart') {
+      this.startX = e.changedTouches[0].pageX
+      this.startY = e.changedTouches[0].pageY
+    } else {
+      const {pageX: startX, pageY: startY} = e
+      this.startX = startX
+      this.startY = startY
+    }
     this.setState({drag: true})
   }
   onMouseUp = (e) => {
@@ -89,7 +90,14 @@ class EditPhoto extends Component {
   }
   onMouseMove = (e) => {
     const {length, width, height, scale, cx, cy} = this.props
-    const {pageX, pageY} = e
+    let pageX
+    let pageY
+    if (e.type === 'touchmove') {
+      pageX = e.changedTouches[0].pageX
+      pageY = e.changedTouches[0].pageY
+    } else {
+      ({pageX, pageY} = e)
+    }
     const {startX, startY} = this
           
     const deltaX = pageX - startX
@@ -167,10 +175,12 @@ class EditPhoto extends Component {
     const {active} = this.props
     if (!active && nextActive) {
       document.addEventListener('mousedown', this.clicksOutsideOfPhoto)
+      document.addEventListener('touchstart', this.clicksOutsideOfPhoto)
       document.addEventListener('keydown', this.onKeyDown)
     }
     if (active && !nextActive) {
       document.removeEventListener('mousedown', this.clicksOutsideOfPhoto)
+      document.removeEventListener('touchstart', this.clicksOutsideOfPhoto)
       document.removeEventListener('keydown', this.onKeyDown)
     }
   }
@@ -203,7 +213,6 @@ class EditPhoto extends Component {
       height: flippedLengths ? pxWidth : pxHeight,
       position: 'absolute'
     }
-            
     return (
       <Container
         style={{
@@ -218,6 +227,9 @@ class EditPhoto extends Component {
           onMouseDown={this.onMouseDown}
           onMouseMove={!drag ? undefined : this.onMouseMove}
           onMouseUp={!drag ? undefined : this.onMouseUp}
+          onTouchStart={(e) => {this.onMouseDown(e);}}
+          onTouchMove={!drag ? undefined : (e) => {this.onMouseMove(e);}}
+          onTouchEnd={!drag ? undefined : (e) => {this.onMouseUp(e);}}
           alt={'Uploaded artwork'}
           src={blobUrl}
           style={photoStyle} />

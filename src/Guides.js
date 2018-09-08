@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
+const length = 1
 const Border = styled.div`
   border-radius: 100%;
   border 3px solid var(--accent);
@@ -10,16 +11,17 @@ const Border = styled.div`
   position: absolute;
   pointer-events: none;
   transition: .4s;
+  clip-path: circle(50%); // for safari
 `
 const BorderLeft = styled.div`
-  width: 1px;
+  width: ${length}px;
   left: 33%;
   height: 100%;
   position: absolute;
   background-color: var(--accent);
 `
 const BorderRight = styled.div`
-  width: 1px;
+  width: ${length}px;
   left: 67%;
   height: 100%;
   position: absolute;
@@ -28,22 +30,23 @@ const BorderRight = styled.div`
 const BorderTop = styled.div`
   width: 100%;
   top: 33%;
-  height: 1px;
+  height: ${length}px;
   position: absolute;
   background-color: var(--accent);
 `
 const BorderBottom = styled.div`
   width: 100%;
   top: 67%;
-  height: 1px;
+  height: ${length}px;
   position: absolute;
   background-color: var(--accent);
 `
 const BorderVert = styled.div`
-  width: 1px;
+  width: ${length}px;
   left: 50%;
   top: 47%;
   height: 6%;
+  margin-left: -${length / 2}px;
   position: absolute;
   background-color: var(--accent);
 `
@@ -51,7 +54,8 @@ const BorderHoriz = styled.div`
   width: 6%;
   top: 50%;
   left: 47%;
-  height: 1px;
+  margin-top: -${length / 2}px;
+  height: ${length}px;
   position: absolute;
   background-color: var(--accent);
 `
@@ -62,21 +66,12 @@ const Guides = ({ active }) => (
       opacity: active ? 1 : 0,
       pointerEvents: 'none'
     }}>
-    <div
-      style={{
-        clipPath: 'circle(50%)',
-        borderRadius: '100%',
-        position: 'absolute',
-        width: '100%',
-        height: '100%'
-      }}>
-      <BorderLeft />
-      <BorderTop />
-      <BorderRight />
-      <BorderBottom />
-      <BorderVert />
-      <BorderHoriz />
-    </div>
+    <BorderLeft />
+    <BorderTop />
+    <BorderRight />
+    <BorderBottom />
+    <BorderVert />
+    <BorderHoriz />
   </Border>
 )
 

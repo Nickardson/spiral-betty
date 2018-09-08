@@ -1,9 +1,11 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import './App.css'
+import Beforeunload from 'react-beforeunload'
 
 import {Link} from './Text'
 
+import Onboarding from './Onboarding'
 import Logo from './Logo'
 import Upload from './Upload'
 import Workspace from './Workspace'
@@ -15,6 +17,8 @@ import DownloadCanvas from './DownloadCanvas'
 import Size from './Size'
 import SectionSliderScale from './SectionSliderScale'
 import Swatches from './Swatches'
+import {InvertIcon} from './SectionSliderScale'
+import {SecondaryButton} from './Button'
 
 import {
   addFilter,
@@ -29,89 +33,171 @@ import {
   addImgData,
   updateLightness
 } from './redux/actions'
-import { scaleInputId } from './lib/constants'
+import { scaleInputId, rings, lightnessVals, contrastVals } from './lib/constants'
 import { getImageData } from './lib/img'
 import styled from 'styled-components'
-import { SecondaryButton } from './Button';
+
+const Container = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background-color: ${props => props.editing ? '#222' : ''};
+  transition: .5s;
+  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px)  {
+    flex-direction: column;
+  }
+`
+const DesktopOnly = styled.div`
+  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
+    display: none;
+  }
+`
 
 const Main = styled.div`
   flex: 1;
-  order: 0;
   height: 100%;
   position: relative;
   z-index: 100;
+  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
+    height: initial;
+    flex: 4;
+  }
 `
 
+const WorkspaceContainer = styled.div`
+  display: flex;
+  height: calc(100% - 100px);
+`
+const MobileMargin = styled.div`
+  display: none;
+  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
+    display: flex;
+    flex: 0 0 5vh;
+  }
+`
 const Sidebar = styled.div`
   flex: 0 0 250px; 
-  order: 1;
+  display: flex;
+  flex-direction: column;
   border-left: 1px solid #ccc;
   background-color: #fff;
   height: 100%;
   padding: 20px 15px;
   overflow-y: auto; 
+  transition: .5s;
+  ${props => props.hide ? `
+    transform: translateX(300px);
+    opacity: 0
+  ` : ''}
+  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
+    z-index: 100;
+    width: 100%;
+    bottom: 0;
+    flex: 0 0 90px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    padding: 10px 5px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    background-color: #efefef;
+    border-top: 1px solid #ccc;
+    transition: .3s;
+    ${props => props.hide || props.noImg ? `
+      transform: translateY(90px);
+      opacity: 0;
+    ` : ''}
+  }
 `
-const Drawer = styled.div`
-  height: 200px
+const CloseIcon = styled.div`
+  width: 100%;
+  height: 100%;    
+  position: relative;
+  
+  &::after, &::before{
+      position:absolute;
+      left:0;
+      top: calc(50% - .5px);
+      content:'';
+      display:block;
+      width:100%;
+      height:1px;
+      background-color: currentColor;
+      transform-origin: center;
+  }
+  &::after {
+      transform: rotate(45deg);
+  }
+  &::before {
+      transform: rotate(-45deg);
+  }
+  ${SecondaryButton}:hover &::after, ${SecondaryButton}:hover &::before {
+    top: calc(50% - 1px);
+    height: 2px;
+  }
 `
 
-const rings = {
-  default: 40,
-  min: 6,
-  max: 160,
-  step: 1
-}
+const MobileHeader = styled.div`
+  display: none;
+  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
+    display: flex;
+    flex: 0 0 45px;
+    height: 45px;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 0 2px rgba(0,0,0,.2);
+    border-bottom: 1px solid #efefef;
+    transition: .2s;
+    ${props => props.hide ? `
+      transform: translateY(-35px);
+      opacity: 0;
+    ` : ''}
+  }
+`
 
 const NavLinks = styled.span`
   transition: .2s;
   font-weight: 800;
+  font-size: 12px;
   cursor: pointer;
   color: #ccc;
   padding: 5px 10px;
   border-radius: 50px;
   :hover {
-    color: #444;
-    background-color: #efefef;
+    color: #fff;
+    background-color: var(--accent);
     scale: 1.1;
   }
   ${props => props.active ? `
     color: var(--accent) !important;
     background-color: transparent !important;
   ` : ''}
+  ${props => props.disabled ? `
+    color: #ddd !important;
+    background-color: transparent !important;
+    pointer: none;
+    pointer-events: none;
+  ` : ''}
 `
 
-
-const contrastVals = {
-  default: 0,
-  min: -100,
-  max: 100,
-  step: 1
-}
-
-const lightnessVals = {
-  default: 0,
-  min: -50,
-  max: 50,
-  step: 1
-}
-
-const attributes = {
-  scale: {
-    name: 'Scale'
-  },
-  rings: {
-    name: 'Rings'
-  },
-  lightness: {
-    name: 'Lightness'
-  },
-  contrast: {
-    name: 'Contrast'
-  },
-  zoom: {
-    name: 'Zoom'
+const SliderContainer = styled.div`
+  position: absolute;
+  width: 80%;
+  min-width: 300px;
+  bottom: -65px;
+  left: 50%;
+  transform: translate(-50%);
+  @media only screen and (orientation: portrait), (max-width: 1000px) {
+    width: 100%;
   }
-}
+`
+const SecondaryActions = styled.div`
+  position: absolute;
+  top: 19px;
+  left: 23px;
+  z-index: 100;
+`
 
 class App extends Component {
   handleRingChange = val => {
@@ -177,9 +263,12 @@ class App extends Component {
     updateImgPos(scale, cx, cy)
     if (endEditing) endEditingPhoto()
   }
-  clearImg = () => {
-    window.URL.revokeObjectURL(this.props.blobUrl)
-    this.props.clearImg()
+  removeImg = () => {
+    const val = window.confirm('Are you sure you want to remove this image?')
+    if (val) {
+      window.URL.revokeObjectURL(this.props.blobUrl)
+      this.props.clearImg()
+    }
   }
   handleFile = (url, file, revokeUrl) => {
     // TODO: get img data for 2x the size of the spiral length
@@ -187,7 +276,7 @@ class App extends Component {
       getImageData(url, orientation).then(
         ({ status, width, height, imgData: data }) => {
           if (status === 'ok') {
-            const { startEditingPhoto, addImgData, addTempProp } = this.props
+            const { startEditingPhoto, addImgData } = this.props
             if (revokeUrl) window.URL.revokeObjectURL(revokeUrl) // we have had some success... now time to revoke old url
             startEditingPhoto()
             addImgData(
@@ -202,26 +291,21 @@ class App extends Component {
               file.name
             )
           } else {
-            // TODO: error with img have a warning of some sort
-            console.error(
-              'Something has gone terribly wrong we need to add an warning'
-            )
+            // TODO: make this a pretty error
+            alert('Sorry, we could not load image data for this file. Check to make sure you are using JPG, GIF, PNG, or WebP.')
           }
         }
+
       )
     })
   }
   handleFileChange = e => {
     const file = e.target.files[0]
     if (!file || !file.name) return
-    if (file.type.indexOf('image/') !== -1) {
-      const blobUrl = URL.createObjectURL(file)
-      const {blobUrl: revokeUrl} = this.props
-      this.handleFile(blobUrl, file, revokeUrl)
-    } else {
-      // TODO: will need to give a warning if not supported
-    }
-    // Now clear out file...
+    const blobUrl = URL.createObjectURL(file)
+    const {blobUrl: revokeUrl} = this.props
+    this.handleFile(blobUrl, file, revokeUrl)
+    // Clear out file...
     e.target.value = ''
   }
   getOrientation(file, callback) {
@@ -264,20 +348,18 @@ class App extends Component {
     // Setup store
     const { addFilter, setup, addTempProp } = this.props
     addFilter()
-    updateContrast(contrastVals.default),
+    updateContrast(contrastVals.default)
     updateLightness(lightnessVals.default)
     addTempProp('attribute', 'rings')
     setup()
   }
   getSliderProps = () => {
-    const {blobUrl, attribute, editing, animating, scale, lightness, contrast, data} = this.props
+    const {attribute, editing, scale, lightness, contrast, data} = this.props
     let attr = editing ? 'scale' : attribute
-    if (!blobUrl) return {}
     switch (attr) {
       case 'scale':
         return {
           editing: editing,
-          disabled: animating,
           sliderProps: { id: scaleInputId },
           title: 'Scale',
           min: 1,
@@ -292,7 +374,6 @@ class App extends Component {
         }
       case 'rings':
         return {
-          disabled: editing || animating,
           title: 'Rings',
           min: rings.min,
           max: rings.max,
@@ -332,69 +413,82 @@ class App extends Component {
     const {
       attribute,
       init,
-      length,
-      clearImg,
-      scale,
       addTempProp,
       editing,
       animating,
       img: { blobUrl, data: imgData }
     } = this.props
     if (!init) return null
+    /* return <Splash /> */
     return (
-      <div style={{display: 'flex', width: '100%', height: '100vh', overflow: 'hidden'}}>
+      <Container editing={editing}>
+        <Beforeunload onBeforeunload={() => "Sure you want to leave this site? You will lose your progress"} />
+        <MobileHeader
+          hide={editing || animating}>
+          {blobUrl && !editing && !animating && ([<div style={{width: 40, height: 40, left: 5, top: 3, position: 'absolute'}} onClick={this.removeImg}><CloseIcon style={{width: 26, height: 26, position: 'absolute', left: 6, top: 6}}  /></div>,
+        <div style={{position: 'absolute', right: 6, top: 3, height: 40, width: 40}}><DownloadCanvas /></div>])
+        }
+          <Logo style={{height: '13px', margin: 'auto', fill: '#777'}} />
+        </MobileHeader>
+        <MobileMargin />
         <Main id='main'>
-          <div style={{display: 'flex', height: 'calc(100% - 100px)'}}>
-          <Workspace>
-            <Filter />
-            <EditPhoto updatePhoto={this.updateImage} />
-            <Guides />
-            <Upload onChange={this.handleFileChange} />
-              <div style={{position: 'absolute', width: '80%', minWidth: 200, bottom: -65, left: '50%', transform: 'translate(-50%)'}}>
-              {blobUrl && !animating && <SectionSliderScale key={editing ? 'scale' : attribute} {...this.getSliderProps()} />}
-              </div> 
-              <div style={{position: 'absolute', width: '80%', minWidth: 200, bottom: -100, left: '50%', transform: 'translate(-50%)'}}>
-                {/* TODO: use local storage to not show this if they have been here before */}
-                <DemoImage blobUrl={blobUrl} handleFile={this.handleFile} />
+          <DesktopOnly>
+            <SecondaryActions style={{display: editing || animating || !blobUrl ? 'none' : ''}}>
+              <SecondaryButton
+                type={'error'}
+                style={{marginBottom: 10, position: 'relative'}}
+                onClick={this.removeImg}>
+                <span style={{paddingRight: 20}}>Remove image</span><span style={{position: 'absolute', right: 16, top: 7, width: 14, height: 14}}><CloseIcon /></span>
+              </SecondaryButton>
+              <div>
+                <Size disabled={editing || animating} />
               </div>
-              <div style={{position: 'absolute', width: '80%', minWidth: 200, bottom: -100, left: '50%', transform: 'translate(-50%)'}}>
-              {blobUrl && !editing && !animating && <div style={{fontSize: 10, justifyContent: 'space-evenly', display: 'flex', alignItems: 'center', textTransform: "uppercase", textAlign: 'center'}}>
-                <NavLinks active={attribute === 'rings' && !editing} onClick={() => {addTempProp('attribute', 'rings')}}>Rings</NavLinks>
-                <NavLinks active={attribute === 'scale' || editing} onClick={() => {addTempProp('attribute', 'scale')}}>Scale</NavLinks>
-                <NavLinks active={attribute === 'lightness' && !editing} onClick={() => addTempProp('attribute', 'lightness')}>Lightness</NavLinks>
-                <NavLinks active={attribute === 'contrast' && !editing} onClick={() => addTempProp('attribute', 'contrast')}>Contrast</NavLinks>
-                </div>}
-              </div>
-          </Workspace>
-          </div>
+            </SecondaryActions>
+          </DesktopOnly>
+          <WorkspaceContainer>
+            <Workspace>
+              <Filter />
+              <EditPhoto updatePhoto={this.updateImage} />
+              <Guides />
+              <Upload onChange={this.handleFileChange} />
+                <SliderContainer>
+                  {!animating && <SectionSliderScale
+                    disabled={!blobUrl || animating}
+                    showBackground={editing}
+                    key={editing ? 'scale' : attribute}
+                    {...this.getSliderProps()} />}
+                </SliderContainer> 
+                <div style={{position: 'absolute', visibility: 'hidden', width: '80%', minWidth: 300, bottom: -100, left: '50%', transform: 'translate(-50%)'}}>
+                  {/* TODO: use local storage to not show this if they have been here before */}
+                  <DemoImage blobUrl={blobUrl} handleFile={this.handleFile} />
+                </div>
+                <div style={{position: 'absolute', width: '80%', minWidth: 300, bottom: -90, left: '50%', transform: 'translate(-50%)'}}>
+                {!editing && !animating && <div style={{fontSize: 10, justifyContent: 'space-evenly', display: 'flex', alignItems: 'center', textTransform: "uppercase", textAlign: 'center'}}>
+                  <NavLinks disabled={!blobUrl} active={attribute === 'rings' && !editing} onClick={() => {addTempProp('attribute', 'rings')}}>Rings</NavLinks>
+                  <NavLinks disabled={!blobUrl} active={attribute === 'scale' || editing} onClick={() => {addTempProp('attribute', 'scale')}}>Scale</NavLinks>
+                  <NavLinks disabled={!blobUrl} active={attribute === 'lightness' && !editing} onClick={() => addTempProp('attribute', 'lightness')}>Lightness</NavLinks>
+                  <NavLinks disabled={!blobUrl} active={attribute === 'contrast' && !editing} onClick={() => addTempProp('attribute', 'contrast')}>Contrast</NavLinks>
+                  </div>}
+                </div>
+            </Workspace>
+          </WorkspaceContainer>
+          <DesktopOnly>
+            {!editing && !animating && blobUrl && <InvertIcon style={{position: 'absolute', right: 15, top: 15, height: 70, width: 70, borderRadius: '100%'}}><DownloadCanvas width={1} /></InvertIcon>}
+          </DesktopOnly>
         </Main>
-        <Sidebar style={{transform: editing || animating ? 'translateX(300px)' : 'translateX(0px)', opacity: editing || animating ? '0' : '1', transition: '.5s'}}>
-          <Logo style={{width: '100%', fill: '#777'}} />
-          <div style={{marginTop: 5, fontSize: 9}}>
-            <Link target={'_blank'} href={'https://twitter.com/shalanahfaith'}>©2018 Shalanah Dawson</Link>
-          </div>
-          <div style={{marginTop: 5, fontSize: 9}}>Free to use downloads for non&#8209;commercial purposes.</div>
+        <MobileMargin />
+        <Sidebar hide={editing || animating} noImg={!blobUrl}>
+          <DesktopOnly>
+            <div><Logo style={{width: '100%', fill: '#777'}} /></div>
+            <div style={{marginTop: 5, fontSize: 12}}>
+              <Link target={'_blank'} href={'https://twitter.com/shalanahfaith'}>©2018 Shalanah Dawson</Link>
+            </div>
+            <div style={{marginTop: 5, fontSize: 12}}>Downloads free to use for non&#8209;commercial purposes.</div>
+          </DesktopOnly>
           {!!imgData && !editing && !animating && <Swatches />}
+          {!blobUrl && <Onboarding />}
         </Sidebar>
-        <div
-          style={{
-            display: 'none',
-            visibility: editing || animating ? 'hidden' : '',
-            flex: '0 0 310px',
-            order: 0,
-            top: '0',
-            zIndex: 1,
-            backgroundColor: '#fff',
-            height: '100%',
-            padding: '40px'
-          }}>
-          {blobUrl && !animating && !editing && <SecondaryButton onClick={clearImg}>
-            <span>&times;</span> Remove image
-          </SecondaryButton>}
-          <Size disabled={editing || animating} />
-          <DownloadCanvas />
-        </div>
-      </div>
+      </Container>
     )
   }
 }
@@ -403,13 +497,12 @@ const mapStateToProps = state => {
   const {
     editing: { editing },
     setup: { init },
-    preview: { length },
     img: { scale, blobUrl, lightness, contrast },
     img,
     filter: {data},
     temp: {animating, attribute}
   } = state
-  return { init, length, scale, img, blobUrl, editing, animating, attribute, lightness, contrast, data }
+  return { init, scale, img, blobUrl, editing, animating, attribute, lightness, contrast, data }
 }
 const mapDispatchToProps = dispatch => {
   return {
