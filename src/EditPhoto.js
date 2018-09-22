@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { blobExifTransform } from './lib/img'
@@ -28,7 +28,7 @@ const ImgMove = styled.img`
   cursor: move;
 `
 
-class EditPhoto extends Component {
+class EditPhoto extends React.Component {
   constructor() {
     super()
     this.state = { // dragging offsets
