@@ -101,8 +101,8 @@ class Size extends Component {
   onMouseLeave = () => {this.setState({hover: false})}
   findFit = () => {
     const main = document.getElementById('main').getBoundingClientRect()
-    const horizontalPadding = window.innerWidth < 1000 ? 40 : 20
-    const verticalPadding = 100 + (window.innerHeight < 1000 ? 20 : 25)
+    const horizontalPadding = window.innerWidth < 1000 ? 10 : 40
+    const verticalPadding = 120 + (window.innerWidth < 1000 ? 10 : 60)
     return Math.min(main.width - horizontalPadding, main.height - verticalPadding)
   }
   outSideClick = () => {
