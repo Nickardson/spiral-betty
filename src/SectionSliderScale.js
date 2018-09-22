@@ -13,7 +13,7 @@ const Icon = styled.div`
     background-color: var(--accent);
   }
 `
-export const InvertIcon = Icon.extend`
+export const InvertIcon = styled(Icon)`
   color: #979797;
   border: 1px solid #979797;
   :hover {
@@ -46,14 +46,12 @@ const SectionSliderScale = ({
   editing,
   defaultValue,
   onChange,
-  startCenter,
   sliderProps,
   disabled,
   showBackground
 }) => {
   return (
     <SliderController
-      startCenter={startCenter}
       defaultValue={defaultValue}
       onChange={onChange}>
       { ({
@@ -61,14 +59,13 @@ const SectionSliderScale = ({
           value
         }) => (
         <div style={{display: 'flex'}}>
-        <div style={{display: 'flex', flex: 1, backgroundColor: showBackground ? '#fff' : '', border: editing ? '1px solid #efefef' : '1px solid transparent', padding: 10, borderRadius: 30}} id={'slider-container'}>
+        <div style={{display: 'flex', flex: 1, backgroundColor: showBackground ? '#fff' : '', border: editing ? '1px solid #efefef' : '1px solid transparent', padding: 15, borderRadius: 35}} id={'slider-container'}>
           <div style={{width: 15}}/>
           <Slider
             style={{margin: '6px 0'}}
             disabled={disabled}
             {...sliderProps}
             value={value}
-            startCenter={startCenter}
             min={min}
             max={max}
             step={step}
@@ -78,7 +75,7 @@ const SectionSliderScale = ({
         </div>
         {/* Done btn for scale */}
         {editing && <Fragment><div style={{width: 8}}/>
-        <div style={{width: 45}}><Icon style={{width: '100%', borderRadius: '100%', height: 45}}><Mark><svg style={{width: '100%', height: '100%'}} viewBox='0 0 193.3 193.3'><polyline points='46.9 101.4 76.9 131.4 146.4 61.9'/></svg></Mark></Icon></div></Fragment>}
+        <div style={{width: 55}}><Icon style={{width: '100%', borderRadius: '100%', height: 55}}><Mark><svg style={{width: '100%', height: '100%'}} viewBox='0 0 193.3 193.3'><polyline points='46.9 101.4 76.9 131.4 146.4 61.9'/></svg></Mark></Icon></div></Fragment>}
         </div>
         )
       }
