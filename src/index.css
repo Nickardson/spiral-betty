@@ -8,6 +8,12 @@
     display: table; 
 }
 
+html { // avoiding moving img and having an accidental reload on mobile
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: Montserrat, sans-serif;
   font-weight: 400;
@@ -20,6 +26,11 @@ body {
 
 *, *:after, *:before {
   box-sizing: border-box;
+}
+
+*, *:after, *:before {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: transparent;
 }
 
 p, h1, h2, h3, h4, h5, h6 {
@@ -62,7 +73,6 @@ button {
   background: transparent;
   -webkit-touch-callout: none;
   user-select: none;
-  -webkit-tap-highlight-color: transparent;
 }
 button:focus {
   background: transparent;
