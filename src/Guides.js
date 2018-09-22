@@ -59,21 +59,22 @@ const BorderHoriz = styled.div`
   position: absolute;
   background-color: var(--accent);
 `
-
-const Guides = ({ active }) => (
-  <Border
-    style={{
-      opacity: active ? 1 : 0,
-      pointerEvents: 'none'
-    }}>
-    <BorderLeft />
-    <BorderTop />
-    <BorderRight />
-    <BorderBottom />
-    <BorderVert />
-    <BorderHoriz />
-  </Border>
-)
+class Guides extends React.PureComponent {
+  render () {
+    return <Border
+      style={{
+        opacity: this.props.active ? 1 : 0,
+        pointerEvents: 'none'
+      }}>
+      <BorderLeft />
+      <BorderTop />
+      <BorderRight />
+      <BorderBottom />
+      <BorderVert />
+      <BorderHoriz />
+    </Border>
+  }
+}
 
 const mapStateToProps = state => {
   const {
