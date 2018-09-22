@@ -1,14 +1,14 @@
-import React, {Component} from 'react'
+import React from 'react'
 import Section from './Section'
 import { P, Link } from './Text'
 
-class DemoImage extends Component {
+class DemoImage extends React.PureComponent {
   getDemoImg = () => {
     const {handleFile} = this.props
     const url = document.location.href + 'assets/imgs/nancy-hime.jpg'
     fetch(url)
       .then(res => res.blob()) 
-      .then(blob => {
+      .then(blob => { 
         // Would create blobUrl if cross-browser if this is cross-origin
         handleFile(url, blob)
       })

@@ -21,7 +21,7 @@ const Button = styled.button`
     background-color: #eee;
   }
 `
-const SecondaryButton = Button.extend`
+const SecondaryButton = styled(Button)`
   color: #777;
   box-sizing: border-box;
   background-color: transparent;

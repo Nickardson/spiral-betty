@@ -157,7 +157,7 @@ const MobileHeader = styled.div`
 `
 
 const NavLinks = styled.span`
-  transition: .2s;
+  transition: background-color .2s, color .2s;
   font-weight: 800;
   font-size: 12px;
   cursor: pointer;
@@ -185,7 +185,7 @@ const SliderContainer = styled.div`
   position: absolute;
   width: 80%;
   min-width: 300px;
-  bottom: -65px;
+  bottom: -70px;
   left: 50%;
   transform: translate(-50%);
   @media only screen and (orientation: portrait), (max-width: 1000px) {
@@ -399,7 +399,7 @@ class App extends Component {
           onValueChange: v => {
             return `${Math.round(v/200 * 100 + 50)}%`
           },
-          min: contrastVals.min,
+          min: contrastVals.min, 
           max: contrastVals.max,
           step: contrastVals.step,
           defaultValue: contrast,
@@ -425,8 +425,12 @@ class App extends Component {
         <Beforeunload onBeforeunload={() => "Sure you want to leave this site? You will lose your progress"} />
         <MobileHeader
           hide={editing || animating}>
-          {blobUrl && !editing && !animating && ([<div style={{width: 40, height: 40, left: 5, top: 3, position: 'absolute'}} onClick={this.removeImg}><CloseIcon style={{width: 26, height: 26, position: 'absolute', left: 6, top: 6}}  /></div>,
-        <div style={{position: 'absolute', right: 6, top: 3, height: 40, width: 40}}><DownloadCanvas /></div>])
+          {blobUrl && !editing && !animating && ([<div key={1} style={{width: 40, height: 40, left: 5, top: 3, position: 'absolute'}} onClick={this.removeImg}><CloseIcon style={{width: 26, height: 26, position: 'absolute', left: 6, top: 6}}  /></div>,
+        <div
+          key={2}
+          style={{position: 'absolute', right: 6, top: 3, height: 40, width: 40}}>
+          <DownloadCanvas />
+        </div>])
         }
           <Logo style={{height: '13px', margin: 'auto', fill: '#777'}} />
         </MobileHeader>
@@ -458,11 +462,11 @@ class App extends Component {
                     key={editing ? 'scale' : attribute}
                     {...this.getSliderProps()} />}
                 </SliderContainer> 
-                <div style={{position: 'absolute', visibility: 'hidden', width: '80%', minWidth: 300, bottom: -100, left: '50%', transform: 'translate(-50%)'}}>
+                <div style={{position: 'absolute', visibility: 'hidden', width: '80%', minWidth: 300, bottom: -90, left: '50%', transform: 'translate(-50%)'}}>
                   {/* TODO: use local storage to not show this if they have been here before */}
                   <DemoImage blobUrl={blobUrl} handleFile={this.handleFile} />
                 </div>
-                <div style={{position: 'absolute', width: '80%', minWidth: 300, bottom: -90, left: '50%', transform: 'translate(-50%)'}}>
+                <div style={{position: 'absolute', width: '80%', minWidth: 300, bottom: -100, left: '50%', transform: 'translate(-50%)'}}>
                 {!editing && !animating && <div style={{fontSize: 10, justifyContent: 'space-evenly', display: 'flex', alignItems: 'center', textTransform: "uppercase", textAlign: 'center'}}>
                   <NavLinks disabled={!blobUrl} active={attribute === 'rings' && !editing} onClick={() => {addTempProp('attribute', 'rings')}}>Rings</NavLinks>
                   <NavLinks disabled={!blobUrl} active={attribute === 'scale' || editing} onClick={() => {addTempProp('attribute', 'scale')}}>Scale</NavLinks>
@@ -481,7 +485,7 @@ class App extends Component {
           <DesktopOnly>
             <div><Logo style={{width: '100%', fill: '#777'}} /></div>
             <div style={{marginTop: 5, fontSize: 12}}>
-              <Link target={'_blank'} href={'https://twitter.com/shalanahfaith'}>©2018 Shalanah Dawson</Link>
+              <Link target={'_blank'} as={'a'} href={'https://twitter.com/shalanahfaith'}>©2018 Shalanah Dawson</Link>
             </div>
             <div style={{marginTop: 5, fontSize: 12}}>Downloads free to use for non&#8209;commercial purposes.</div>
           </DesktopOnly>
