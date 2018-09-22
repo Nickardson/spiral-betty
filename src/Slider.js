@@ -3,8 +3,9 @@ import styled from 'styled-components'
 
 const sliderThumbSize = '12px'
 const trackColor = '#979797'
-const hoverScale = 2.5
-const grabScale = 2
+const initScale = 1.5
+const hoverScale = 3
+const grabScale = 3
 
 const SliderContainer = styled.div`
   position: relative;
@@ -51,6 +52,7 @@ const SliderInput = styled.input`
 &[type=range]::-webkit-slider-thumb {
   box-shadow: none;
   border: none;
+  transform: scale(${initScale});
   height: ${sliderThumbSize};
   width: ${sliderThumbSize};
   border-radius: 100%;
@@ -82,6 +84,7 @@ const SliderInput = styled.input`
 &[type=range]::-moz-range-thumb {
   box-shadow: none;
   border: none;
+  transform: scale(${initScale});
   box-sizing: border-box;
   height: ${sliderThumbSize};
   width: ${sliderThumbSize};
@@ -121,6 +124,7 @@ const SliderInput = styled.input`
   cursor: pointer;
   width: 10px;
   height: 10px;
+  transform: scale(${initScale});
 }
 &[type=range]::-ms-thumb:hover {
   width: 10px;
@@ -167,9 +171,11 @@ const SliderInput = styled.input`
 `
 const TrackBeforeSlider = styled.div`
   position: absolute;
+  left: 0;
   width: 100%;
   height: 3px;
   top: 4px;
+  transform-origin: 0 0;
   background-color: ${props =>
     props.disabled ? 'rgb(238, 238, 238)' : 'var(--accent)'};
   pointer-events: none;
@@ -186,12 +192,14 @@ class Slider extends Component {
     this.setState({ dragging: false }, () => {
       document.body.classList.remove('grabbing')
       document.removeEventListener('mouseup', this.dragging)
+      document.removeEventListener('touchend', this.dragging)
     })
   }
   onMouseDown = () => {
     this.setState({ dragging: true }, () => {
       document.body.classList.add('grabbing')
       document.addEventListener('mouseup', this.dragging)
+      document.addEventListener('touchend', this.dragging)
     })
   }
   onMouseEnter = () => {
@@ -204,7 +212,6 @@ class Slider extends Component {
     const {
       onChange,
       value,
-      startCenter,
       max,
       min,
       step,
@@ -212,19 +219,9 @@ class Slider extends Component {
       style = {},
       ...sliderProps
     } = this.props
-    let trackBeforeSliderStyle = {}
-    if (startCenter) {
-      // is this to the right or left of slider?
-      let midPt = (max + min) / 2
-      let pastCenter = value > midPt
-      trackBeforeSliderStyle = {
-        [pastCenter ? 'left' : 'right']: '50%',
-        width: Math.abs((value - midPt) / (max - min)) * 100 + '%'
-      }
-    } else {
-      trackBeforeSliderStyle = {
-        width: `${((value - min) / (max - min)) * 100}%`
-      }
+    const trackBeforeSliderStyle = {
+      WebkitTransform: `scaleX(${((value - min) / (max - min))}) translateZ(0)`,
+      transform: `scaleX(${((value - min) / (max - min))}) translateZ(0)`
     }
     let className = ''
     if (this.state.dragging) className = 'grabbing'
@@ -238,6 +235,7 @@ class Slider extends Component {
           onMouseDown={this.onMouseDown}
           onMouseEnter={this.onMouseEnter}
           onMouseLeave={this.onMouseLeave}
+          onTouchStart={this.onMouseDown}
           type={'range'}
           min={min}
           max={max}
