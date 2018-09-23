@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Fragment } from 'react'
 import SpiralPointsGetter from './SpiralPointsGetter'
 import SpiralCanvas from './SpiralCanvas'
 import { connect } from 'react-redux'
@@ -9,7 +9,7 @@ import {addTempProp} from './redux/actions'
 
 const { coloring } = require('./lib/constants')
 
-class Filter extends Component {
+class Filter extends React.Component {
   state = { hover: false }
   onMouseEnter = () => {
     this.setState({ hover: true })
@@ -32,14 +32,14 @@ class Filter extends Component {
     return darkest
   }
   render() {
-    const { name, length, colorIndex, imgData, editing, setAnimationValue, animating } = this.props
+    const { name, length, colorIndex, imgData, editing, setAnimationValue, animating, downloading } = this.props
     if (!imgData) return null
-    const maxSize = 2000
+    const maxSize = 1500
     switch (name) {
       case 'spiral':
         return (
           <SpiralPointsGetter>
-            {({ points, invertPoints, width, height, scale }) => {
+            {({ points, width, height, scale }) => {
               return (
                 <div>
                   {/* Interactive asset */}
@@ -54,21 +54,20 @@ class Filter extends Component {
                     width={width}
                     height={height}
                     scale={scale}
-                    points={coloring[colorIndex].fill.invert ? invertPoints : points}
+                    points={points}
                     length={Math.min(length, maxSize)}
                     colorIndex={colorIndex}
                   />
                   {/* Downloading asset */}
-                  <SpiralCanvas
+                  {downloading && <SpiralCanvas
                     id={layout.ids.spiralCanvas}
                     width={width}
                     height={height}
                     scale={scale}
-                    points={coloring[colorIndex].fill.invert ? invertPoints : points}
+                    points={points}
                     length={maxSize}
                     style={{position: 'absolute', zIndex: -1}}
-                    colorIndex={colorIndex}
-                  />
+                    colorIndex={colorIndex} />}
                   {!animating &&
                     <Fragment>
                       <div
@@ -108,10 +107,10 @@ const mapStateToProps = state => {
     filter: { name, colorIndex },
     preview: { length },
     img: { data: imgData },
-    temp: {animating}
+    temp: {animating, downloading}
   } = state
   return { name, length, colorIndex, imgData, 
-    editing, animating
+    editing, animating, downloading
   }
 }
 
