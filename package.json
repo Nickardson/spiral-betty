@@ -5,7 +5,6 @@
   "homepage": "https://shalanah.github.io/spiral-betty/",
   "dependencies": {
     "chroma-js": "^1.3.7",
-    "gh-pages": "^2.0.0",
     "react": "^16.4.0",
     "react-beforeunload": "^1.0.4",
     "react-dom": "^16.4.0",
@@ -14,15 +13,17 @@
     "redux": "^3.7.2",
     "styled-components": "^4.0.0-beta.8"
   },
+  "gh-pages-deploy": {
+    "staticpath": "build",
+    "prep": [
+      "npm run build"
+    ]
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "npm run build",
-    "predeploy": "gh-pages -d build"
-  },
-  "devDependencies": {
-    "react-motion": "^0.5.2"
+    "deploy": "gh-pages-deploy"
   }
 }
