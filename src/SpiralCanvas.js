@@ -73,7 +73,7 @@ const bounceIn = keyframes`
   100% {
     transform: scale(1.25);
   }
-`;
+`
 const bounceOut = keyframes`
   0% {
     transform: scale(1.25);
@@ -84,7 +84,7 @@ const bounceOut = keyframes`
   100% {
     transform: scale(1);
   }
-`;
+`
 
 const Canvas = styled.canvas`
   transition: border .2s;
@@ -99,12 +99,17 @@ const Canvas = styled.canvas`
           border: 3px solid ${props.accent};
           z-index: 1000000; // absurd number on purpose
         }
-      }
     ` : ''
   }
   ${(props) => props.active ? `
     border: 3px solid ${props.accent};
   ` : ''}
+  ${props => props.interactive ? '' : `
+    &:active {
+      border: 3px solid ${props.accent};
+      box-shadow: 0 0 0 4px ${props.highlight};
+    }
+  `} 
 `
 
 const getFillType = (ctx, {colors, fill, fill: {attr}}, len) => {
@@ -253,9 +258,10 @@ class SpiralCanvas extends React.Component {
         highlight={highlight}
         accent={accent}
         active={active}
+        interactive={interactive}
         id={id}
         onClick={interactive && startEditingPhoto}
-        innerRef={(x) => this.canvas = x}
+        ref={(x) => this.canvas = x}
         width={length * this.multiplier}
         height={length * this.multiplier}
         style={{
