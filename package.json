@@ -15,9 +15,6 @@
   },
   "gh-pages-deploy": {
     "staticpath": "build",
-    "prep": [
-      "npm run build"
-    ],
     "post": [
       "clean:gh"
     ]
