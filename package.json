@@ -16,7 +16,6 @@
   "gh-pages-deploy": {
     "staticpath": "build",
     "prep": [
-      "install",
       "build"
     ],
     "post": [
