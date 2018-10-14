@@ -24,6 +24,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "gh-pages-deploy -- 'Build'"
+    "deploy": "gh-pages-deploy -- 'Prod Build'"
+  },
+  "devDependencies": {
+    "gh-pages-deploy": "^0.5.0"
   }
 }
