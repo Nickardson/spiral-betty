@@ -15,9 +15,12 @@
   },
   "gh-pages-deploy": {
     "staticpath": "build",
-    "post": [
+    "prep": [
+      "build"
+    ],
+    "post": {
       "clean:gh"
-    ]
+    }
   },
   "scripts": {
     "start": "react-scripts start",
