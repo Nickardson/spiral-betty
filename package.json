@@ -18,9 +18,9 @@
     "prep": [
       "build"
     ],
-    "post": {
+    "post": [
       "clean:gh"
-    }
+    ]
   },
   "scripts": {
     "start": "react-scripts start",
