@@ -19,7 +19,7 @@
       "build"
     ],
     "post": [
-      "clean:gh"
+      "clean"
     ]
   },
   "scripts": {
@@ -28,7 +28,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "gh-pages-deploy -- 'Prod Build'",
-    "clean:gh": "del-cli public src README.md yarn* package* .gitignore node_modules"
+    "clean": "del-cli public src README.md yarn.lock package.json package-lock.json .gitignore node_modules"
   },
   "devDependencies": {
     "del-cli": "^1.1.0",
