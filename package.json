@@ -14,7 +14,10 @@
     "styled-components": "^4.0.0-beta.8"
   },
   "gh-pages-deploy": {
-    "staticpath": "build"
+    "staticpath": "build",
+    "prep": [
+      "npm run build"
+    ]
   },
   "scripts": {
     "start": "react-scripts start",
