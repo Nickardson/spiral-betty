@@ -17,6 +17,9 @@
     "staticpath": "build",
     "prep": [
       "npm run build"
+    ],
+    "post": [
+      "clean:gh"
     ]
   },
   "scripts": {
@@ -24,9 +27,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "gh-pages-deploy -- 'Prod Build'"
+    "deploy": "gh-pages-deploy -- 'Prod Build'",
+    "clean:gh": "del-cli public src README.md yarn* package* .gitignore node_modules"
   },
   "devDependencies": {
+    "del-cli": "^1.1.0",
     "gh-pages-deploy": "^0.5.0"
   }
 }
