@@ -21,6 +21,9 @@ import {InvertIcon} from './SectionSliderScale'
 import {SecondaryButton} from './Button'
 import CloseIcon from './CloseIcon'
 import SliderContainer from './SliderContainer'
+import Main from './Main'
+import WorkspaceContainer from './WorkspaceContainer'
+import DesktopOnly from './DesktopOnly'
 
 import {
   addFilter,
@@ -50,27 +53,6 @@ const Container = styled.div`
   @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px)  {
     flex-direction: column;
   }
-`
-const DesktopOnly = styled.div`
-  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
-    display: none;
-  }
-`
-
-const Main = styled.div`
-  flex: 1;
-  height: 100%;
-  position: relative;
-  z-index: 100;
-  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
-    height: initial;
-    flex: 4;
-  }
-`
-
-const WorkspaceContainer = styled.div`
-  display: flex;
-  height: calc(100% - 100px);
 `
 const MobileMargin = styled.div`
   display: none;
