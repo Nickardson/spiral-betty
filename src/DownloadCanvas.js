@@ -44,9 +44,9 @@ class DownloadCanvas extends React.PureComponent {
     }
     return (
       <svg
+        touch-action={'none'}
         viewBox='0 0 60 60'
-        onMouseUp={this.onClick} // TODO: POINTER
-        onTouchEnd={this.onClick}
+        onPointerUp={this.onClick}
         style={{position: 'relative', width: '100%', height: '100%'}}>
         <g transform='translate(3 3)'>
           <polyline
