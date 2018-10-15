@@ -20,6 +20,7 @@ import Swatches from './Swatches'
 import {InvertIcon} from './SectionSliderScale'
 import {SecondaryButton} from './Button'
 import CloseIcon from './CloseIcon'
+import SliderContainer from './SliderContainer'
 
 import {
   addFilter,
@@ -155,17 +156,6 @@ const NavLinks = styled.span`
   ` : ''}
 `
 
-const SliderContainer = styled.div`
-  position: absolute;
-  width: 80%;
-  min-width: 300px;
-  bottom: -70px;
-  left: 50%;
-  transform: translate(-50%);
-  @media only screen and (orientation: portrait), (max-width: 1000px) {
-    width: 100%;
-  }
-`
 const SecondaryActions = styled.div`
   position: absolute;
   top: 19px;
@@ -174,9 +164,7 @@ const SecondaryActions = styled.div`
 `
 
 class App extends Component {
-  handleRingChange = val => {
-    this.props.updateRings(val)
-  }
+  state = {}
   handleScaleChange = scale => {
     const {
       img: { scale: prevScale, cx: prevCx, cy: prevCy, width, height },
