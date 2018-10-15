@@ -24,6 +24,12 @@ import SliderContainer from './SliderContainer'
 import Main from './Main'
 import WorkspaceContainer from './WorkspaceContainer'
 import DesktopOnly from './DesktopOnly'
+import Sidebar from './Sidebar'
+import NavLinks from './NavLinks'
+import MobileMargin from './MobileMargin'
+import MobileHeader from './MobileHeader'
+import SecondaryActions from './SecondaryActions'
+import AppContainer from './AppContainer'
 
 import {
   addFilter,
@@ -40,113 +46,8 @@ import {
 } from './redux/actions'
 import { scaleInputId, rings, lightnessVals, contrastVals } from './lib/constants'
 import { getImageData } from './lib/img'
-import styled from 'styled-components'
-
-const Container = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  position: relative;
-  background-color: ${props => props.editing ? '#222' : ''};
-  transition: .5s;
-  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px)  {
-    flex-direction: column;
-  }
-`
-const MobileMargin = styled.div`
-  display: none;
-  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
-    display: flex;
-    flex: 0 0 5vh;
-  }
-`
-const Sidebar = styled.div`
-  flex: 0 0 250px; 
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid #ccc;
-  background-color: #fff;
-  height: 100%;
-  padding: 20px 15px;
-  overflow-y: auto; 
-  transition: .5s;
-  ${props => props.hide ? `
-    transform: translateX(300px);
-    opacity: 0
-  ` : ''}
-  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
-    z-index: 100;
-    width: 100%;
-    bottom: 0;
-    flex: 0 0 90px;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    padding: 10px 5px;
-    overflow-y: hidden;
-    overflow-x: scroll;
-    background-color: #efefef;
-    border-top: 1px solid #ccc;
-    transition: .3s;
-    ${props => props.hide || props.noImg ? `
-      transform: translateY(90px);
-      opacity: 0;
-    ` : ''}
-  }
-`
-
-const MobileHeader = styled.div`
-  display: none;
-  @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
-    display: flex;
-    flex: 0 0 45px;
-    height: 45px;
-    width: 100%;
-    background-color: #fff;
-    box-shadow: 0 0 2px rgba(0,0,0,.2);
-    border-bottom: 1px solid #efefef;
-    transition: .2s;
-    ${props => props.hide ? `
-      transform: translateY(-35px);
-      opacity: 0;
-    ` : ''}
-  }
-`
-
-const NavLinks = styled.span`
-  transition: background-color .2s, color .2s;
-  font-weight: 800;
-  font-size: 12px;
-  cursor: pointer;
-  color: #ccc;
-  padding: 5px 10px;
-  border-radius: 50px;
-  :hover {
-    color: #fff;
-    background-color: var(--accent);
-    scale: 1.1;
-  }
-  ${props => props.active ? `
-    color: var(--accent) !important;
-    background-color: transparent !important;
-  ` : ''}
-  ${props => props.disabled ? `
-    color: #ddd !important;
-    background-color: transparent !important;
-    pointer: none;
-    pointer-events: none;
-  ` : ''}
-`
-
-const SecondaryActions = styled.div`
-  position: absolute;
-  top: 19px;
-  left: 23px;
-  z-index: 100;
-`
 
 class App extends Component {
-  state = {}
   handleScaleChange = scale => {
     const {
       img: { scale: prevScale, cx: prevCx, cy: prevCy, width, height },
@@ -365,7 +266,7 @@ class App extends Component {
     if (!init) return null
     /* return <Splash /> */
     return (
-      <Container editing={editing}>
+      <AppContainer editing={editing}>
         <Beforeunload onBeforeunload={() => "Sure you want to leave this site? You will lose your progress"} />
         <MobileHeader
           hide={editing || animating}>
@@ -436,7 +337,7 @@ class App extends Component {
           {!!imgData && !editing && !animating && <Swatches />}
           {!blobUrl && <Onboarding />}
         </Sidebar>
-      </Container>
+      </AppContainer>
     )
   }
 }
