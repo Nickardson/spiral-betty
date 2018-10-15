@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import { layout } from './lib/constants'
 import chroma from 'chroma-js'
 import WorkspaceIconAndText from './WorkspaceIconAndText'
-import {addTempProp} from './redux/actions'
 
 const { coloring } = require('./lib/constants')
 
@@ -32,7 +31,7 @@ class Filter extends React.Component {
     return darkest
   }
   render() {
-    const { name, length, colorIndex, imgData, editing, setAnimationValue, animating, downloading } = this.props
+    const { name, length, colorIndex, imgData, editing, animating, setAnimating, clickedDownload } = this.props
     if (!imgData) return null
     const maxSize = 1500
     switch (name) {
@@ -44,8 +43,8 @@ class Filter extends React.Component {
                 <div>
                   {/* Interactive asset */}
                   <SpiralCanvas
-                    onStartAnimation={() => {setAnimationValue(true)}}
-                    onEndAnimation={() => {setAnimationValue(false)}}
+                    onStartAnimation={() => {setAnimating(true)}}
+                    onEndAnimation={() => {setAnimating(false)}}
                     animate
                     editing={editing}
                     interactive
@@ -59,7 +58,7 @@ class Filter extends React.Component {
                     colorIndex={colorIndex}
                   />
                   {/* Downloading asset */}
-                  {downloading && <SpiralCanvas
+                  {clickedDownload && <SpiralCanvas
                     id={layout.ids.spiralCanvas}
                     width={width}
                     height={height}
@@ -107,17 +106,8 @@ const mapStateToProps = state => {
     filter: { name, colorIndex },
     preview: { length },
     img: { data: imgData },
-    temp: {animating, downloading}
   } = state
-  return { name, length, colorIndex, imgData, 
-    editing, animating, downloading
-  }
+  return { name, length, colorIndex, imgData, editing}
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setAnimationValue: (value) => dispatch(addTempProp('animating', value))
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Filter)
+export default connect(mapStateToProps)(Filter)

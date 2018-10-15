@@ -63,13 +63,6 @@ const setup = () => ({
   type: 'STORE_INIT',
 })
 
-// Temp
-const addTempProp = (prop, value) => ({
-  type: 'TEMP',
-  prop,
-  value
-})
-
 export {
   startEditingPhoto,
   endEditingPhoto,
@@ -81,6 +74,5 @@ export {
   addFilter,
   updateFilter,
   setup,
-  addTempProp,
   clearImg
 }

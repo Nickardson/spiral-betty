@@ -1,15 +1,8 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import {
-  addTempProp
-} from './redux/actions'
-
 const {layout: {ids: {spiralCanvas}}} = require('./lib/constants')
 
 class DownloadCanvas extends React.PureComponent {
-  onClick = () => {
-    this.props.setDownload(true)
-  }
+  onClick = () => { this.props.setClickedDownload(true) }
   downloadCanvas = () => {
     const canvas = document.getElementById(spiralCanvas)
     canvas.toBlob(function(blob) {
@@ -28,11 +21,11 @@ class DownloadCanvas extends React.PureComponent {
     if (document.getElementById(spiralCanvas)) {
       this.downloadCanvas()
       window.clearInterval(this.timer)
-      this.props.setDownload(false)
+      this.props.setClickedDownload(false)
     }
   }
   componentDidUpdate (prevProps) {
-    if (prevProps.downloading !== true && this.props.downloading === true) {
+    if (prevProps.clickedDownload !== true && this.props.clickedDownload === true) {
       this.timer = setInterval(() => {
         this.checkToSeeIfCanvasForDownloadExists()
       }, 100)
@@ -40,27 +33,42 @@ class DownloadCanvas extends React.PureComponent {
     }
   }
   render () {
-    const {width = 2} = this.props
+    const {width} = this.props
     const strokeWidth = `${width}px`
+    const style = {
+      fill: 'none',
+      stroke: 'currentColor',
+      strokeLinecap: 'round',
+      strokeLinejoin: 'round',
+      strokeWidth
+    }
     return (
-      <svg viewBox='0 0 60 60' onMouseUp={this.onClick} style={{position: 'relative', width: '100%', height: '100%'}}><g transform='translate(3 3)'><polyline points='12 29 12 41 42 41 42 29' style={{fill: 'none', stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth}}/><polyline points='35 26 27 34 19 26' style={{fill: 'none', stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth}}/><line x1='27' y1='34' x2='27' y2='11.3' style={{fill: 'none', stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth}}/></g></svg>
+      <svg
+        viewBox='0 0 60 60'
+        onMouseUp={this.onClick} // TODO: POINTER
+        onTouchEnd={this.onClick}
+        style={{position: 'relative', width: '100%', height: '100%'}}>
+        <g transform='translate(3 3)'>
+          <polyline
+            points='12 29 12 41 42 41 42 29'
+            style={style} />
+          <polyline
+            points='35 26 27 34 19 26'
+            style={style} />
+          <line
+            x1='27'
+            y1='34'
+            x2='27'
+            y2='11.3'
+            style={style} />
+        </g>
+      </svg>
     )
   }
 }
 
-const mapStateToProps = state => {
-  const {
-    temp: {downloading}
-  } = state
-  return { downloading }
-}
-const mapDispatchToProps = dispatch => {
-  return {
-    setDownload: (value) => dispatch(addTempProp('downloading', value))
-  }
+DownloadCanvas.defaultProps = {
+  width: 2
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DownloadCanvas)
+export default DownloadCanvas

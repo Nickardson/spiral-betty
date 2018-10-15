@@ -17,7 +17,6 @@ class Upload extends Component {
     e.preventDefault()
     // TODO: set state
     this.props.onChange({target: e.dataTransfer})
-    if (this.props.isFirefox) return // FF kinda sucks at this stuff
     this.setState(({dragging: d, ...props}) => {return {...props, dragging: 0}}, () => {
       // Keeping children from firing (pointer events turned off)
       document.getElementsByTagName( 'html' )[0].classList.remove('file-dragging')
@@ -25,14 +24,12 @@ class Upload extends Component {
   }
   onDragEnter = (e) => {
     e.preventDefault()
-    if (this.props.isFirefox) return // FF kinda sucks at this stuff
     document.getElementsByTagName('html')[0].classList.add('file-dragging')
     this.setState(({dragging: d, ...props}) => {return {...props, dragging: d + 1}})
   }
   onDragOver = (e) => {e.preventDefault()}
   onDragLeave = (e) => {
     e.preventDefault()
-    if (this.props.isFirefox) return // FF kinda sucks at this stuff
     this.setState(({dragging: d, ...props}) => {return {...props, dragging: d - 1}}, () => {
       if (this.state.dragging <= 0) {
          // Turn back on pointer events
@@ -97,8 +94,8 @@ class Upload extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const {img: {blobUrl}, temp: {isFirefox}} = state
-  return {blobUrl, isFirefox}
+  const {img: {blobUrl}} = state
+  return {blobUrl}
 }
 export default connect(
   mapStateToProps

@@ -36,7 +36,6 @@ import {
   setup,
   updateImgPos,
   clearImg,
-  addTempProp,
   updateFilter,
   startEditingPhoto,
   updateContrast,
@@ -48,6 +47,18 @@ import { scaleInputId, rings, lightnessVals, contrastVals } from './lib/constant
 import { getImageData } from './lib/img'
 
 class App extends Component {
+  state = {
+    attribute: 'rings', // active attribute
+    clickedDownload: false,
+    animating: false
+  }
+  handleAttributeChange = (att) => { this.setState({attribute: att}) }
+  setClickedDownload = (val) => { this.setState({clickedDownload: val}) }
+  setAnimating = (val) => { this.setState({animating: val}) }
+
+  handleRingChange = val => {
+    this.props.updateRings(val)
+  }
   handleScaleChange = scale => {
     const {
       img: { scale: prevScale, cx: prevCx, cy: prevCy, width, height },
@@ -191,15 +202,15 @@ class App extends Component {
   }
   componentWillMount() {
     // Setup store
-    const { addFilter, setup, addTempProp } = this.props
+    const { addFilter, setup } = this.props
     addFilter()
     updateContrast(contrastVals.default)
     updateLightness(lightnessVals.default)
-    addTempProp('attribute', 'rings')
     setup()
   }
   getSliderProps = () => {
-    const {attribute, editing, scale, lightness, contrast, data} = this.props
+    const {attribute} = this.state
+    const {editing, scale, lightness, contrast, data} = this.props
     let attr = editing ? 'scale' : attribute
     switch (attr) {
       case 'scale':
@@ -256,15 +267,14 @@ class App extends Component {
   }
   render() {
     const {
-      attribute,
       init,
-      addTempProp,
       editing,
-      animating,
       img: { blobUrl, data: imgData }
     } = this.props
+    const {attribute, clickedDownload, animating} = this.state
     if (!init) return null
     /* return <Splash /> */
+    const navLinksDisabled = !blobUrl
     return (
       <AppContainer editing={editing}>
         <Beforeunload onBeforeunload={() => "Sure you want to leave this site? You will lose your progress"} />
@@ -274,7 +284,9 @@ class App extends Component {
         <div
           key={2}
           style={{position: 'absolute', right: 6, top: 3, height: 40, width: 40}}>
-          <DownloadCanvas />
+          <DownloadCanvas
+            setClickedDownload={this.setClickedDownload}
+            clickedDownload={clickedDownload} />
         </div>])
         }
           <Logo style={{height: '13px', margin: 'auto', fill: '#777'}} />
@@ -296,7 +308,10 @@ class App extends Component {
           </DesktopOnly>
           <WorkspaceContainer>
             <Workspace>
-              <Filter />
+              <Filter
+                setAnimating={this.setAnimating}
+                animating={animating}
+                clickedDownload={clickedDownload} />
               <EditPhoto updatePhoto={this.updateImage} />
               <Guides />
               <Upload onChange={this.handleFileChange} />
@@ -309,20 +324,47 @@ class App extends Component {
                 </SliderContainer> 
                 <div style={{position: 'absolute', visibility: 'hidden', width: '80%', minWidth: 300, bottom: -90, left: '50%', transform: 'translate(-50%)'}}>
                   {/* TODO: use local storage to not show this if they have been here before */}
-                  <DemoImage blobUrl={blobUrl} handleFile={this.handleFile} />
+                  <DemoImage
+                    blobUrl={blobUrl}
+                    handleFile={this.handleFile} />
                 </div>
                 <div style={{position: 'absolute', width: '80%', minWidth: 300, bottom: -100, left: '50%', transform: 'translate(-50%)'}}>
                 {!editing && !animating && <div style={{fontSize: 10, justifyContent: 'space-evenly', display: 'flex', alignItems: 'center', textTransform: "uppercase", textAlign: 'center'}}>
-                  <NavLinks disabled={!blobUrl} active={attribute === 'rings' && !editing} onClick={() => {addTempProp('attribute', 'rings')}}>Rings</NavLinks>
-                  <NavLinks disabled={!blobUrl} active={attribute === 'scale' || editing} onClick={() => {addTempProp('attribute', 'scale')}}>Scale</NavLinks>
-                  <NavLinks disabled={!blobUrl} active={attribute === 'lightness' && !editing} onClick={() => addTempProp('attribute', 'lightness')}>Lightness</NavLinks>
-                  <NavLinks disabled={!blobUrl} active={attribute === 'contrast' && !editing} onClick={() => addTempProp('attribute', 'contrast')}>Contrast</NavLinks>
+                  <NavLinks
+                    disabled={navLinksDisabled}
+                    active={attribute === 'rings' && !editing}
+                    onClick={() => {this.handleAttributeChange('rings')}}>
+                    Rings
+                  </NavLinks>
+                  <NavLinks
+                    disabled={navLinksDisabled}
+                    active={attribute === 'scale' || editing} // in editing mode we are always open to scale
+                    onClick={() => {this.handleAttributeChange('scale')}}>
+                    Scale
+                  </NavLinks>
+                  <NavLinks
+                    disabled={navLinksDisabled}
+                    active={attribute === 'lightness' && !editing}
+                    onClick={() => {this.handleAttributeChange('lightness')}}>
+                    Lightness
+                  </NavLinks>
+                  <NavLinks
+                    disabled={navLinksDisabled}
+                    active={attribute === 'contrast' && !editing}
+                    onClick={() => {this.handleAttributeChange('contrast')}}>
+                    Contrast
+                  </NavLinks>
                   </div>}
                 </div>
             </Workspace>
           </WorkspaceContainer>
           <DesktopOnly>
-            {!editing && !animating && blobUrl && <InvertIcon style={{position: 'absolute', right: 15, top: 15, height: 70, width: 70, borderRadius: '100%'}}><DownloadCanvas width={1} /></InvertIcon>}
+            {!editing && !animating && blobUrl && <InvertIcon style={{position: 'absolute', right: 15, top: 15, height: 70, width: 70, borderRadius: '100%'}}>
+              <DownloadCanvas
+                width={1}
+                setClickedDownload={this.setClickedDownload}
+                clickedDownload={clickedDownload} />
+              </InvertIcon>}
           </DesktopOnly>
         </Main>
         <MobileMargin />
@@ -348,10 +390,9 @@ const mapStateToProps = state => {
     setup: { init },
     img: { scale, blobUrl, lightness, contrast },
     img,
-    filter: {data},
-    temp: {animating, attribute}
+    filter: {data}
   } = state
-  return { init, scale, img, blobUrl, editing, animating, attribute, lightness, contrast, data }
+  return { init, scale, img, blobUrl, editing, lightness, contrast, data }
 }
 const mapDispatchToProps = dispatch => {
   return {
@@ -388,7 +429,6 @@ const mapDispatchToProps = dispatch => {
     updateImgPos: (scale, cx, cy) => dispatch(updateImgPos(scale, cx, cy)),
     updateContrast: contrast => dispatch(updateContrast(contrast)),
     updateLightness: lightness => dispatch(updateLightness(lightness)),
-    addTempProp: (prop, value) => dispatch(addTempProp(prop, value)),
     clearImg: () => dispatch(clearImg())
   }
 }
