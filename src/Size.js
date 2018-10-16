@@ -1,16 +1,8 @@
 import React, {Component} from 'react'
 import Section from './Section'
 import {SecondaryButton} from './Button'
-import { connect } from 'react-redux'
 import styled from 'styled-components'
-import {updatePreview} from './redux/actions'
-
-const sizes = [
-  {length: this.originalSize, retina: 1, name: 'Fit to screen'},
-  {length: 168, name: 'Facebook profile'},
-  {length: 200, name: 'Twitter profile'},
-  {length: 614, name: 'Instagram'},
-]
+import {sizes} from './lib/constants'
 
 const DD = styled.div`
   position: relative;
@@ -114,21 +106,21 @@ class Size extends Component {
     document.addEventListener('mouseup', this.outSideClick)
   }
   onResize = () => {
-    const l = this.findFit()
-    const {name, updatePreview} = this.props
-    if (sizes[0].name === name) updatePreview(l, name)
+    const length = this.findFit()
+    const {name, setPreview} = this.props
+    if (sizes[0].name === name) setPreview({length, name})
   }
   componentDidMount () {
     // setup store
-    const {updatePreview} = this.props
-    updatePreview(this.findFit(), sizes[0].name)
+    const {setPreview} = this.props
+    setPreview({length: this.findFit(), name: sizes[0].name})
     window.addEventListener('resize', this.onResize)
   }
   componentWillUnmount () {
     window.removeEventListener('resize', this.onResize)
   }
   render () {
-    const {updatePreview, name: currentName, disabled} = this.props
+    const {setPreview, name: currentName, disabled} = this.props
     return (
       <Section style={{pointerEvents: disabled ? 'none' : '', opacity: disabled ? .15 : 1}}>
         <DD>
@@ -154,9 +146,7 @@ class Size extends Component {
                   <Li 
                     style={{color: active ? '#222' : ''}}
                     key={i}
-                    onClick={() => {
-                      updatePreview(i !== 0 ? length : this.findFit(), name)}
-                    }>
+                    onClick={() => {setPreview({length: i !== 0 ? length : this.findFit(), name})}}>
                     {name}
                   </Li>
                 )
@@ -169,18 +159,4 @@ class Size extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const {preview: {length, name}} = state
-  return {length, name}
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    updatePreview: (length, name) => dispatch(updatePreview(length, name))
-  }
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Size)
+export default Size

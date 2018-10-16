@@ -37,21 +37,23 @@ import {
   updateImgPos,
   clearImg,
   updateFilter,
-  startEditingPhoto,
+  startEditingPhoto, 
   updateContrast,
   endEditingPhoto,
   addImgData,
   updateLightness
 } from './redux/actions'
-import { scaleInputId, rings, lightnessVals, contrastVals } from './lib/constants'
+import { scaleInputId, rings, lightnessVals, contrastVals, sizes } from './lib/constants'
 import { getImageData } from './lib/img'
 
 class App extends Component {
   state = {
     attribute: 'rings', // active attribute
     clickedDownload: false,
-    animating: false
+    animating: false,
+    preview: sizes[0]
   }
+  setPreview = (preview) => { this.setState({preview}) }
   handleAttributeChange = (att) => { this.setState({attribute: att}) }
   setClickedDownload = (val) => { this.setState({clickedDownload: val}) }
   setAnimating = (val) => { this.setState({animating: val}) }
@@ -271,7 +273,7 @@ class App extends Component {
       editing,
       img: { blobUrl, data: imgData }
     } = this.props
-    const {attribute, clickedDownload, animating} = this.state
+    const {attribute, clickedDownload, animating, preview: {length, name}} = this.state
     if (!init) return null
     /* return <Splash /> */
     const navLinksDisabled = !blobUrl
@@ -302,17 +304,24 @@ class App extends Component {
                 <span style={{paddingRight: 20}}>Remove image</span><span style={{position: 'absolute', right: 16, top: 7, width: 14, height: 14}}><CloseIcon /></span>
               </SecondaryButton>
               <div>
-                <Size disabled={editing || animating} />
+                <Size
+                  length={length}
+                  name={name}
+                  disabled={editing || animating}
+                  setPreview={this.setPreview} />
               </div>
             </SecondaryActions>
           </DesktopOnly>
           <WorkspaceContainer>
-            <Workspace>
+            <Workspace length={length}>
               <Filter
+                length={length}
                 setAnimating={this.setAnimating}
                 animating={animating}
                 clickedDownload={clickedDownload} />
-              <EditPhoto updatePhoto={this.updateImage} />
+              <EditPhoto
+                length={length}
+                updatePhoto={this.updateImage} />
               <Guides />
               <Upload onChange={this.handleFileChange} />
                 <SliderContainer>

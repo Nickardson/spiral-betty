@@ -1,26 +1,21 @@
 import React from 'react'
-import { connect } from 'react-redux'
 
-const Workspace = ({children, length}) => (
-  <div 
-    style={{
-      margin: 'auto',
-      position: 'relative',
-      width: length,
-      height: length,
-      transition: '.2s'
-    }}>
-    {children}
-  </div>
-)
-
-
-const mapStateToProps = (state) => {
-  const {preview: {length}} = state
-  return {
-    length
+class Workspace extends React.PureComponent {
+  render () {
+    const {children, length} = this.props
+    return (
+      <div 
+        style={{
+          margin: 'auto',
+          position: 'relative',
+          width: length,
+          height: length,
+          transition: '.2s'
+        }}>
+        {children}
+      </div>
+    )
   }
 }
-export default connect(
-  mapStateToProps
-)(Workspace)
+
+export default Workspace

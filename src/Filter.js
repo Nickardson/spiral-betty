@@ -104,10 +104,9 @@ const mapStateToProps = state => {
   const {
     editing: {editing},
     filter: { name, colorIndex },
-    preview: { length },
     img: { data: imgData },
   } = state
-  return { name, length, colorIndex, imgData, editing}
+  return { name, colorIndex, imgData, editing}
 }
 
 export default connect(mapStateToProps)(Filter)

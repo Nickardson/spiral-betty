@@ -8,6 +8,13 @@ export const layout = {
   }
 }
 
+export const sizes = [
+  {length: 0, name: 'Fit to screen'}, // length will be filled in
+  {length: 168, name: 'Facebook profile'},
+  {length: 200, name: 'Twitter profile'},
+  {length: 614, name: 'Instagram'},
+]
+
 // Source: https://css-tricks.com/emulating-css-timing-functions-javascript/
 export const easing = {
   linear: (k) => (k),
