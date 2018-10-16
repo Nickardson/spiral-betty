@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import Section from './Section'
 import Swatch from './Swatch'
@@ -17,15 +17,19 @@ const Container = styled.div`
   }
 `
 
-class Swatches extends Component {
+class Swatches extends React.PureComponent {
   render () {
     return (
       <Section>
-        <SpiralPointsGetter delayUntilMouseUp>
-          {({ points, width, height, scale }) => {
+        <SpiralPointsGetter
+          delayUntilMouseUp
+          filter={this.props.filter}> 
+          {({ points, width, height, scale }) => { 
             return <Container>
               {coloring.map((d, i) => (
                 <Swatch
+                  activeIndex={this.props.filter.colorIndex}
+                  setColorIndex={this.props.setColorIndex}
                   points={points}
                   width={width}
                   height={height}
@@ -45,9 +49,7 @@ class Swatches extends Component {
 }
 
 const mapStateToProps = state => {
-  const {
-    img: { data: imgData }
-  } = state
+  const { img: { data: imgData } } = state
   return { imgData }
 }
 

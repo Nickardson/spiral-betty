@@ -1,10 +1,7 @@
-import React, {Component} from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import SpiralCanvas from './SpiralCanvas'
 import chroma from 'chroma-js'
-
-import { connect } from 'react-redux'
-import { updateFilter } from './redux/actions'
 
 const {coloring} = require('./lib/constants')
 
@@ -22,7 +19,7 @@ const SwatchSize = styled.div`
   border-radius: 100%;
 `
 
-class Swatch extends Component {
+class Swatch extends React.PureComponent {
   findDarkestColor = () => {
     // const 
     const colors = coloring[this.props.colorIndex].dark.colors
@@ -38,8 +35,8 @@ class Swatch extends Component {
     return darkest
   }
   onClick = () => {
-    const {colorIndex, updateFilter} = this.props
-    updateFilter(colorIndex)
+    const {colorIndex, setColorIndex} = this.props
+    setColorIndex(colorIndex)
     // Find darkest color in set
     const accent = this.findDarkestColor()
     document.documentElement.style.setProperty('--accent', accent)
@@ -66,17 +63,4 @@ class Swatch extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const {filter: {colorIndex}} = state
-  return {activeIndex: colorIndex}
-}
-const mapDispatchToProps = (dispatch) => {
-  return {
-    updateFilter: (index) => dispatch(updateFilter(undefined, index)),
-  }
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Swatch)
+export default Swatch

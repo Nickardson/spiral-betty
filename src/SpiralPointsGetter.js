@@ -30,7 +30,7 @@ class SpiralPointsGetter extends Component {
     }
   }
   render() {
-    const {width, height, scale, contrast, lightness, cx, cy, imgData, rings} = this.props
+    const {width, height, scale, contrast, lightness, cx, cy, imgData, filter: {data: {rings}}} = this.props
     const points = getPoints({
       contrast,
       lightness,
@@ -47,15 +47,11 @@ class SpiralPointsGetter extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   const {
-    filter: {
-      data: { rings }
-    },
     img: { cx, cy, contrast, lightness, scale, data: imgData, width, height }
   } = state
   return {
-    rings,
     cx,
     cy,
     contrast,

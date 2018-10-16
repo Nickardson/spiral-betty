@@ -31,13 +31,13 @@ class Filter extends React.Component {
     return darkest
   }
   render() {
-    const { name, length, colorIndex, imgData, editing, animating, setAnimating, clickedDownload } = this.props
+    const { filter: {name, colorIndex}, filter, length, imgData, editing, animating, setAnimating, clickedDownload } = this.props
     if (!imgData) return null
     const maxSize = 1500
     switch (name) {
       case 'spiral':
         return (
-          <SpiralPointsGetter>
+          <SpiralPointsGetter filter={filter}>
             {({ points, width, height, scale }) => {
               return (
                 <div>
@@ -103,10 +103,9 @@ class Filter extends React.Component {
 const mapStateToProps = state => {
   const {
     editing: {editing},
-    filter: { name, colorIndex },
     img: { data: imgData },
   } = state
-  return { name, colorIndex, imgData, editing}
+  return { imgData, editing}
 }
 
 export default connect(mapStateToProps)(Filter)

@@ -44,20 +44,6 @@ const updateImgPos = (scale, cx, cy) => ({
   cy
 })
 
-// Filter
-const addFilter = (name, data, colorIndex) => ({
-  type: 'ADD_FILTER',
-  name,
-  data,
-  colorIndex
-})
-const updateFilter = (name, colorIndex, data) => ({
-  type: 'UPDATE_FILTER',
-  name,
-  colorIndex,
-  data
-})
-
 // Setup
 const setup = () => ({
   type: 'STORE_INIT',
@@ -71,8 +57,6 @@ export {
   updateLightness,
   addImgData,
   updateImgPos,
-  addFilter,
-  updateFilter,
   setup,
   clearImg
 }

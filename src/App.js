@@ -32,11 +32,9 @@ import SecondaryActions from './SecondaryActions'
 import AppContainer from './AppContainer'
 
 import {
-  addFilter,
   setup,
   updateImgPos,
   clearImg,
-  updateFilter,
   startEditingPhoto, 
   updateContrast,
   endEditingPhoto,
@@ -51,16 +49,33 @@ class App extends Component {
     attribute: 'rings', // active attribute
     clickedDownload: false,
     animating: false,
-    preview: sizes[0]
+    preview: sizes[0],
+    filter: {
+      name: 'spiral',
+      colorIndex: 0,
+      data: {
+        rings: rings.default
+      }
+    }
   }
+
+  setColorIndex = (colorIndex) => { this.setState(({filter: prevFilter}) => {return {filter: {...prevFilter, colorIndex}}}) }
   setPreview = (preview) => { this.setState({preview}) }
-  handleAttributeChange = (att) => { this.setState({attribute: att}) }
+  setAttributeChange = (att) => { this.setState({attribute: att}) }
   setClickedDownload = (val) => { this.setState({clickedDownload: val}) }
   setAnimating = (val) => { this.setState({animating: val}) }
+  setRings = val => { this.setState(({filter: prevFilter}) => {
+    return {
+      filter: { 
+        ...prevFilter,
+        data: {
+          ...prevFilter.data,
+          rings: val
+        }
+      }
+    }
+  })}
 
-  handleRingChange = val => {
-    this.props.updateRings(val)
-  }
   handleScaleChange = scale => {
     const {
       img: { scale: prevScale, cx: prevCx, cy: prevCy, width, height },
@@ -204,15 +219,15 @@ class App extends Component {
   }
   componentWillMount() {
     // Setup store
-    const { addFilter, setup } = this.props
-    addFilter()
+    const { setup } = this.props
     updateContrast(contrastVals.default)
     updateLightness(lightnessVals.default)
     setup()
   }
   getSliderProps = () => {
     const {attribute} = this.state
-    const {editing, scale, lightness, contrast, data} = this.props
+    const {editing, scale, lightness, contrast} = this.props
+    const {filter: {data}} = this.state
     let attr = editing ? 'scale' : attribute
     switch (attr) {
       case 'scale':
@@ -237,7 +252,7 @@ class App extends Component {
           max: rings.max,
           step: rings.step,
           defaultValue: data.rings,
-          onChange: this.handleRingChange
+          onChange: this.setRings
         }
       case 'lightness':
         return {
@@ -273,7 +288,7 @@ class App extends Component {
       editing,
       img: { blobUrl, data: imgData }
     } = this.props
-    const {attribute, clickedDownload, animating, preview: {length, name}} = this.state
+    const {attribute, clickedDownload, animating, preview: {length, name}, filter} = this.state
     if (!init) return null
     /* return <Splash /> */
     const navLinksDisabled = !blobUrl
@@ -315,6 +330,7 @@ class App extends Component {
           <WorkspaceContainer>
             <Workspace length={length}>
               <Filter
+                filter={filter}
                 length={length}
                 setAnimating={this.setAnimating}
                 animating={animating}
@@ -342,25 +358,25 @@ class App extends Component {
                   <NavLinks
                     disabled={navLinksDisabled}
                     active={attribute === 'rings' && !editing}
-                    onClick={() => {this.handleAttributeChange('rings')}}>
+                    onClick={() => {this.setAttributeChange('rings')}}>
                     Rings
                   </NavLinks>
                   <NavLinks
                     disabled={navLinksDisabled}
                     active={attribute === 'scale' || editing} // in editing mode we are always open to scale
-                    onClick={() => {this.handleAttributeChange('scale')}}>
+                    onClick={() => {this.setAttributeChange('scale')}}>
                     Scale
                   </NavLinks>
                   <NavLinks
                     disabled={navLinksDisabled}
                     active={attribute === 'lightness' && !editing}
-                    onClick={() => {this.handleAttributeChange('lightness')}}>
+                    onClick={() => {this.setAttributeChange('lightness')}}>
                     Lightness
                   </NavLinks>
                   <NavLinks
                     disabled={navLinksDisabled}
                     active={attribute === 'contrast' && !editing}
-                    onClick={() => {this.handleAttributeChange('contrast')}}>
+                    onClick={() => {this.setAttributeChange('contrast')}}>
                     Contrast
                   </NavLinks>
                   </div>}
@@ -385,7 +401,7 @@ class App extends Component {
             </div>
             <div style={{marginTop: 5, fontSize: 12}}>Downloads free to use for non&#8209;commercial purposes.</div>
           </DesktopOnly>
-          {!!imgData && !editing && !animating && <Swatches />}
+          {!!imgData && !editing && !animating && <Swatches setColorIndex={this.setColorIndex} filter={filter} />}
           {!blobUrl && <Onboarding />}
         </Sidebar>
       </AppContainer>
@@ -399,16 +415,12 @@ const mapStateToProps = state => {
     setup: { init },
     img: { scale, blobUrl, lightness, contrast },
     img,
-    filter: {data}
   } = state
-  return { init, scale, img, blobUrl, editing, lightness, contrast, data }
+  return { init, scale, img, blobUrl, editing, lightness, contrast }
 }
 const mapDispatchToProps = dispatch => {
   return {
-    addFilter: () => dispatch(addFilter('spiral', { rings: rings.default }, 0)),
     setup: () => dispatch(setup()),
-    updateRings: rings =>
-      dispatch(updateFilter(undefined, undefined, { rings })),
     startEditingPhoto: () => dispatch(startEditingPhoto()),
     endEditingPhoto: () => dispatch(endEditingPhoto()),
     addImgData: (
