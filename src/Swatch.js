@@ -42,12 +42,13 @@ class Swatch extends React.PureComponent {
     document.documentElement.style.setProperty('--accent', accent)
   }
   render () {
-    const {colorIndex, activeIndex, width, height, length, scale, points} = this.props
+    const {colorIndex, setEditingPhoto, activeIndex, width, height, length, scale, points} = this.props
     const highlight = chroma(this.findDarkestColor()).alpha(0.3).css()
     return (
       <Container>
         <SwatchSize onClick={this.onClick}>
           <SpiralCanvas
+            setEditingPhoto={setEditingPhoto}
             active={colorIndex === activeIndex}
             accent={this.findDarkestColor()}
             highlight={highlight}

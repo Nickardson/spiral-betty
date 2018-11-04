@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import { connect } from 'react-redux'
 
 const length = 1
 const Border = styled.div`
@@ -76,10 +75,4 @@ class Guides extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
-  const {
-    editing: { editing }
-  } = state
-  return { active: editing }
-}
-export default connect(mapStateToProps)(Guides)
+export default Guides

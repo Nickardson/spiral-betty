@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import WorkspaceIconAndText from './WorkspaceIconAndText'
 
 import styled from 'styled-components'
@@ -93,10 +92,4 @@ class Upload extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const {img: {blobUrl}} = state
-  return {blobUrl}
-}
-export default connect(
-  mapStateToProps
-)(Upload)
+export default Upload

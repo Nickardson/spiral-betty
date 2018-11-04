@@ -1,7 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import { connect } from 'react-redux'
-import { blobExifTransform } from './lib/img'
 import { scaleInputId } from './lib/constants'
 
 const Container = styled.div`
@@ -244,11 +242,4 @@ class EditPhoto extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const {img: {cx, cy, scale, width, height, blobUrl, orientation}, editing: {editing: active}} = state
-  const {flippedLengths, transform} = blobExifTransform(orientation)
-  return {active, cx, cy, scale, blobUrl, width, height, flippedLengths, transform}
-}
-export default connect(
-  mapStateToProps
-)(EditPhoto)
+export default EditPhoto

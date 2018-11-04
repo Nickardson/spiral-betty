@@ -1,8 +1,7 @@
-import { Component } from 'react'
+import React from 'react'
 import { getPoints } from './lib/spiral'
-import { connect } from 'react-redux'
 
-class SpiralPointsGetter extends Component {
+class SpiralPointsGetter extends React.Component {
   _mouseDown = () => {
     this.mouseIsDown = true
   }
@@ -30,7 +29,7 @@ class SpiralPointsGetter extends Component {
     }
   }
   render() {
-    const {width, height, scale, contrast, lightness, cx, cy, imgData, filter: {data: {rings}}} = this.props
+    const {width, height, scale, contrast, lightness, cx, cy, data: imgData, filter: {data: {rings: maxLoops}}} = this.props
     const points = getPoints({
       contrast,
       lightness,
@@ -41,26 +40,10 @@ class SpiralPointsGetter extends Component {
       width,
       height,
       imgData,
-      maxLoops: rings
+      maxLoops
     })
     return this.props.children({points, width, height, scale})
   }
 }
 
-const mapStateToProps = (state) => {
-  const {
-    img: { cx, cy, contrast, lightness, scale, data: imgData, width, height }
-  } = state
-  return {
-    cx,
-    cy,
-    contrast,
-    scale,
-    imgData,
-    width,
-    height,
-    lightness
-  }
-}
-
-export default connect(mapStateToProps)(SpiralPointsGetter)
+export default SpiralPointsGetter

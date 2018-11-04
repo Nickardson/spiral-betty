@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react'
 import SpiralPointsGetter from './SpiralPointsGetter'
 import SpiralCanvas from './SpiralCanvas'
-import { connect } from 'react-redux'
 import { layout } from './lib/constants'
 import chroma from 'chroma-js'
 import WorkspaceIconAndText from './WorkspaceIconAndText'
@@ -31,18 +30,21 @@ class Filter extends React.Component {
     return darkest
   }
   render() {
-    const { filter: {name, colorIndex}, filter, length, imgData, editing, animating, setAnimating, clickedDownload } = this.props
-    if (!imgData) return null
+    const { filter: {name, colorIndex}, img, filter, setEditingPhoto, length, editing, animating, setAnimating, clickedDownload } = this.props
+    if (!img || !img.data) return null
     const maxSize = 1500
     switch (name) {
       case 'spiral':
         return (
-          <SpiralPointsGetter filter={filter}>
+          <SpiralPointsGetter
+            {...img}
+            filter={filter}>
             {({ points, width, height, scale }) => {
               return (
                 <div>
                   {/* Interactive asset */}
                   <SpiralCanvas
+                    setEditingPhoto={setEditingPhoto}
                     onStartAnimation={() => {setAnimating(true)}}
                     onEndAnimation={() => {setAnimating(false)}}
                     animate
@@ -100,12 +102,4 @@ class Filter extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  const {
-    editing: {editing},
-    img: { data: imgData },
-  } = state
-  return { imgData, editing}
-}
-
-export default connect(mapStateToProps)(Filter)
+export default Filter

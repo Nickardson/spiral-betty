@@ -1,5 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import Section from './Section'
 import Swatch from './Swatch'
 import SpiralPointsGetter from './SpiralPointsGetter'
@@ -22,19 +21,21 @@ class Swatches extends React.PureComponent {
     return (
       <Section>
         <SpiralPointsGetter
+          {...this.props.img}
           delayUntilMouseUp
           filter={this.props.filter}> 
           {({ points, width, height, scale }) => { 
             return <Container>
               {coloring.map((d, i) => (
                 <Swatch
+                  setEditingPhoto={this.props.setEditingPhoto}
                   activeIndex={this.props.filter.colorIndex}
                   setColorIndex={this.props.setColorIndex}
                   points={points}
                   width={width}
                   height={height}
                   scale={scale}
-                  length={80}
+                  length={40}
                   colorIndex={i}
                   key={i}
                 />
@@ -48,11 +49,4 @@ class Swatches extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
-  const { img: { data: imgData } } = state
-  return { imgData }
-}
-
-export default connect(
-  mapStateToProps
-)(Swatches)
+export default Swatches

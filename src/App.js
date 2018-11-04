@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import './App.css'
 import Beforeunload from 'react-beforeunload'
+import { blobExifTransform } from './lib/img'
 
 import {Link} from './Text'
-
 import Onboarding from './Onboarding'
 import Logo from './Logo'
 import Upload from './Upload'
@@ -31,21 +30,13 @@ import MobileHeader from './MobileHeader'
 import SecondaryActions from './SecondaryActions'
 import AppContainer from './AppContainer'
 
-import {
-  setup,
-  updateImgPos,
-  clearImg,
-  startEditingPhoto, 
-  updateContrast,
-  endEditingPhoto,
-  addImgData,
-  updateLightness
-} from './redux/actions'
 import { scaleInputId, rings, lightnessVals, contrastVals, sizes } from './lib/constants'
 import { getImageData } from './lib/img'
 
 class App extends Component {
   state = {
+    winHeight: 0, // default till update
+    editing: false, // cropping
     attribute: 'rings', // active attribute
     clickedDownload: false,
     animating: false,
@@ -56,14 +47,17 @@ class App extends Component {
       data: {
         rings: rings.default
       }
-    }
+    },
+    img: {} // not set yet
   }
 
-  setColorIndex = (colorIndex) => { this.setState(({filter: prevFilter}) => {return {filter: {...prevFilter, colorIndex}}}) }
-  setPreview = (preview) => { this.setState({preview}) }
-  setAttributeChange = (att) => { this.setState({attribute: att}) }
-  setClickedDownload = (val) => { this.setState({clickedDownload: val}) }
-  setAnimating = (val) => { this.setState({animating: val}) }
+
+  setEditingPhoto = val => { this.setState({editing: val}) }
+  setColorIndex = colorIndex => { this.setState(({filter: prevFilter}) => {return {filter: {...prevFilter, colorIndex}}}) }
+  setPreview = preview => { this.setState({preview}) }
+  setAttributeChange = att => { this.setState({attribute: att}) }
+  setClickedDownload = val => { this.setState({clickedDownload: val}) }
+  setAnimating = val => { this.setState({animating: val}) }
   setRings = val => { this.setState(({filter: prevFilter}) => {
     return {
       filter: { 
@@ -75,15 +69,87 @@ class App extends Component {
       }
     }
   })}
+  setImgData = ({
+    data,
+    blobUrl,
+    contrast,
+    lightness,
+    scale,
+    width,
+    height,
+    orientation,
+    name
+  }) => {
+    this.setState({
+      img: {
+        blobUrl,
+        contrast,
+        lightness,
+        scale,
+        width,
+        height,
+        data,
+        name,
+        orientation: (orientation !== undefined && orientation > 0)
+          ? orientation
+          : 1,
+        cx: width / 2,
+        cy: height / 2
+      }
+    })
+  }
+  setImgPos = ({scale, cx, cy}) => {
+    this.setState(({img: prevImg}) => {
+      let updatePos = {}
+      if (scale !== undefined) updatePos.scale = scale
+      if (cx !== undefined) updatePos.cx = cx
+      if (cy !== undefined) updatePos.cy = cy
+      return {
+        img: {
+          ...prevImg,
+          ...updatePos
+        }
+      }
+    })
+  }
+  setContrast = (contrast) => {
+    this.setState(({img: prevImg}) => {
+      return {
+        img: {
+          ...prevImg,
+          contrast
+        }
+      }
+    })
+  }
+  setScale = (scale) => {
+    this.setState(({img: prevImg}) => {
+      return {
+        img: {
+          ...prevImg,
+          scale
+        }
+      }
+    })
+  }
+  setLightness = (lightness) => {
+    this.setState(({img: prevImg}) => {
+      return {
+        img: {
+          ...prevImg,
+          lightness
+        }
+      }
+    })
+  }
+  clearImg = () => { this.setState({img: {}}) }
 
   handleScaleChange = scale => {
-    const {
-      img: { scale: prevScale, cx: prevCx, cy: prevCy, width, height },
-      updateImgPos
-    } = this.props
+    let { img: { scale: prevScale, cx: prevCx, cy: prevCy, width, height } } = this.state
+    prevScale = prevScale === undefined || 1
     if (prevScale <= scale) {
       // Increasing in scale, we're good to go and update
-      updateImgPos(scale)
+      this.setScale(scale)
     } else {
       // Decreasing in scale, need to double check that cx & cy are still ok or fix
 
@@ -106,41 +172,24 @@ class App extends Component {
       const maxCy = height - minCy
 
       // Is our current cx/cy fine?
-      if (prevCx < minCx) {
-        cx = minCx
-      }
-      if (prevCx > maxCx) {
-        cx = maxCx
-      }
-      if (prevCy < minCy) {
-        cy = minCy
-      }
-      if (prevCy > maxCy) {
-        cy = maxCy
-      }
+      if (prevCx < minCx) cx = minCx
+      if (prevCx > maxCx) cx = maxCx
+      if (prevCy < minCy) cy = minCy
+      if (prevCy > maxCy) cy = maxCy
 
-      updateImgPos(scale, cx, cy)
+      this.setImgPos({scale, cx, cy})
     }
-  }
-  handleContrastChange = val => {
-    const { updateContrast } = this.props
-    updateContrast(val)
-  }
-  handleLightnessChange = val => {
-    const { updateLightness } = this.props
-    updateLightness(val)
   }
   updateImage = updates => {
     const { scale, cx, cy, endEditing } = updates
-    const { updateImgPos, endEditingPhoto } = this.props
-    updateImgPos(scale, cx, cy)
-    if (endEditing) endEditingPhoto()
+    this.setImgPos({scale, cx, cy})
+    if (endEditing) this.setEditingPhoto(false)
   }
   removeImg = () => {
     const val = window.confirm('Are you sure you want to remove this image?')
     if (val) {
       window.URL.revokeObjectURL(this.props.blobUrl)
-      this.props.clearImg()
+      this.clearImg()
     }
   }
   handleFile = (url, file, revokeUrl) => {
@@ -149,20 +198,19 @@ class App extends Component {
       getImageData(url, orientation).then(
         ({ status, width, height, imgData: data }) => {
           if (status === 'ok') {
-            const { startEditingPhoto, addImgData } = this.props
             if (revokeUrl) window.URL.revokeObjectURL(revokeUrl) // we have had some success... now time to revoke old url
-            startEditingPhoto()
-            addImgData(
-              url,
-              contrastVals.default,
-              lightnessVals.default,
-              1,
+            this.setEditingPhoto(true)
+            this.setImgData({
+              blobUrl: url,
+              contrast: contrastVals.default,
+              lightness: lightnessVals.default,
+              scale: 1,
               width,
               height,
               data,
-              orientation || 1,
-              file.name
-            )
+              orientation: orientation || 1,
+              name: file.name
+            })
           } else {
             // TODO: make this a pretty error
             alert('Sorry, we could not load image data for this file. Check to make sure you are using JPG, GIF, PNG, or WebP.')
@@ -217,17 +265,8 @@ class App extends Component {
     }
     reader.readAsArrayBuffer(file.slice(0, 131072)) // just to get exif
   }
-  componentWillMount() {
-    // Setup store
-    const { setup } = this.props
-    updateContrast(contrastVals.default)
-    updateLightness(lightnessVals.default)
-    setup()
-  }
   getSliderProps = () => {
-    const {attribute} = this.state
-    const {editing, scale, lightness, contrast} = this.props
-    const {filter: {data}} = this.state
+    const {filter: {data}, editing, img: {scale, lightness, contrast}, attribute} = this.state
     let attr = editing ? 'scale' : attribute
     switch (attr) {
       case 'scale':
@@ -263,8 +302,8 @@ class App extends Component {
           min: lightnessVals.min,
           max: lightnessVals.max,
           step: lightnessVals.step,
-          defaultValue: lightness,
-          onChange: this.handleLightnessChange
+          defaultValue: lightness || lightnessVals.default,
+          onChange: this.setLightness
         }
       case 'contrast':
         return {
@@ -275,29 +314,44 @@ class App extends Component {
           min: contrastVals.min, 
           max: contrastVals.max,
           step: contrastVals.step,
-          defaultValue: contrast,
-          onChange: this.handleContrastChange
+          defaultValue: contrast || contrastVals.default,
+          onChange: this.setContrast
         }
       default:
         return {}
     }
   }
+
+  setWinSize = () => {
+    this.setState({winHeight: window.innerHeight})
+  }
+  componentDidMount () {
+    this.setWinSize()
+    document.addEventListener('resize', this.setWinSize)
+  }
+  componentWillUnmount () {
+    document.removeEventListener('resize', this.setWinSize)
+  }
   render() {
-    const {
-      init,
-      editing,
-      img: { blobUrl, data: imgData }
-    } = this.props
-    const {attribute, clickedDownload, animating, preview: {length, name}, filter} = this.state
-    if (!init) return null
+    const {attribute, clickedDownload, animating, preview: {length, name}, filter, editing, img: { blobUrl, data }, img, winHeight} = this.state
+    if (winHeight === 0) return null
+    // if (length === 0) return null
     /* return <Splash /> */
+
     const navLinksDisabled = !blobUrl
     return (
-      <AppContainer editing={editing}>
+      <AppContainer editing={editing} style={{height: winHeight}}>
         <Beforeunload onBeforeunload={() => "Sure you want to leave this site? You will lose your progress"} />
         <MobileHeader
           hide={editing || animating}>
-          {blobUrl && !editing && !animating && ([<div key={1} style={{width: 40, height: 40, left: 5, top: 3, position: 'absolute'}} onClick={this.removeImg}><CloseIcon style={{width: 26, height: 26, position: 'absolute', left: 6, top: 6}}  /></div>,
+          {blobUrl && !editing && !animating && ([
+          <div
+            key={1}
+            style={{width: 40, height: 40, left: 5, top: 3, position: 'absolute'}}
+            onClick={this.removeImg}>
+            <CloseIcon
+              style={{width: 26, height: 26, position: 'absolute', left: 6, top: 6}}  />
+          </div>,
         <div
           key={2}
           style={{position: 'absolute', right: 6, top: 3, height: 40, width: 40}}>
@@ -308,7 +362,7 @@ class App extends Component {
         }
           <Logo style={{height: '13px', margin: 'auto', fill: '#777'}} />
         </MobileHeader>
-        <MobileMargin />
+        <MobileMargin style={{flex: `0 0 ${winHeight * .05}px`}} />
         <Main id='main'>
           <DesktopOnly>
             <SecondaryActions style={{display: editing || animating || !blobUrl ? 'none' : ''}}>
@@ -330,16 +384,24 @@ class App extends Component {
           <WorkspaceContainer>
             <Workspace length={length}>
               <Filter
+                img={img}
+                setEditingPhoto={this.setEditingPhoto}
+                editing={editing}
                 filter={filter}
                 length={length}
                 setAnimating={this.setAnimating}
                 animating={animating}
                 clickedDownload={clickedDownload} />
               <EditPhoto
+                {...blobExifTransform((img && img.orientation) || 1)}
+                {...img}
+                active={editing}
                 length={length}
                 updatePhoto={this.updateImage} />
-              <Guides />
-              <Upload onChange={this.handleFileChange} />
+              <Guides active={editing} />
+              <Upload
+                blobUrl={img && img.blobUrl}
+                onChange={this.handleFileChange} />
                 <SliderContainer>
                   {!animating && <SectionSliderScale
                     disabled={!blobUrl || animating}
@@ -353,8 +415,24 @@ class App extends Component {
                     blobUrl={blobUrl}
                     handleFile={this.handleFile} />
                 </div>
-                <div style={{position: 'absolute', width: '80%', minWidth: 300, bottom: -100, left: '50%', transform: 'translate(-50%)'}}>
-                {!editing && !animating && <div style={{fontSize: 10, justifyContent: 'space-evenly', display: 'flex', alignItems: 'center', textTransform: "uppercase", textAlign: 'center'}}>
+                <div
+                  style={{
+                    position: 'absolute',
+                    width: '80%',
+                    minWidth: 300,
+                    bottom: -100,
+                    left: '50%',
+                    transform: 'translate(-50%)'
+                  }}>
+                {!editing && !animating && <div
+                  style={{
+                    fontSize: 10,
+                    justifyContent: 'space-evenly',
+                    display: 'flex',
+                    alignItems: 'center',
+                    textTransform: "uppercase",
+                    textAlign: 'center'
+                  }}>
                   <NavLinks
                     disabled={navLinksDisabled}
                     active={attribute === 'rings' && !editing}
@@ -384,7 +462,15 @@ class App extends Component {
             </Workspace>
           </WorkspaceContainer>
           <DesktopOnly>
-            {!editing && !animating && blobUrl && <InvertIcon style={{position: 'absolute', right: 15, top: 15, height: 70, width: 70, borderRadius: '100%'}}>
+            {!editing && !animating && blobUrl && <InvertIcon
+              style={{
+                position: 'absolute',
+                right: 15,
+                top: 15,
+                height: 70,
+                width: 70,
+                borderRadius: '100%'
+              }}>
               <DownloadCanvas
                 width={1}
                 setClickedDownload={this.setClickedDownload}
@@ -393,15 +479,30 @@ class App extends Component {
           </DesktopOnly>
         </Main>
         <MobileMargin />
-        <Sidebar hide={editing || animating} noImg={!blobUrl}>
+        <Sidebar
+          hide={editing || animating}
+          noImg={!blobUrl}>
           <DesktopOnly>
-            <div><Logo style={{width: '100%', fill: '#777'}} /></div>
-            <div style={{marginTop: 5, fontSize: 12}}>
-              <Link target={'_blank'} as={'a'} href={'https://twitter.com/shalanahfaith'}>©2018 Shalanah Dawson</Link>
+            <div>
+              <Logo style={{width: '100%', fill: '#777'}} />
             </div>
-            <div style={{marginTop: 5, fontSize: 12}}>Downloads free to use for non&#8209;commercial purposes.</div>
+            <div style={{marginTop: 5, fontSize: 12}}>
+              <Link
+                target={'_blank'}
+                as={'a'}
+                href={'https://twitter.com/shalanahfaith'}>
+                ©2018 Shalanah Dawson
+              </Link>
+            </div>
+            <div style={{marginTop: 5, fontSize: 12}}>
+              Downloads free to use for non&#8209;commercial purposes.
+            </div>
           </DesktopOnly>
-          {!!imgData && !editing && !animating && <Swatches setColorIndex={this.setColorIndex} filter={filter} />}
+          {!!data && !editing && !animating && <Swatches
+            img={img}
+            setEditingPhoto={this.setEditingPhoto}
+            setColorIndex={this.setColorIndex}
+            filter={filter} />}
           {!blobUrl && <Onboarding />}
         </Sidebar>
       </AppContainer>
@@ -409,52 +510,4 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  const {
-    editing: { editing },
-    setup: { init },
-    img: { scale, blobUrl, lightness, contrast },
-    img,
-  } = state
-  return { init, scale, img, blobUrl, editing, lightness, contrast }
-}
-const mapDispatchToProps = dispatch => {
-  return {
-    setup: () => dispatch(setup()),
-    startEditingPhoto: () => dispatch(startEditingPhoto()),
-    endEditingPhoto: () => dispatch(endEditingPhoto()),
-    addImgData: (
-      blobUrl,
-      contrast,
-      lightness,
-      scale,
-      width,
-      height,
-      data,
-      orientation,
-      name
-    ) =>
-      dispatch(
-        addImgData(
-          blobUrl,
-          contrast,
-          lightness,
-          scale,
-          width,
-          height,
-          data,
-          orientation,
-          name
-        )
-      ),
-    updateImgPos: (scale, cx, cy) => dispatch(updateImgPos(scale, cx, cy)),
-    updateContrast: contrast => dispatch(updateContrast(contrast)),
-    updateLightness: lightness => dispatch(updateLightness(lightness)),
-    clearImg: () => dispatch(clearImg())
-  }
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App)
+export default App

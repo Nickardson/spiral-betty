@@ -1,7 +1,5 @@
 import React from 'react'
 import {coloring} from './lib/constants'
-import {startEditingPhoto} from './redux/actions'
-import { connect } from 'react-redux'
 import styled, {keyframes} from 'styled-components'
 const {easing} = require('./lib/constants')
 
@@ -142,7 +140,7 @@ const getFillType = (ctx, {colors, fill, fill: {attr}}, len) => {
   }
 }
 
-class SpiralCanvas extends React.Component {
+class SpiralCanvas extends React.PureComponent {
   multiplier =  window.devicePixelRatio || 1
   animate = (loopsInfo, count, onComplete) => {
     if (count <= 100) {
@@ -250,7 +248,7 @@ class SpiralCanvas extends React.Component {
     }
   }
   render () {
-    const { length, startEditingPhoto, interactive, id, highlight, accent, onMouseEnter, onMouseLeave, style = {}, active } = this.props
+    const { length, setEditingPhoto, interactive, id, highlight, accent, onMouseEnter, onMouseLeave, style = {}, active } = this.props
     return (
       <Canvas
         onMouseEnter={onMouseEnter}
@@ -260,7 +258,7 @@ class SpiralCanvas extends React.Component {
         active={active}
         interactive={interactive}
         id={id}
-        onClick={interactive && startEditingPhoto}
+        onClick={interactive && setEditingPhoto ? () => { setEditingPhoto(true) } : undefined}
         ref={(x) => this.canvas = x}
         width={length * this.multiplier}
         height={length * this.multiplier}
@@ -278,13 +276,4 @@ class SpiralCanvas extends React.Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    startEditingPhoto: () => dispatch(startEditingPhoto())
-  }
-}
-
-export default connect(
-  undefined,
-  mapDispatchToProps
-)(SpiralCanvas)
+export default SpiralCanvas

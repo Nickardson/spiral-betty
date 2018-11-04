@@ -8,9 +8,8 @@
     display: table; 
 }
 
-html { // avoiding moving img and having an accidental reload on mobile
+html, body { /* avoiding moving img and having an accidental reload on mobile */
   height: 100%;
-  width: 100%;
   overflow: hidden;
 }
 
