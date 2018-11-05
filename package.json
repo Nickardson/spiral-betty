@@ -11,7 +11,7 @@
     "react-redux": "^5.0.7",
     "react-scripts": "1.1.4",
     "redux": "^3.7.2",
-    "styled-components": "^4.0.0-beta.8"
+    "styled-components": "^4.0.3"
   },
   "gh-pages-deploy": {
     "staticpath": "build",
