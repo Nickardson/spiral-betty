@@ -78,7 +78,8 @@ class Upload extends Component {
           type='placeholder' />
         {/* Hide input so we can style label */}
         <input
-          type='file'
+          accept={'image/*'}
+          type={'file'}
           id={'upload-btn'}
           onChange={onChange}
           style={{
