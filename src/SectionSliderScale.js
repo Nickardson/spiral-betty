@@ -48,7 +48,9 @@ const SectionSliderScale = ({
   onChange,
   sliderProps,
   disabled,
-  showBackground
+  showBackground,
+  onDragStart,
+  onDragEnd
 }) => {
   return (
     <SliderController
@@ -67,6 +69,8 @@ const SectionSliderScale = ({
             {...sliderProps}
             value={value}
             min={min}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
             max={max}
             step={step}
             defaultValue={defaultValue}

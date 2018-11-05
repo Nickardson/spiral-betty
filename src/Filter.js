@@ -1,20 +1,12 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import SpiralPointsGetter from './SpiralPointsGetter'
 import SpiralCanvas from './SpiralCanvas'
 import { layout } from './lib/constants'
 import chroma from 'chroma-js'
-import WorkspaceIconAndText from './WorkspaceIconAndText'
 
 const { coloring } = require('./lib/constants')
 
-class Filter extends React.Component {
-  state = { hover: false }
-  onMouseEnter = () => {
-    this.setState({ hover: true })
-  }
-  onMouseLeave = () => {
-    this.setState({ hover: false })
-  }
+class Filter extends React.PureComponent {
   findDarkestColor = () => {
     // TODO: move
     const colors = coloring[this.props.colorIndex].dark.colors
@@ -30,7 +22,7 @@ class Filter extends React.Component {
     return darkest
   }
   render() {
-    const { filter: {name, colorIndex}, img, filter, setEditingPhoto, length, editing, animating, setAnimating, clickedDownload } = this.props
+    const { filter: {name, colorIndex}, img, rings, setEditingPhoto, length, editing, setAnimating, clickedDownload } = this.props
     if (!img || !img.data) return null
     const maxSize = 1500
     switch (name) {
@@ -38,7 +30,7 @@ class Filter extends React.Component {
         return (
           <SpiralPointsGetter
             {...img}
-            filter={filter}>
+            rings={rings} >
             {({ points, width, height, scale }) => {
               return (
                 <div>
@@ -50,12 +42,11 @@ class Filter extends React.Component {
                     animate
                     editing={editing}
                     interactive
-                    onMouseEnter={this.onMouseEnter}
-                    onMouseLeave={this.onMouseLeave}
                     width={width}
                     height={height}
                     scale={scale}
                     points={points}
+                    id={layout.ids.spiralCanvas}
                     length={Math.min(length, maxSize)}
                     colorIndex={colorIndex}
                   />
@@ -69,28 +60,14 @@ class Filter extends React.Component {
                     length={maxSize}
                     style={{position: 'absolute', zIndex: -1}}
                     colorIndex={colorIndex} />}
-                  {!animating &&
-                    <Fragment>
-                      <div
-                        style={{
-                          opacity: this.state.hover ? 1 : 0,
-                          transition: '.2s',
-                          border: '3px solid var(--accent)',
-                          borderRadius: '100%',
-                          pointerEvents: 'none',
-                          lineHeight: 0,
-                          position: 'absolute',
-                          width: '100%',
-                          height: '100%',
-                          backgroundColor: 'rgba(255,255,255,.3)'
-                        }}
-                      />
+                  {/*!animating &&
+                    <Overlay>
                       <WorkspaceIconAndText
-                        active={this.state.hover}
+                        active
                         text={`Click to crop`}
                         type="move" />
-                    </Fragment>
-                  }
+                    </Overlay>
+                  */}
                 </div>
               )
             }}

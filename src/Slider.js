@@ -194,6 +194,7 @@ class Slider extends Component {
       document.removeEventListener('mouseup', this.dragging)
       document.removeEventListener('touchend', this.dragging)
     })
+    if (this.props.onDragEnd) this.props.onDragEnd()
   }
   onMouseDown = () => {
     this.setState({ dragging: true }, () => {
@@ -201,6 +202,7 @@ class Slider extends Component {
       document.addEventListener('mouseup', this.dragging)
       document.addEventListener('touchend', this.dragging)
     })
+    if (this.props.onDragStart) this.props.onDragStart()
   }
   onMouseEnter = () => {
     this.setState({ hover: true })

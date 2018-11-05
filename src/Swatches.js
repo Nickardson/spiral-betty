@@ -16,21 +16,28 @@ const Container = styled.div`
   }
 `
 
-class Swatches extends React.PureComponent {
+class Swatches extends React.Component {
+  shouldComponentUpdate (nextProps) {
+    if (nextProps.sliderActive || (nextProps.attribute !== this.props.attribute)) {
+      return false
+    }
+    return true
+  }
   render () {
+    const {rings, setEditingPhoto, colorIndex, setColorIndex, attribute, ...img} = this.props
     return (
       <Section>
         <SpiralPointsGetter
-          {...this.props.img}
-          delayUntilMouseUp
-          filter={this.props.filter}> 
+          rings={rings}
+          colorIndex={colorIndex}
+          {...img}> 
           {({ points, width, height, scale }) => { 
             return <Container>
               {coloring.map((d, i) => (
                 <Swatch
-                  setEditingPhoto={this.props.setEditingPhoto}
-                  activeIndex={this.props.filter.colorIndex}
-                  setColorIndex={this.props.setColorIndex}
+                  setEditingPhoto={setEditingPhoto}
+                  activeIndex={colorIndex}
+                  setColorIndex={setColorIndex}
                   points={points}
                   width={width}
                   height={height}

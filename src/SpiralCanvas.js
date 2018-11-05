@@ -1,7 +1,9 @@
 import React from 'react'
 import {coloring} from './lib/constants'
-import styled, {keyframes} from 'styled-components'
+import styled, {keyframes, css} from 'styled-components'
+import WorkspaceIconAndText from './WorkspaceIconAndText'
 const {easing} = require('./lib/constants')
+
 
 const getLoopStartLengthAndOffset = ({offsetFactor, i, loopIndexes, loopsLength, sideLength, onlyOffset = false}) => { 
   // Regular start without offset yet (basically at deg 0)
@@ -84,22 +86,36 @@ const bounceOut = keyframes`
   }
 `
 
+const bounceInAnimation = css`
+  animation: ${bounceIn} both .25s;
+`
+const bounceOutAnimation = css`
+  animation: ${bounceOut} both .15s;
+`
+
 const Canvas = styled.canvas`
   transition: border .2s;
-  ${(props) => props.highlight ? `
+  cursor: pointer;
+  border-radius: 100%;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  ${props => props.highlight ? css`
       border: 0px solid rgba(255,255,255,0);
       box-shadow: 0 0 0 0px rgba(255,255,255,0);
       animation: ${bounceOut} both .15s;
       @media not all and (hover: none) {
         &:hover {
-          box-shadow: 0 0 0 4px ${props.highlight};
           animation: ${bounceIn} both .25s;
+          box-shadow: 0 0 0 4px ${props.highlight};
           border: 3px solid ${props.accent};
           z-index: 1000000; // absurd number on purpose
         }
     ` : ''
   }
-  ${(props) => props.active ? `
+  ${props => props.active ? `
     border: 3px solid ${props.accent};
   ` : ''}
   ${props => props.interactive ? '' : `
@@ -107,7 +123,23 @@ const Canvas = styled.canvas`
       border: 3px solid ${props.accent};
       box-shadow: 0 0 0 4px ${props.highlight};
     }
-  `} 
+  `}
+`
+
+const Overlay = styled.div`
+  opacity: 0;
+  transition: .2s;
+  border: 3px solid var(--accent);
+  border-radius: 100%;
+  line-height: 0;
+  cursor: pointer;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,255,255,.3);
+  :hover {
+    opacity: 1;
+  }
 `
 
 const getFillType = (ctx, {colors, fill, fill: {attr}}, len) => {
@@ -248,30 +280,27 @@ class SpiralCanvas extends React.PureComponent {
     }
   }
   render () {
-    const { length, setEditingPhoto, interactive, id, highlight, accent, onMouseEnter, onMouseLeave, style = {}, active } = this.props
+    const { length, setEditingPhoto, interactive, id, highlight, accent, active } = this.props
     return (
-      <Canvas
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
+      [<Canvas
+        key="canvas"
         highlight={highlight}
         accent={accent}
         active={active}
         interactive={interactive}
         id={id}
-        onClick={interactive && setEditingPhoto ? () => { setEditingPhoto(true) } : undefined}
         ref={(x) => this.canvas = x}
         width={length * this.multiplier}
-        height={length * this.multiplier}
-        style={{
-          cursor: 'pointer',
-          borderRadius: '100%',
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          ...style
-        }} />
+        height={length * this.multiplier} />,
+        (interactive && <Overlay
+          onClick={interactive && setEditingPhoto ? () => { setEditingPhoto(true) } : undefined}
+          key="overlay">
+          <WorkspaceIconAndText
+            active
+            text={`Click to crop`}
+            type="move" />
+        </Overlay>)
+      ]
     )
   }
 }

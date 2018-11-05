@@ -35,6 +35,7 @@ import { getImageData } from './lib/img'
 
 class App extends Component {
   state = {
+    sliderActive: false,
     winHeight: 0, // default till update
     editing: false, // cropping
     attribute: 'rings', // active attribute
@@ -51,7 +52,7 @@ class App extends Component {
     img: {} // not set yet
   }
 
-
+  setSliderActive = val => {this.setState({sliderActive: val})}
   setEditingPhoto = val => { this.setState({editing: val}) }
   setColorIndex = colorIndex => { this.setState(({filter: prevFilter}) => {return {filter: {...prevFilter, colorIndex}}}) }
   setPreview = preview => { this.setState({preview}) }
@@ -289,7 +290,7 @@ class App extends Component {
           title: 'Rings',
           min: rings.min,
           max: rings.max,
-          step: rings.step,
+          step: data.rings < 50 ? rings.step : 5,
           defaultValue: data.rings,
           onChange: this.setRings
         }
@@ -333,8 +334,9 @@ class App extends Component {
     document.removeEventListener('resize', this.setWinSize)
   }
   render() {
-    const {attribute, clickedDownload, animating, preview: {length, name}, filter, editing, img: { blobUrl, data }, img, winHeight} = this.state
+    const {sliderActive, attribute, clickedDownload, animating, preview: {length, name}, filter, editing, img: { blobUrl, data }, img, winHeight} = this.state
     if (winHeight === 0) return null
+    const {data: {rings}} = filter
     // if (length === 0) return null
     /* return <Splash /> */
 
@@ -383,15 +385,15 @@ class App extends Component {
           </DesktopOnly>
           <WorkspaceContainer>
             <Workspace length={length}>
-              <Filter
+              {!editing && <Filter
                 img={img}
+                filter={filter}
                 setEditingPhoto={this.setEditingPhoto}
                 editing={editing}
-                filter={filter}
+                rings={rings}
                 length={length}
                 setAnimating={this.setAnimating}
-                animating={animating}
-                clickedDownload={clickedDownload} />
+                clickedDownload={clickedDownload} />}
               <EditPhoto
                 {...blobExifTransform((img && img.orientation) || 1)}
                 {...img}
@@ -406,6 +408,8 @@ class App extends Component {
                   {!animating && <SectionSliderScale
                     disabled={!blobUrl || animating}
                     showBackground={editing}
+                    onDragStart={() => {this.setSliderActive(true)}}
+                    onDragEnd={() => {this.setSliderActive(false)}}
                     key={editing ? 'scale' : attribute}
                     {...this.getSliderProps()} />}
                 </SliderContainer> 
@@ -499,10 +503,13 @@ class App extends Component {
             </div>
           </DesktopOnly>
           {!!data && !editing && !animating && <Swatches
-            img={img}
+            {...img}
+            attribute={attribute}
+            colorIndex={filter.colorIndex}
+            sliderActive={sliderActive}
             setEditingPhoto={this.setEditingPhoto}
             setColorIndex={this.setColorIndex}
-            filter={filter} />}
+          rings={rings} />}
           {!blobUrl && <Onboarding />}
         </Sidebar>
       </AppContainer>
