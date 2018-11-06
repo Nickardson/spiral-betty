@@ -2,7 +2,7 @@
   "name": "spiral-betty",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://shalanah.github.io/spiral-betty/",
+  "homepage": "https://spiralbetty.com",
   "dependencies": {
     "chroma-js": "^1.3.7",
     "react": "^16.4.0",
