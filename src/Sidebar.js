@@ -8,7 +8,9 @@ export default styled.div`
   background-color: #fff;
   height: 100%;
   padding: 20px 15px;
-  overflow-y: auto; 
+  overflow-x: hidden;
+  overflow-y: scroll; /* for iOS momentum scrolling */
+  -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
   transition: .5s;
   ${props => props.hide ? `
     transform: translateX(300px);
