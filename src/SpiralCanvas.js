@@ -86,13 +86,6 @@ const bounceOut = keyframes`
   }
 `
 
-const bounceInAnimation = css`
-  animation: ${bounceIn} both .25s;
-`
-const bounceOutAnimation = css`
-  animation: ${bounceOut} both .15s;
-`
-
 const Canvas = styled.canvas`
   transition: border .2s;
   cursor: pointer;
