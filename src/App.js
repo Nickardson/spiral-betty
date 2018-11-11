@@ -49,7 +49,9 @@ class App extends Component {
         rings: rings.default
       }
     },
-    img: {} // not set yet
+    img: {
+      scale: 1 // default
+    }
   }
 
   ios = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
@@ -149,7 +151,6 @@ class App extends Component {
 
   handleScaleChange = scale => {
     let { img: { scale: prevScale, cx: prevCx, cy: prevCy, width, height } } = this.state
-    prevScale = prevScale === undefined || 1
     if (prevScale <= scale) {
       // Increasing in scale, we're good to go and update
       this.setScale(scale)
