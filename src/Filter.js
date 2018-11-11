@@ -46,7 +46,6 @@ class Filter extends React.PureComponent {
                     height={height}
                     scale={scale}
                     points={points}
-                    id={layout.ids.spiralCanvas}
                     length={Math.min(length, maxSize)}
                     colorIndex={colorIndex}
                   />
@@ -58,7 +57,7 @@ class Filter extends React.PureComponent {
                     scale={scale}
                     points={points}
                     length={maxSize}
-                    style={{position: 'absolute', zIndex: -1}}
+                    style={{pointerEvents: 'none', zIndex: -1, visibility: 'hidden', transform: 'translateZ(0)'}}
                     colorIndex={colorIndex} />}
                   {/*!animating &&
                     <Overlay>
