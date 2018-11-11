@@ -52,7 +52,7 @@ const SliderInput = styled.input`
 &[type=range]::-webkit-slider-thumb {
   box-shadow: none;
   border: none;
-  transform: scale(${initScale});
+  transform: scale(${initScale}) translateZ(0);
   height: ${sliderThumbSize};
   width: ${sliderThumbSize};
   border-radius: 100%;
@@ -84,7 +84,7 @@ const SliderInput = styled.input`
 &[type=range]::-moz-range-thumb {
   box-shadow: none;
   border: none;
-  transform: scale(${initScale});
+  transform: scale(${initScale}) translateZ(0);
   box-sizing: border-box;
   height: ${sliderThumbSize};
   width: ${sliderThumbSize};
@@ -124,39 +124,39 @@ const SliderInput = styled.input`
   cursor: pointer;
   width: 10px;
   height: 10px;
-  transform: scale(${initScale});
+  transform: scale(${initScale}) translateZ(0);
 }
 &[type=range]::-ms-thumb:hover {
   width: 10px;
   height: 10px;
 }
 &.hover::-webkit-slider-thumb {
-  transform: scale(${hoverScale});
+  transform: scale(${hoverScale}) translateZ(0);
   border: 2px solid rgba(255,255,255,.8);
 } 
 &.hover::-moz-range-thumb {
-  transform: scale(${hoverScale});
+  transform: scale(${hoverScale}) translateZ(0);
   border: 2px solid rgba(255,255,255,.8);
 } 
 &.hover::-ms-thumb {
-  transform: scale(1) !important;
+  transform: scale(1) translateZ(0) !important;
   border: none;
   width: 10px;
   height: 10px;
 }
 &.grabbing.grabbing::-webkit-slider-thumb, &:active::-webkit-slider-thumb {
   cursor: grabbing !important;
-  transform: scale(${grabScale});
+  transform: scale(${grabScale}) translateZ(0);
   border: 2px solid transparent;
 }
 &.grabbing.grabbing::-moz-range-thumb, &:active::-moz-range-thumb  {
   cursor: grabbing !important;
-  transform: scale(${grabScale});
+  transform: scale(${grabScale}) translateZ(0);
   border: 2px solid transparent;
 }
 &.grabbing.grabbing::-ms-thumb, &:active::-ms-thumb {
   cursor: grabbing !important;
-  transform: scale(1);
+  transform: scale(1) translateZ(0);
   border: none;
 }
 &.grabbing.grabbing::-webkit-slider-runnable-track, &:active::-webkit-slider-runnable-track {
