@@ -147,9 +147,9 @@ const orientFlippedLengths = (orientation) => {
   return orientation && orientation > 4 ? true : false
 }
 
-const blobExifTransform = (orientation) => {
-  let transform = orientTransforms(orientation)
-  let flippedLengths = orientFlippedLengths(orientation)
+const blobExifTransform = (orientation, ios = false) => {
+  const transform = ios ? '' : orientTransforms(orientation)
+  const flippedLengths = ios ? false : orientFlippedLengths(orientation)
   return {
     transform,
     flippedLengths
