@@ -27,7 +27,7 @@ export const easing = {
 export const rings = {
   default: 35,
   min: 3,
-  max: 160,
+  max: 75,
   step: 1
 }
 export const contrastVals = {

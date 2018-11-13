@@ -213,7 +213,8 @@ class App extends Component {
               height,
               data,
               orientation: orientation || 1,
-              name: file.name
+              name: file.name,
+              date: Date.now()
             })
           } else {
             // TODO: make this a pretty error
@@ -292,7 +293,7 @@ class App extends Component {
           title: 'Rings',
           min: rings.min,
           max: rings.max,
-          step: data.rings < 50 ? rings.step : 5,
+          step: rings.step,
           defaultValue: data.rings,
           onChange: this.setRings
         }

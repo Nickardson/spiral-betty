@@ -59,14 +59,6 @@ class Filter extends React.PureComponent {
                     length={maxSize}
                     style={{pointerEvents: 'none', zIndex: -1, visibility: 'hidden', transform: 'translateZ(0)'}}
                     colorIndex={colorIndex} />}
-                  {/*!animating &&
-                    <Overlay>
-                      <WorkspaceIconAndText
-                        active
-                        text={`Click to crop`}
-                        type="move" />
-                    </Overlay>
-                  */}
                 </div>
               )
             }}

@@ -16,6 +16,7 @@ const Icon = styled.div`
 export const InvertIcon = styled(Icon)`
   color: #979797;
   border: 1px solid #979797;
+  transform: translateZ(0);
   :hover {
     color: #fff;
     background-color: var(--accent);

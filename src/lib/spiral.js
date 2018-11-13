@@ -133,25 +133,4 @@ const getPoints = ({imgData, lightness, contrast, invert = false, scale, cx, cy,
   return {outter, inner, loopIndexes}
 }
 
-// mutates inner
-const createPath = ({outter, inner}) => {
-  if (!outter || outter.length === 0) return ''
-  let d = 'M'
-  outter.forEach(([x, y], i) => { d += `${x},${y} `})
-  inner.reverse().forEach(([x, y], i) => { d += `${x},${y} ` })
-  d += 'Z'
-  return d
-}
-
-// Less points for thumbnail
-// mutates inner
-const createPathThumb = ({outter, inner}) => {
-  if (!outter || outter.length === 0) return ''
-  let d = 'M'
-  outter.forEach(([x, y], i) => { if (i % 10) d += `${Math.round(x)},${Math.round(y)} `})
-  inner.reverse().forEach(([x, y], i) => { if (i % 10) d += `${Math.round(x)},${Math.round(y)} ` })
-  d += 'Z'
-  return d
-}
-
-export {getPoints, createPath, createPathThumb}
+export {getPoints}

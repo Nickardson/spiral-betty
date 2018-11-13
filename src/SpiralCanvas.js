@@ -65,24 +65,24 @@ const getLoopsInfo = (points) => {
 
 const bounceIn = keyframes`
   0% {
-    transform: scale(1);
+    transform: scale(1) translateZ(0);
   }
   70% {
-    transform: scale(1.26);
+    transform: scale(1.26) translateZ(0);
   }
   100% {
-    transform: scale(1.25);
+    transform: scale(1.25) translateZ(0);
   }
 `
 const bounceOut = keyframes`
   0% {
-    transform: scale(1.25);
+    transform: scale(1.25) translateZ(0);
   }
   70% {
-    transform: scale(.985);
+    transform: scale(.985) translateZ(0);
   }
   100% {
-    transform: scale(1);
+    transform: scale(1) translateZ(0);
   }
 `
 
@@ -95,6 +95,7 @@ const Canvas = styled.canvas`
   position: absolute;
   left: 0;
   top: 0;
+  transform: translateZ(0);
   ${props => props.highlight ? css`
       border: 0px solid rgba(255,255,255,0);
       box-shadow: 0 0 0 0px rgba(255,255,255,0);
@@ -209,7 +210,7 @@ class SpiralCanvas extends React.PureComponent {
     const {width, scale: s, height, colorIndex, length, points} = this.props
     const imgLength = Math.min(width / s, height / s)
     const {inner, outter} = points || {}
-    const ctx = this.canvas.getContext('2d')
+    const ctx = this.canvas.getContext('2d', { alpha: false })
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, length, length)
     ctx.scale(this.multiplier, this.multiplier)
@@ -222,7 +223,7 @@ class SpiralCanvas extends React.PureComponent {
     
     // Background especially for downloading
     ctx.fillStyle = '#fff'
-    ctx.fillRect(0,0,length,length)
+    ctx.fillRect(0, 0, length, length)
 
     if (inner && inner.length) { 
       // Circle
