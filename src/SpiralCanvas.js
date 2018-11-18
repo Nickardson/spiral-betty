@@ -100,6 +100,9 @@ const Canvas = styled.canvas`
       border: 0px solid rgba(255,255,255,0);
       box-shadow: 0 0 0 0px rgba(255,255,255,0);
       animation: ${bounceOut} both .15s;
+      &:hover {
+        border: 3px solid ${props.accent};
+      }
       @media not all and (hover: none) {
         &:hover {
           animation: ${bounceIn} both .25s;
