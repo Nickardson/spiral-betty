@@ -146,8 +146,13 @@ const SliderInput = styled.input`
 }
 &.grabbing.grabbing::-webkit-slider-thumb, &:active::-webkit-slider-thumb  {
   cursor: grabbing !important;
-  transform: scale(${grabScale}) translateZ(0);
-  border: 2px solid transparent;
+  ${props => props.ios ? ` /* ios does weird trippy stuff when scale is larger than init */
+    transform: scale(${initScale}) translateZ(0);
+    border: 2px solid transparent;
+  ` : `
+    transform: scale(${grabScale}) translateZ(0);
+    border: 2px solid transparent;
+  `}
 }
 &.grabbing.grabbing::-moz-range-thumb, &:active::-moz-range-thumb  {
   cursor: grabbing !important;
@@ -218,6 +223,7 @@ class Slider extends Component {
       min,
       step,
       disabled,
+      ios,
       style = {},
       ...sliderProps
     } = this.props
@@ -232,6 +238,7 @@ class Slider extends Component {
       <SliderContainer style={style}>
         <SliderInput
           {...sliderProps}
+          ios={ios}
           disabled={disabled}
           className={className}
           onMouseDown={this.onMouseDown}

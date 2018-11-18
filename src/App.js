@@ -33,6 +33,22 @@ import AppContainer from './AppContainer'
 import { scaleInputId, rings, lightnessVals, contrastVals, sizes } from './lib/constants'
 import { getImageData } from './lib/img'
 
+import styled from 'styled-components'
+const MobileDownloadBtn = styled.div`
+  cursor: pointer;
+  transition: .3s;
+  :hover, :active {
+    color: var(--accent);
+  }
+`
+const MobileRemoveBtn = styled.div`
+  cursor: pointer;
+  transition: .3s;
+  :hover, :active {
+    color: red;
+  }
+`
+
 class App extends Component {
   state = {
     sliderActive: false,
@@ -350,21 +366,21 @@ class App extends Component {
         <MobileHeader
           hide={editing || animating}>
           {blobUrl && !editing && !animating && ([
-          <div
+          <MobileRemoveBtn
             key={1}
             style={{width: 40, height: 40, left: 5, top: 3, position: 'absolute'}}
             onClick={this.removeImg}>
             <CloseIcon
               style={{width: 26, height: 26, position: 'absolute', left: 6, top: 6}}  />
-          </div>,
-          <div
+          </MobileRemoveBtn>,
+          <MobileDownloadBtn
             key={2}
             style={{position: 'absolute', right: 6, top: 3, height: 40, width: 40}}>
             <DownloadCanvas
               download={false}
               setClickedDownload={this.setClickedDownload}
               clickedDownload={clickedDownload} />
-          </div>])
+          </MobileDownloadBtn>])
           }
           <Logo style={{height: '13px', margin: 'auto', fill: '#777'}} />
         </MobileHeader>
@@ -410,6 +426,7 @@ class App extends Component {
                 onChange={this.handleFileChange} />
                 <SliderContainer>
                   {!animating && <SectionSliderScale
+                    ios={this.ios}
                     disabled={!blobUrl || animating}
                     showBackground={editing}
                     onDragStart={() => {this.setSliderActive(true)}}
