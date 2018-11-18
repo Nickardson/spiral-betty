@@ -1061,32 +1061,6 @@ export const coloring = [
       fill: {type: 'flood'},
       colors: [{color: 'rgb(58,160,210)'}]
     }
-  }, {
-    fill: {
-      line: 'dark',
-      background: 'light'
-    },
-    dark: {
-      fill: {type: 'flood'},
-      colors: [{color: 'rgb(28,24,194)'}]
-    },
-    light: {
-      fill: {type: 'flood'},
-      colors: [{color: 'rgb(84,188,97)'}]
-    }
-  }, {
-    fill: {
-      line: 'dark',
-      background: 'light'
-    },
-    dark: {
-      fill: {type: 'flood'},
-      colors: [{color: 'rgb(128,46,146)'}]
-    },
-    light: {
-      fill: {type: 'flood'},
-      colors: [{color: 'rgb(187,109,154)'}]
-    }
   }
 ]
 
