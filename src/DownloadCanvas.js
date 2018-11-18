@@ -1,35 +1,28 @@
 import React from 'react'
+import FileSaver from 'file-saver'
 const {layout: {ids: {spiralCanvas}}} = require('./lib/constants')
 
 class DownloadCanvas extends React.PureComponent {
-  onClick = () => { this.props.setClickedDownload(true) }
+  onClick = () => {
+    this.props.setClickedDownload(true)
+  }
   downloadCanvas = () => {
+    console.log('here')
     const canvas = document.getElementById(spiralCanvas)
     canvas.toBlob(function(blob) {
-      const href = URL.createObjectURL(blob)
-      const dt = new Date();
-      var downloadLink = document.createElement("a")
-      downloadLink.href = href   
-      downloadLink.download = `spiralbetty_${dt.getTime()}.jpg`
-      document.body.appendChild(downloadLink)
-      downloadLink.click()
-      document.body.removeChild(downloadLink)
-      URL.revokeObjectURL(href)
+      const dt = new Date()
+      FileSaver.saveAs(blob, `spiralbetty_${dt.getTime()}.jpg`)
     }, 'image/jpeg', 0.95)
+    this.props.setClickedDownload(false)
   }
   checkToSeeIfCanvasForDownloadExists = () => {
     if (document.getElementById(spiralCanvas)) {
       this.downloadCanvas()
-      window.clearInterval(this.timer)
-      this.props.setClickedDownload(false)
     }
   }
   componentDidUpdate (prevProps) {
-    if (prevProps.clickedDownload !== true && this.props.clickedDownload === true) {
-      this.timer = setInterval(() => {
-        this.checkToSeeIfCanvasForDownloadExists()
-      }, 100)
-      
+    if (this.props.download !== false && prevProps.clickedDownload !== true && this.props.clickedDownload === true) {
+      this.checkToSeeIfCanvasForDownloadExists()
     }
   }
   render () {

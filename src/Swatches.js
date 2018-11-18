@@ -10,6 +10,7 @@ const Container = styled.div`
   margin-top: 15px; 
   flex-wrap: wrap;
   align-items: center;
+  transform: translateZ(0);
   @media only screen and (orientation: portrait), only screen and (max-width: 1000px), only screen and (max-height: 730px) {
     margin-top: 0;
     flex-wrap: nowrap;

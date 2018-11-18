@@ -2,7 +2,7 @@ import React from 'react'
 import { getPoints } from './lib/spiral'
 
 class SpiralPointsGetter extends React.Component {
-  calculated = {}
+  calculated = {} 
   shouldComponentUpdate (nextProps) {
     // Don't allow swatches to update... just master img
     if (nextProps.colorIndex !== this.props.colorIndex) return false
@@ -29,7 +29,6 @@ class SpiralPointsGetter extends React.Component {
     if (this.calculated[key]) {
       points = this.calculated[key]
     } else {
-      console.log('here')
       points = getPoints({
         contrast,
         lightness,

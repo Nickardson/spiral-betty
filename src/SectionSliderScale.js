@@ -8,7 +8,7 @@ const Icon = styled.div`
   color: #979797;
   background-color: #fff;
   transition: .2s;
-  :hover {
+  :hover, :active {
     color: var(--accent);
     background-color: var(--accent);
   }

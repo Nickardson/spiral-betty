@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 const sliderThumbSize = '12px'
 const trackColor = '#979797'
-const initScale = 1.5
+const initScale = 2
 const hoverScale = 3
 const grabScale = 3
 
@@ -139,12 +139,12 @@ const SliderInput = styled.input`
   border: 2px solid rgba(255,255,255,.8);
 } 
 &.hover::-ms-thumb {
-  transform: scale(1) translateZ(0) !important;
+  transform: scale(${initScale}) !important translateZ(0);
   border: none;
   width: 10px;
   height: 10px;
 }
-&.grabbing.grabbing::-webkit-slider-thumb, &:active::-webkit-slider-thumb {
+&.grabbing.grabbing::-webkit-slider-thumb, &:active::-webkit-slider-thumb  {
   cursor: grabbing !important;
   transform: scale(${grabScale}) translateZ(0);
   border: 2px solid transparent;
@@ -156,7 +156,7 @@ const SliderInput = styled.input`
 }
 &.grabbing.grabbing::-ms-thumb, &:active::-ms-thumb {
   cursor: grabbing !important;
-  transform: scale(1) translateZ(0);
+  transform: scale(${initScale}) translateZ(0);
   border: none;
 }
 &.grabbing.grabbing::-webkit-slider-runnable-track, &:active::-webkit-slider-runnable-track {
@@ -222,8 +222,8 @@ class Slider extends Component {
       ...sliderProps
     } = this.props
     const trackBeforeSliderStyle = {
-      WebkitTransform: `scaleX(${((value - min) / (max - min))}) translateZ(0)`,
-      transform: `scaleX(${((value - min) / (max - min))}) translateZ(0)`
+      WebkitTransform: `scaleX(${((value - min) / (max - min))})`,
+      transform: `scaleX(${((value - min) / (max - min))})`
     }
     let className = ''
     if (this.state.dragging) className = 'grabbing'

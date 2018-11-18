@@ -8,9 +8,16 @@
     display: table; 
 }
 
-html, body { /* avoiding moving img and having an accidental reload on mobile */
-  height: 100%;
+
+button, *[tabindex] {
+  touch-action: manipulation;
+}
+
+html, body {
   overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
 }
 
 body {

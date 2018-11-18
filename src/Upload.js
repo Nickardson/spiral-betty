@@ -70,7 +70,12 @@ class Upload extends Component {
           backgroundColor,
           border: showHover ? `3px ${line} var(--accent)` : `1px ${line} rgba(0,0,0,.25)`,
         }}>
-        <div className='pos-full' style={{backgroundColor: 'var(--accent)', transition: '.2s', borderRadius: '100%', opacity: showHover ? 0.2 : 0}} />
+        <div className='pos-full' style={{
+          backgroundColor: 'var(--accent)',
+          transition: '.2s',
+          borderRadius: '100%',
+          opacity: showHover ? 0.2 : 0
+        }} />
         <WorkspaceIconAndText
           active={showHover}
           showText={!blobUrl}

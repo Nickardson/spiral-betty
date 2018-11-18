@@ -357,14 +357,15 @@ class App extends Component {
             <CloseIcon
               style={{width: 26, height: 26, position: 'absolute', left: 6, top: 6}}  />
           </div>,
-        <div
-          key={2}
-          style={{position: 'absolute', right: 6, top: 3, height: 40, width: 40}}>
-          <DownloadCanvas
-            setClickedDownload={this.setClickedDownload}
-            clickedDownload={clickedDownload} />
-        </div>])
-        }
+          <div
+            key={2}
+            style={{position: 'absolute', right: 6, top: 3, height: 40, width: 40}}>
+            <DownloadCanvas
+              download={false}
+              setClickedDownload={this.setClickedDownload}
+              clickedDownload={clickedDownload} />
+          </div>])
+          }
           <Logo style={{height: '13px', margin: 'auto', fill: '#777'}} />
         </MobileHeader>
         <MobileMargin style={{flex: `0 0 ${winHeight * .05}px`}} />
@@ -387,7 +388,7 @@ class App extends Component {
             </SecondaryActions>
           </DesktopOnly>
           <WorkspaceContainer>
-            <Workspace length={length}>
+            <Workspace length={length} editing={editing}>
               {!editing && <Filter
                 img={img}
                 filter={filter}
@@ -479,6 +480,7 @@ class App extends Component {
                 borderRadius: '100%'
               }}>
               <DownloadCanvas
+                download={true}
                 width={1}
                 setClickedDownload={this.setClickedDownload}
                 clickedDownload={clickedDownload} />
