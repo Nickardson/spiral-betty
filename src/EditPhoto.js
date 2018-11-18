@@ -58,7 +58,7 @@ class EditPhoto extends React.Component {
       // Allow for scaling while editing
       const endEditing = e.target.id === scaleInputId ? false : true
       if (e.target.id !== this.movePhotoId && e.target.id !== 'slider-container') {
-        this.updateStore(endEditing)
+        setTimeout(() => {this.updateStore(endEditing)}, 0) // helps for touch screens and seeing check btn highlight
       }
     }
   }
@@ -172,13 +172,13 @@ class EditPhoto extends React.Component {
     const {active: nextActive} = nextProps
     const {active} = this.props
     if (!active && nextActive) {
-      document.addEventListener('mousedown', this.clicksOutsideOfPhoto)
-      document.addEventListener('touchstart', this.clicksOutsideOfPhoto)
+      document.addEventListener('mouseup', this.clicksOutsideOfPhoto)
+      document.addEventListener('touchend', this.clicksOutsideOfPhoto)
       document.addEventListener('keydown', this.onKeyDown)
     }
     if (active && !nextActive) {
-      document.removeEventListener('mousedown', this.clicksOutsideOfPhoto)
-      document.removeEventListener('touchstart', this.clicksOutsideOfPhoto)
+      document.removeEventListener('mouseup', this.clicksOutsideOfPhoto)
+      document.removeEventListener('touchend', this.clicksOutsideOfPhoto)
       document.removeEventListener('keydown', this.onKeyDown)
     }
   }
