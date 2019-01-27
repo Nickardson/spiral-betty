@@ -340,25 +340,22 @@ class App extends Component {
         return {}
     }
   }
-
   setWinSize = () => {
     this.setState({winHeight: window.innerHeight})
   }
   componentDidMount () {
     this.setWinSize()
-    document.addEventListener('resize', this.setWinSize)
+    window.addEventListener('resize', this.setWinSize)
   }
   componentWillUnmount () {
-    document.removeEventListener('resize', this.setWinSize)
+    window.removeEventListener('resize', this.setWinSize)
   }
   render() {
     const {sliderActive, attribute, clickedDownload, animating, preview: {length, name}, filter, editing, img: { blobUrl, data }, img, winHeight} = this.state
     if (winHeight === 0) return null
     const {data: {rings}} = filter
-    // if (length === 0) return null
-    /* return <Splash /> */
-
     const navLinksDisabled = !blobUrl
+    // TODO: Splash page
     return (
       <AppContainer editing={editing} style={{height: winHeight}}>
         <Beforeunload onBeforeunload={() => "Sure you want to leave this site? You will lose your progress"} />
