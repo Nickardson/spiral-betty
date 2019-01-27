@@ -48,6 +48,7 @@ class Swatch extends React.PureComponent {
       <Container>
         <SwatchSize onClick={this.onClick}>
           <SpiralCanvas
+            type={'swatch'}
             setEditingPhoto={setEditingPhoto}
             active={colorIndex === activeIndex}
             accent={this.findDarkestColor()}

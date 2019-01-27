@@ -36,6 +36,7 @@ class Filter extends React.PureComponent {
                 <div>
                   {/* Interactive asset */}
                   <SpiralCanvas
+                    type={'preview'}
                     setEditingPhoto={setEditingPhoto}
                     onStartAnimation={() => {setAnimating(true)}}
                     onEndAnimation={() => {setAnimating(false)}}
@@ -51,6 +52,7 @@ class Filter extends React.PureComponent {
                   />
                   {/* Downloading asset */}
                   {clickedDownload && <SpiralCanvas
+                    type={'print'}
                     id={layout.ids.spiralCanvas}
                     width={width}
                     height={height}

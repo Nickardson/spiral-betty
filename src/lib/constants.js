@@ -77,36 +77,6 @@ export const coloring = [
   {
     fill: {
       line: 'dark',
-      background: 'light',
-      stroke: 'stroke'
-    },
-    stroke: {
-      color: '#000'
-    },
-    light: {
-      fill: {
-        type: 'flood'
-      },
-      colors: [
-        {
-          color: '#fff'
-        }
-      ]
-    },
-    dark: {
-      fill: {
-        type: 'flood'
-      },
-      colors: [
-        {
-          color: '#fff'
-        }
-      ]
-    }
-  },
-  {
-    fill: {
-      line: 'dark',
       background: 'light'
     },
     light: {
@@ -129,7 +99,44 @@ export const coloring = [
         }
       ]
     }
-  }, 
+  },
+  {
+    fill: {
+      line: 'light',
+      background: 'bg',
+      stroke: 'stroke'
+    },
+    stroke: {
+      colors: [{
+        color: 'rgba(0,0,0,.15)'
+      }]
+    },
+    dark: { // just used for accent color
+      colors: [{
+        color: '#000'
+      }]
+    },
+    light: {
+      fill: {
+        type: 'flood'
+      },
+      colors: [
+        {
+          color: '#fff'
+        }
+      ]
+    },
+    bg: {
+      fill: {
+        type: 'flood'
+      },
+      colors: [
+        {
+          color: '#fff'
+        }
+      ]
+    }
+  },
   {
     fill: {
       line: 'dark',
@@ -1090,6 +1097,54 @@ export const coloring = [
     light: {
       fill: {type: 'flood'},
       colors: [{color: 'rgb(58,160,210)'}]
+    }
+  },
+  {
+    fill: {
+      line: 'dark',
+      background: 'light',
+    },
+    dark: {
+      fill: {
+        type: 'flood'
+      },
+      colors: [{
+        color: 'red'
+      }]
+    },
+    light: {
+      fill: {
+        type: 'flood'
+      },
+      colors: [
+        {
+          color: 'orange'
+        }
+      ]
+    }
+  },
+  {
+    fill: {
+      line: 'dark',
+      background: 'light',
+    },
+    dark: {
+      fill: {
+        type: 'flood'
+      },
+      colors: [{
+        color: 'orange'
+      }]
+    },
+    light: {
+      fill: {
+        type: 'flood'
+      },
+      colors: [
+        {
+          color: '#fff'
+        }
+      ]
     }
   }
 ]

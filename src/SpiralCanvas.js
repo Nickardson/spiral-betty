@@ -169,6 +169,25 @@ const getFillType = (ctx, {colors, fill, fill: {attr}}, len) => {
   }
 }
 
+const addStroke = (ctx, strokeColorData, type) => {
+  if (strokeColorData !== undefined) {
+    switch (type) {
+      case 'print':
+        ctx.lineWidth = 2
+        break
+      case 'preview':
+        ctx.lineWidth = 1
+        break
+      case 'swatch':
+      default:
+        ctx.lineWidth = .2
+        break
+    }
+    ctx.strokeStyle = strokeColorData.colors[0].color
+    ctx.stroke()
+  }
+}
+
 class SpiralCanvas extends React.PureComponent {
   multiplier =  window.devicePixelRatio || 1
   animate = (loopsInfo, count, onComplete) => {
@@ -210,7 +229,7 @@ class SpiralCanvas extends React.PureComponent {
   }
   updateCanvas = (loopsInfo, count) => {
     if (!this.canvas) return
-    const {width, scale: s, height, colorIndex, length, points} = this.props
+    const {width, scale: s, height, colorIndex, length, points, type} = this.props
     const imgLength = Math.min(width / s, height / s)
     const {inner, outter} = points || {}
     const ctx = this.canvas.getContext('2d', { alpha: false })
@@ -220,9 +239,10 @@ class SpiralCanvas extends React.PureComponent {
 
     const scale = length / imgLength
     const colorData = coloring[colorIndex]
-    const {fill: {line, background}} = colorData
+    const {fill: {line, background, stroke}} = colorData
     const bgColorData = colorData[background]
     const lineColorData = colorData[line]
+    const strokeColorData = colorData[stroke]
     
     // Background especially for downloading
     ctx.fillStyle = '#fff'
@@ -236,7 +256,7 @@ class SpiralCanvas extends React.PureComponent {
 
       // Lines
       getFillType(ctx, lineColorData, length)
-      if (loopsInfo) {
+      if (loopsInfo && count !== 100) { // Don't want to animate last loop because of strokes
         loopsInfo.forEach(({start, length}) => {
           const index = start + (easing.easeInOut(count / 100) * length)
           const outterLoop = outter.slice(start, index)
@@ -254,10 +274,11 @@ class SpiralCanvas extends React.PureComponent {
             const [x, y] = outterLoop[(len - 1) - i]
             ctx.lineTo(x * scale, y * scale)
           }
-          ctx.closePath()
           ctx.fill()
+          addStroke(ctx, strokeColorData, true, type)
         })
-      } else {
+      } 
+      if (count === 100 || !loopsInfo) {
         ctx.beginPath()
         for (let i = 0, len = inner.length; i < len; i++) {
           const [x, y] = inner[i]
@@ -273,6 +294,7 @@ class SpiralCanvas extends React.PureComponent {
         }
         ctx.closePath()
         ctx.fill()
+        addStroke(ctx, strokeColorData, type)
       }
     }
   }
