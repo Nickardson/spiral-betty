@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import './App.css'
 import Beforeunload from 'react-beforeunload'
 import { blobExifTransform } from './lib/img'
 

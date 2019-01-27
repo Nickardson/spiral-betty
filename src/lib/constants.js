@@ -77,6 +77,36 @@ export const coloring = [
   {
     fill: {
       line: 'dark',
+      background: 'light',
+      stroke: 'stroke'
+    },
+    stroke: {
+      color: '#000'
+    },
+    light: {
+      fill: {
+        type: 'flood'
+      },
+      colors: [
+        {
+          color: '#fff'
+        }
+      ]
+    },
+    dark: {
+      fill: {
+        type: 'flood'
+      },
+      colors: [
+        {
+          color: '#fff'
+        }
+      ]
+    }
+  },
+  {
+    fill: {
+      line: 'dark',
       background: 'light'
     },
     light: {
