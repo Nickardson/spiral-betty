@@ -275,7 +275,7 @@ class SpiralCanvas extends React.PureComponent {
             ctx.lineTo(x * scale, y * scale)
           }
           ctx.fill()
-          addStroke(ctx, strokeColorData, true, type)
+          addStroke(ctx, strokeColorData, type)
         })
       } 
       if (count === 100 || !loopsInfo) {

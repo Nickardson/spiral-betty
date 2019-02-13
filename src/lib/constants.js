@@ -102,13 +102,13 @@ export const coloring = [
   },
   {
     fill: {
-      line: 'light',
+      line: 'line',
       background: 'bg',
       stroke: 'stroke'
     },
     stroke: {
       colors: [{
-        color: 'rgba(0,0,0,.15)'
+        color: '#ddd'
       }]
     },
     dark: { // just used for accent color
@@ -116,25 +116,33 @@ export const coloring = [
         color: '#000'
       }]
     },
-    light: {
+    line: {
       fill: {
-        type: 'flood'
-      },
-      colors: [
-        {
-          color: '#fff'
+        type: 'radial-gradient',
+        attr: {
+          r1: 0,
+          r2: .5,
+          x1: .5,
+          x2: .5,
+          y1: .5,
+          y2: .5
         }
-      ]
+      },
+      colors: [{
+        color: '#efefef',
+        offset: 0
+      }, {
+        color: '#fff',
+        offset: .15
+      }]
     },
     bg: {
       fill: {
-        type: 'flood'
+        type: 'flood',
       },
-      colors: [
-        {
-          color: '#fff'
-        }
-      ]
+      colors: [{
+        color: '#fff',
+      }]
     }
   },
   {
