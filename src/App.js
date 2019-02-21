@@ -331,18 +331,32 @@ class App extends Component {
   }
 
   checkToSeeIfCanvasForDownloadExists = () => {
-    // TODO: Is a set timeout necessary here?
-    // - Check to see if both canvases are being made
-    if (document.getElementById(spiralCanvas)) {
-      this.downloadCanvas()
-    }
+    let count = 0
+    let maxTime = 4000
+    let int = 20
+    let maxAttempts = maxTime / int
+    this.checkCanvasDownoad = setInterval(() => {
+      if (count > maxAttempts) {
+        clearInterval(this.checkCanvasDownoad)
+        this.checkCanvasDownoad = null
+        alert('Sorry, could not download image.')
+        return
+      } else if (document.getElementById(spiralCanvas)) {
+        this.downloadCanvas()
+        clearInterval(this.checkCanvasDownoad)
+        this.checkCanvasDownoad = null
+        return
+      } else {
+        count++
+      }
+    }, int)
   }
 
   setWinSize = () => {
     this.setState({winHeight: window.innerHeight})
   }
-  componentDidUpdate () {
-    if (this.state.clickedDownload === true) {
+  componentDidUpdate (prevProps, prevState) {
+    if (prevState.clickedDownload === false && this.state.clickedDownload === true) {
       this.checkToSeeIfCanvasForDownloadExists()
     }
   }
