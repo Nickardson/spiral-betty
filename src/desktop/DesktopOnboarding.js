@@ -49,7 +49,7 @@ class DesktopOnboarding extends React.PureComponent {
           alt={'Spiralize, edit, and download'}
           src={'assets/imgs/onboard-sm-3.jpg'}
           number={3}>
-          <p>Crop, scale, and<br />move image in circle</p>
+          <p>Spiralize, edit, and download</p>
         </DesktopOnboardingItem>
       </Container>
     )
