@@ -1,52 +1,34 @@
 import React, { Component } from 'react'
 import Beforeunload from 'react-beforeunload'
-import { blobExifTransform } from './lib/img'
+import FileSaver from 'file-saver'
 
-import {Link} from './Text'
-import Onboarding from './Onboarding'
-import Logo from './Logo'
 import Upload from './Upload'
 import Workspace from './Workspace'
 import Guides from './Guides'
 import EditPhoto from './EditPhoto'
 import DemoImage from './DemoImage'
 import Filter from './Filter'
-import DownloadCanvas from './DownloadCanvas'
-import Size from './Size'
 import SectionSliderScale from './SectionSliderScale'
-import Swatches from './Swatches'
-import {InvertIcon} from './SectionSliderScale'
-import {SecondaryButton} from './Button'
-import CloseIcon from './CloseIcon'
+import DesktopDownloadBtn from './desktop/DesktopDownloadBtn'
+import DesktopRemoveAndPreviewSize from './desktop/DesktopRemoveAndPreviewSize'
 import SliderContainer from './SliderContainer'
 import Main from './Main'
 import WorkspaceContainer from './WorkspaceContainer'
-import DesktopOnly from './DesktopOnly'
 import Sidebar from './Sidebar'
 import NavLinks from './NavLinks'
-import MobileMargin from './MobileMargin'
-import MobileHeader from './MobileHeader'
-import SecondaryActions from './SecondaryActions'
+import MobileMargin from './mobile/MobileMargin'
+import MobileHeader from './mobile/MobileHeader'
 import AppContainer from './AppContainer'
+import Swatches from './Swatches'
+import DesktopSidebarLogoAndAuthor from './desktop/DesktopSidebarLogoAndAuthor'
+import DesktopOnboarding from './desktop/DesktopOnboarding'
 
-import { scaleInputId, rings, lightnessVals, contrastVals, sizes } from './lib/constants'
+import { blobExifTransform } from './lib/img'
+import { scaleInputId, rings, lightnessVals, contrastVals, sizes, layout } from './lib/constants'
 import { getImageData } from './lib/img'
 
-import styled from 'styled-components'
-const MobileDownloadBtn = styled.div`
-  cursor: pointer;
-  transition: .3s;
-  :hover, :active {
-    color: var(--accent);
-  }
-`
-const MobileRemoveBtn = styled.div`
-  cursor: pointer;
-  transition: .3s;
-  :hover, :active {
-    color: red;
-  }
-`
+const {ids: {spiralCanvas}} = layout
+const ios = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 
 class App extends Component {
   state = {
@@ -68,8 +50,6 @@ class App extends Component {
       scale: 1 // default
     }
   }
-
-  ios = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 
   setSliderActive = val => {this.setState({sliderActive: val})}
   setEditingPhoto = val => { this.setState({editing: val}) }
@@ -340,8 +320,31 @@ class App extends Component {
         return {}
     }
   }
+
+  downloadCanvas = () => {
+    const canvas = document.getElementById(spiralCanvas)
+    canvas.toBlob(function(blob) {
+      const dt = new Date()
+      FileSaver.saveAs(blob, `spiralbetty_${dt.getTime()}.jpg`)
+    }, 'image/jpeg', 0.95)
+    this.setClickedDownload(false)
+  }
+
+  checkToSeeIfCanvasForDownloadExists = () => {
+    // TODO: Is a set timeout necessary here?
+    // - Check to see if both canvases are being made
+    if (document.getElementById(spiralCanvas)) {
+      this.downloadCanvas()
+    }
+  }
+
   setWinSize = () => {
     this.setState({winHeight: window.innerHeight})
+  }
+  componentDidUpdate () {
+    if (this.state.clickedDownload === true) {
+      this.checkToSeeIfCanvasForDownloadExists()
+    }
   }
   componentDidMount () {
     this.setWinSize()
@@ -355,53 +358,35 @@ class App extends Component {
     if (winHeight === 0) return null
     const {data: {rings}} = filter
     const navLinksDisabled = !blobUrl
+    const showSwatches = !!data && !editing && !animating
+    const showFilter = !editing // img adjustments & rings
     // TODO: Splash page
     return (
-      <AppContainer editing={editing} style={{height: winHeight}}>
-        <Beforeunload onBeforeunload={() => "Sure you want to leave this site? You will lose your progress"} />
+      <AppContainer
+        darken={editing}
+        style={{height: winHeight}}>
+        <Beforeunload
+          onBeforeunload={() => "Sure you want to leave this site? You will lose your progress"} />
         <MobileHeader
-          hide={editing || animating}>
-          {blobUrl && !editing && !animating && ([
-          <MobileRemoveBtn
-            key={1}
-            style={{width: 40, height: 40, left: 5, top: 3, position: 'absolute'}}
-            onClick={this.removeImg}>
-            <CloseIcon
-              style={{width: 26, height: 26, position: 'absolute', left: 6, top: 6}}  />
-          </MobileRemoveBtn>,
-          <MobileDownloadBtn
-            key={2}
-            style={{position: 'absolute', right: 6, top: 3, height: 40, width: 40}}>
-            <DownloadCanvas
-              download={false}
-              setClickedDownload={this.setClickedDownload}
-              clickedDownload={clickedDownload} />
-          </MobileDownloadBtn>])
-          }
-          <Logo style={{height: '13px', margin: 'auto', fill: '#777'}} />
-        </MobileHeader>
+          hide={editing || animating}
+          showRemoveAndDownloadBtns={blobUrl && !editing && !animating}
+          download={() => {this.setClickedDownload(true)}}
+          removeImg={this.removeImg} />
         <MobileMargin style={{flex: `0 0 ${winHeight * .05}px`}} />
         <Main id='main'>
-          <DesktopOnly>
-            <SecondaryActions style={{display: editing || animating || !blobUrl ? 'none' : ''}}>
-              <SecondaryButton
-                type={'error'}
-                style={{marginBottom: 10, position: 'relative'}}
-                onClick={this.removeImg}>
-                <span style={{paddingRight: 20}}>Remove image</span><span style={{position: 'absolute', right: 16, top: 7, width: 14, height: 14}}><CloseIcon /></span>
-              </SecondaryButton>
-              <div>
-                <Size
-                  length={length}
-                  name={name}
-                  disabled={editing || animating}
-                  setPreview={this.setPreview} />
-              </div>
-            </SecondaryActions>
-          </DesktopOnly>
+          <DesktopRemoveAndPreviewSize
+            removeImg={this.removeImg}
+            length={length}
+            name={name}
+            setPreview={this.setPreview}
+            editing={editing}
+            animating={animating}
+            blobUrl={blobUrl} />
           <WorkspaceContainer>
-            <Workspace length={length} editing={editing}>
-              {!editing && <Filter
+            <Workspace
+              length={length}
+              editing={editing}>
+              {showFilter && <Filter
                 img={img}
                 filter={filter}
                 setEditingPhoto={this.setEditingPhoto}
@@ -422,7 +407,7 @@ class App extends Component {
                 onChange={this.handleFileChange} />
                 <SliderContainer>
                   {!animating && <SectionSliderScale
-                    ios={this.ios}
+                    ios={ios}
                     disabled={!blobUrl || animating}
                     showBackground={editing}
                     onDragStart={() => {this.setSliderActive(true)}}
@@ -430,8 +415,14 @@ class App extends Component {
                     key={editing ? 'scale' : attribute}
                     {...this.getSliderProps()} />}
                 </SliderContainer> 
-                <div style={{position: 'absolute', visibility: 'hidden', width: '80%', minWidth: 300, bottom: -90, left: '50%', transform: 'translate(-50%)'}}>
-                  {/* TODO: use local storage to not show this if they have been here before */}
+                <div style={{
+                  position: 'absolute',
+                  visibility: 'hidden',
+                  width: '80%',
+                  minWidth: 300,
+                  bottom: -90,
+                  left: '50%',
+                  transform: 'translate(-50%)'}}>
                   <DemoImage
                     blobUrl={blobUrl}
                     handleFile={this.handleFile} />
@@ -482,53 +473,24 @@ class App extends Component {
                 </div>
             </Workspace>
           </WorkspaceContainer>
-          <DesktopOnly>
-            {!editing && !animating && blobUrl && <InvertIcon
-              style={{
-                position: 'absolute',
-                right: 15,
-                top: 15,
-                height: 70,
-                width: 70,
-                borderRadius: '100%'
-              }}>
-              <DownloadCanvas
-                download={true}
-                width={1}
-                setClickedDownload={this.setClickedDownload}
-                clickedDownload={clickedDownload} />
-              </InvertIcon>}
-          </DesktopOnly>
+          <DesktopDownloadBtn
+            show={!editing && !animating && blobUrl}
+            onClick={() => {this.setClickedDownload(true)}} />
         </Main>
         <MobileMargin />
         <Sidebar
           hide={editing || animating}
           noImg={!blobUrl}>
-          <DesktopOnly>
-            <div>
-              <Logo style={{width: '100%', fill: '#777'}} />
-            </div>
-            <div style={{marginTop: 5, fontSize: 12}}>
-              <Link
-                target={'_blank'}
-                as={'a'}
-                href={'https://twitter.com/shalanahfaith'}>
-                ©2018 Shalanah Dawson
-              </Link>
-            </div>
-            <div style={{marginTop: 5, fontSize: 12}}>
-              Downloads free to use for non&#8209;commercial purposes.
-            </div>
-          </DesktopOnly>
-          {!!data && !editing && !animating && <Swatches
+          <DesktopSidebarLogoAndAuthor />
+          {showSwatches && <Swatches
             {...img}
             attribute={attribute}
             colorIndex={filter.colorIndex}
             sliderActive={sliderActive}
             setEditingPhoto={this.setEditingPhoto}
             setColorIndex={this.setColorIndex}
-          rings={rings} />}
-          {!blobUrl && <Onboarding />}
+            rings={rings} />}
+          {!blobUrl && <DesktopOnboarding />}
         </Sidebar>
       </AppContainer>
     )
