@@ -232,7 +232,7 @@ class SpiralCanvas extends React.PureComponent {
     const {width, scale: s, height, colorIndex, length, points, type} = this.props
     const imgLength = Math.min(width / s, height / s)
     const {inner, outter} = points || {}
-    const ctx = this.canvas.getContext('2d', { alpha: false })
+    const ctx = this.canvas.getContext('2d') // future optimization {alpha: false} not fully supported right now especially in mobile
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, length, length)
     ctx.scale(this.multiplier, this.multiplier)
