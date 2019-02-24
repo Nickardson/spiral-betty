@@ -1,8 +1,8 @@
 import React from 'react'
-import {coloring} from './lib/constants'
+import {coloring} from '../lib/constants'
 import styled, {keyframes, css} from 'styled-components'
 import WorkspaceIconAndText from './WorkspaceIconAndText'
-const {easing} = require('./lib/constants')
+const {easing} = require('../lib/constants')
 
 
 const getLoopStartLengthAndOffset = ({offsetFactor, i, loopIndexes, loopsLength, sideLength, onlyOffset = false}) => { 
@@ -189,7 +189,10 @@ const addStroke = (ctx, strokeColorData, type) => {
 }
 
 class SpiralCanvas extends React.PureComponent {
-  multiplier =  window.devicePixelRatio || 1
+  // Pixel density (multiplier)
+  // - Do not need extra pixels for downloads
+  multiplier =  this.props.enableRetina ? window.devicePixelRatio || 1 : 1 
+
   animate = (loopsInfo, count, onComplete) => {
     if (count <= 100) {
       // Only animate to count 100
@@ -232,7 +235,7 @@ class SpiralCanvas extends React.PureComponent {
     const {width, scale: s, height, colorIndex, length, points, type} = this.props
     const imgLength = Math.min(width / s, height / s)
     const {inner, outter, thickness} = points || {}
-    const ctx = this.canvas.getContext('2d', { alpha: false })
+    const ctx = this.canvas.getContext('2d') // future optimization {alpha: false} not fully supported right now especially in mobile
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, length, length)
     ctx.scale(this.multiplier, this.multiplier)

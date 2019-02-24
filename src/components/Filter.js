@@ -1,10 +1,10 @@
 import React from 'react'
 import SpiralPointsGetter from './SpiralPointsGetter'
 import SpiralCanvas from './SpiralCanvas'
-import { layout } from './lib/constants'
+import { layout } from '../lib/constants'
 import chroma from 'chroma-js'
 
-const { coloring } = require('./lib/constants')
+const { coloring } = require('../lib/constants')
 
 class Filter extends React.PureComponent {
   findDarkestColor = () => {
@@ -41,6 +41,7 @@ class Filter extends React.PureComponent {
                     onStartAnimation={() => {setAnimating(true)}}
                     onEndAnimation={() => {setAnimating(false)}}
                     animate
+                    enableRetina={true}
                     editing={editing}
                     interactive
                     width={width}
@@ -53,6 +54,7 @@ class Filter extends React.PureComponent {
                   {/* Downloading asset */}
                   {clickedDownload && <SpiralCanvas
                     type={'print'}
+                    enableRetina={false}
                     id={layout.ids.spiralCanvas}
                     width={width}
                     height={height}

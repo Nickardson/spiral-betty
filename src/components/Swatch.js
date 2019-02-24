@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import SpiralCanvas from './SpiralCanvas'
 import chroma from 'chroma-js'
 
-const {coloring} = require('./lib/constants')
+const {coloring} = require('../lib/constants')
 
 const Container = styled.div`
   flex: 1 1 auto;
@@ -49,6 +49,7 @@ class Swatch extends React.PureComponent {
         <SwatchSize onClick={this.onClick}>
           <SpiralCanvas
             type={'swatch'}
+            enableRetina={true}
             setEditingPhoto={setEditingPhoto}
             active={colorIndex === activeIndex}
             accent={this.findDarkestColor()}

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { scaleInputId } from './lib/constants'
+import { scaleInputId } from '../lib/constants'
 
 const Container = styled.div`
   width: 100%;

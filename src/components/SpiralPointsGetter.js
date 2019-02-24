@@ -1,5 +1,5 @@
 import React from 'react'
-import { getPoints } from './lib/spiral'
+import { getPoints } from '../lib/spiral'
 
 class SpiralPointsGetter extends React.Component {
   calculated = {} 
