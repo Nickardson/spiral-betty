@@ -13,6 +13,7 @@ export const sizes = [
   {length: 168, name: 'Facebook profile'},
   {length: 200, name: 'Twitter profile'},
   {length: 614, name: 'Instagram'},
+  {length: 400, name: 'Tracy the Turtle'},
 ]
 
 // Source: https://css-tricks.com/emulating-css-timing-functions-javascript/

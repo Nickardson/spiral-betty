@@ -231,11 +231,19 @@ class SpiralCanvas extends React.PureComponent {
     if (!this.canvas) return
     const {width, scale: s, height, colorIndex, length, points, type} = this.props
     const imgLength = Math.min(width / s, height / s)
-    const {inner, outter} = points || {}
+    const {inner, outter, thickness} = points || {}
     const ctx = this.canvas.getContext('2d', { alpha: false })
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, length, length)
     ctx.scale(this.multiplier, this.multiplier)
+
+    window.downloadThicknessMap = () => {
+      var a = document.createElement('a');
+      var file = new Blob([ JSON.stringify(thickness) ], { type: 'text/plain' });
+      a.href = URL.createObjectURL(file);
+      a.download = 'thicknessmap.json';
+      a.click();
+    }
 
     const scale = length / imgLength
     const colorData = coloring[colorIndex]

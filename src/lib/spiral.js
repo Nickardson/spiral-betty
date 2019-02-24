@@ -54,6 +54,7 @@ const getPoints = ({imgData, lightness, contrast, invert = false, scale, cx, cy,
   const scaledHeight = height / scale
   const outter = []
   const inner = []
+  const thickness = []
   const loopIndexes = [] // used for animations
   const minPointsOnCircle = 30
   
@@ -122,6 +123,11 @@ const getPoints = ({imgData, lightness, contrast, invert = false, scale, cx, cy,
       
       outter.push(p1)
       inner.push(p2)
+      thickness.push([
+        1 * x.toFixed(1),
+        1 * y.toFixed(1),
+        1 * thicknessInner.toFixed(2)
+      ]);
     }
     
     loop = Math.floor(angle / (Math.PI * 2)) // which loop are we on...
@@ -130,7 +136,7 @@ const getPoints = ({imgData, lightness, contrast, invert = false, scale, cx, cy,
     else angle = angle + Math.min(getAngle(loop, chord, b), Math.PI * 2 / minPointsOnCircle)
   }
   
-  return {outter, inner, loopIndexes}
+  return {outter, inner, loopIndexes, thickness}
 }
 
 export {getPoints}
