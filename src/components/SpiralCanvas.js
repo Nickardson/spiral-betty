@@ -1,8 +1,8 @@
 import React from 'react'
-import {coloring} from './lib/constants'
+import {coloring} from '../lib/constants'
 import styled, {keyframes, css} from 'styled-components'
 import WorkspaceIconAndText from './WorkspaceIconAndText'
-const {easing} = require('./lib/constants')
+const {easing} = require('../lib/constants')
 
 
 const getLoopStartLengthAndOffset = ({offsetFactor, i, loopIndexes, loopsLength, sideLength, onlyOffset = false}) => { 

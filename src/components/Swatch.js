@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import SpiralCanvas from './SpiralCanvas'
 import chroma from 'chroma-js'
 
-const {coloring} = require('./lib/constants')
+const {coloring} = require('../lib/constants')
 
 const Container = styled.div`
   flex: 1 1 auto;

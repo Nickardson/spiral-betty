@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import Section from './Section'
 import {SecondaryButton} from './Button'
 import styled from 'styled-components'
-import {sizes} from './lib/constants'
+import {sizes} from '../lib/constants'
 
 const DD = styled.div`
   position: relative;

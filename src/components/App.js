@@ -23,9 +23,9 @@ import Swatches from './Swatches'
 import DesktopSidebarLogoAndAuthor from './desktop/DesktopSidebarLogoAndAuthor'
 import DesktopOnboarding from './desktop/DesktopOnboarding'
 
-import { blobExifTransform } from './lib/img'
-import { scaleInputId, rings, lightnessVals, contrastVals, sizes, layout } from './lib/constants'
-import { getImageData } from './lib/img'
+import { blobExifTransform } from '../lib/img'
+import { scaleInputId, rings, lightnessVals, contrastVals, sizes, layout } from '../lib/constants'
+import { getImageData } from '../lib/img'
 
 const {ids: {spiralCanvas}} = layout
 const ios = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);

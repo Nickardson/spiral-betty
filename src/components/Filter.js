@@ -1,10 +1,10 @@
 import React from 'react'
 import SpiralPointsGetter from './SpiralPointsGetter'
 import SpiralCanvas from './SpiralCanvas'
-import { layout } from './lib/constants'
+import { layout } from '../lib/constants'
 import chroma from 'chroma-js'
 
-const { coloring } = require('./lib/constants')
+const { coloring } = require('../lib/constants')
 
 class Filter extends React.PureComponent {
   findDarkestColor = () => {

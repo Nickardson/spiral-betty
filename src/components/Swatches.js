@@ -3,7 +3,7 @@ import Section from './Section'
 import Swatch from './Swatch'
 import SpiralPointsGetter from './SpiralPointsGetter'
 import styled from 'styled-components'
-const {coloring} = require('./lib/constants')
+const {coloring} = require('../lib/constants')
 
 const Container = styled.div`
   display: flex;
