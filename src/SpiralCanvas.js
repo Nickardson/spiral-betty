@@ -189,7 +189,10 @@ const addStroke = (ctx, strokeColorData, type) => {
 }
 
 class SpiralCanvas extends React.PureComponent {
-  multiplier =  window.devicePixelRatio || 1
+  // Pixel density (multiplier)
+  // - Do not need extra pixels for downloads
+  multiplier =  this.props.enableRetina ? window.devicePixelRatio || 1 : 1 
+
   animate = (loopsInfo, count, onComplete) => {
     if (count <= 100) {
       // Only animate to count 100
